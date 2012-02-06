@@ -1,0 +1,11 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  longitude: 1.5
+  latitude: 1.5
+  node: 
+
+two:
+  longitude: 1.5
+  latitude: 1.5
+  node: 

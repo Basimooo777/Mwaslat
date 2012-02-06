@@ -1,0 +1,73 @@
+<body onload="initView()">
+    <div id="search_map" style="width:100%; height:100%"></div>
+    <br />
+    <%= form_tag(:action => "search") do %>
+    <table>
+    	<tr>
+    		<td>
+    			<%= label_tag "Source District"%>			
+    		</td>
+    		<td>
+    			<%= text_field_tag :src %>			
+    		</td>
+    	</tr>
+    	<tr>
+    		<td>
+    			<%= label_tag "Dest District"%>			
+    		</td>
+    		<td>
+    			<%= text_field_tag :dest %>
+    		</td>
+    		<td>
+    			<%= submit_tag("Search") %>
+    		</td>
+    	</tr>
+    </table>
+    <% end %>
+    <br />
+    <% if(@routes != nil) %>
+	<style type="text/css">
+		td
+		{
+			vertical-align: top;
+		}
+	</style>
+	<table border="1">
+		<th>ID</th>
+		<th>Cost</th>
+		<th>Time</th>
+		<th>Src Dist</th>
+		<th>Src Streets</th>
+		<th>Dest Dist</th>
+		<th>Dest Streets</th>
+		<th>Transportation</th>
+		
+		<% @routes.each do|r|%>
+			<tr>
+				<td><%= r.id %></td>
+				<td><%= r.cost %></td>
+				<td><%= r.time %></td>
+				<td><%= r.src.district %></td>
+				<td>
+					<% r.src.streets.each do |st| %>
+						- <%= st.name %><br/>
+					<% end %>
+				</td>
+				<td><%= r.dest.district %></td>
+				<td>
+					<% r.dest.streets.each do |st| %>
+						- <%= st.name %><br/>
+					<% end %>
+				</td>
+				<td><%= r.transportation.name %></td>
+				<td><button type="button" onclick="view('<%= r.src.get_lats %>', 
+					'<%= r.src.get_lngs %>', '<%= r.dest.get_lats %>',
+					'<%= r.dest.get_lngs %>')">View</button></td>
+			</tr>
+		<% end %>
+	</table>
+	<%end%>
+    
+    <br />
+    <%= link_to "Back", new_route_path %>
+</body>

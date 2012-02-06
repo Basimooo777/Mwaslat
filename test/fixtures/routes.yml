@@ -1,0 +1,15 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  src: 
+  dest: 
+  time: 1.5
+  cost: 1.5
+  transportation: 
+
+two:
+  src: 
+  dest: 
+  time: 1.5
+  cost: 1.5
+  transportation: 
