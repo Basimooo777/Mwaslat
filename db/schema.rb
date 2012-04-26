@@ -11,43 +11,78 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120203124147) do
+ActiveRecord::Schema.define(:version => 20120406184217) do
 
-  create_table "nodes", :force => true do |t|
-    t.string   "district"
+  create_table "containings", :force => true do |t|
+    t.integer  "district_id"
+    t.integer  "poi_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "points", :force => true do |t|
-    t.float    "longitude"
-    t.float    "latitude"
-    t.integer  "node_id"
+  create_table "nodes", :force => true do |t|
+    t.string   "name"
+    t.string   "path"
+    t.string   "category"
+    t.integer  "zoom"
+    t.string   "center"
+    t.integer  "user_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "notifications", :force => true do |t|
+    t.string   "msg"
+    t.integer  "user_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "routes", :force => true do |t|
-    t.integer  "src_id"
-    t.integer  "dest_id"
-    t.float    "time"
-    t.float    "cost"
+    t.decimal  "cost",              :precision => 10, :scale => 0
     t.integer  "transportation_id"
+    t.integer  "user_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "streets", :force => true do |t|
-    t.string   "name"
-    t.integer  "node_id"
+  create_table "sub_routes", :force => true do |t|
+    t.integer  "src_id"
+    t.integer  "dest_id"
+    t.decimal  "duration",   :precision => 10, :scale => 0
+    t.integer  "route_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "transportations", :force => true do |t|
-    t.string   "name"
+    t.string   "category"
+    t.string   "way"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  create_table "users", :force => true do |t|
+    t.string   "email",                                 :default => "", :null => false
+    t.string   "encrypted_password",     :limit => 128, :default => "", :null => false
+    t.string   "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.integer  "sign_in_count",                         :default => 0
+    t.datetime "current_sign_in_at"
+    t.datetime "last_sign_in_at"
+    t.string   "current_sign_in_ip"
+    t.string   "last_sign_in_ip"
+    t.string   "confirmation_token"
+    t.datetime "confirmed_at"
+    t.datetime "confirmation_sent_at"
+    t.boolean  "admin"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true
+  add_index "users", ["email"], :name => "index_users_on_email", :unique => true
+  add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
 
 end
