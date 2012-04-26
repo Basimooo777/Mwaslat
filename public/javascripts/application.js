@@ -10,11 +10,6 @@ function remover(){
 	remove_child(parseInt($("to_remove").value))
 }
 
-function enable_sub_route(content){
-	// >>>>>>>>>>>>>>>>>>>>>>>>>>> increment the counter inside
-	map.incrementCounter(1);
-}
-
 // 0. 1. 2. 3. ...
 function remove_child(sub_route_index){
 	if(sub_route_index < sub_routes_ids.length && (sub_route_index >= 0)){
@@ -74,7 +69,7 @@ function add_child(sub_route_index){
 	rename_stops(sub_route_index);
 }
 
-function rename_stops(start){
+function rename_stops(start) {
 	for(var i=start; i < sub_routes_ids.length; i++){
 		$("route_sub_routes_attributes_"+sub_routes_ids[i]+"_dest_attributes_name").previous(1).innerHTML = "Stop " + (i+1);
 	}
