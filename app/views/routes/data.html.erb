@@ -1,0 +1,29 @@
+<head>
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+	<title>Data Seed</title>
+</head>
+<body onload="showingNodes()">
+	<div id="map_canvas" style="height: 80%"></div>
+	<div id="data"></div>
+	<div align="center">
+		<% form_tag do %>
+			<%= hidden_field_tag("next", @next ) %>
+			<%= submit_tag("<") %>
+			<%= submit_tag(">") %>
+		<% end %>
+	</div>
+	<table border="1" align = "center">
+		<th>ID</th>
+		<th>Title</th>
+		<th>Category</th>
+		<% @nodes.each do |node| %>
+			<tr>
+				<td><%= node.id %></td>
+				<td><%= node.name %></td>
+				<td><%= node.category %></td>
+				<td><button type="button" onclick="map.showNode('<%=node.path%>')">View</button></td>
+			</tr>
+		<% end %>
+	</table>
+	<br />
+</body>

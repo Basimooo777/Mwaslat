@@ -25,48 +25,41 @@
     </table>
     <% end %>
     <br />
+    
+    <%= notice %>
+    
     <% if(@routes != nil) %>
 	<style type="text/css">
-		td {
+		td
+		{
 			vertical-align: top;
 		}
 	</style>
+
+	<% @routes.each do|route| %>
+	<% nodes = ""%>
 	<table border="1">
 		<th>ID</th>
 		<th>Cost</th>
 		<th>Time</th>
-		<th>Src Dist</th>
-		<th>Src Streets</th>
-		<th>Dest Dist</th>
-		<th>Dest Streets</th>
 		<th>Transportation</th>
-		
-		<% @routes.each do|r|%>
+		<% route.each do |r| %>
 			<tr>
 				<td><%= r.id %></td>
 				<td><%= r.cost %></td>
 				<td><%= r.time %></td>
-				<td><%= r.src.district %></td>
-				<td>
-					<% r.src.streets.each do |st| %>
-						- <%= st.name %><br/>
-					<% end %>
-				</td>
-				<td><%= r.dest.district %></td>
-				<td>
-					<% r.dest.streets.each do |st| %>
-						- <%= st.name %><br/>
-					<% end %>
-				</td>
 				<td><%= r.transportation.name %></td>
-				<td><button type="button" onclick="view('<%= r.src.get_lats %>', 
-					'<%= r.src.get_lngs %>', '<%= r.dest.get_lats %>',
-					'<%= r.dest.get_lngs %>')">View</button></td>
+				<td><%= link_to "Delete", :action => "destroy", :id => r.id %></td>
+				<td><%= link_to "Edit", :action => "edit", :id => r.id %></td>
 			</tr>
+			<% nodes += r.src.path + "," %>
 		<% end %>
-	</table>
+		<% nodes += route.last.dest.path %>
+		</table>
+		<button type="button" onclick="view('<%=nodes%>')">View</button>
+		<hr />
+	<% end %>
 	<%end%>
-    
     <br />
     <%= link_to "Back", new_route_path %>
 </body>
