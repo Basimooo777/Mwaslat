@@ -1,6 +1,5 @@
 // Place your application-specific JavaScript functions and classes here
 // This file is automatically included by javascript_include_tag :defaults
-var sub_route_element;
 var sub_routes_ids = [];
 
 function adder(){
@@ -12,7 +11,6 @@ function remover(){
 }
 
 function enable_sub_route(content){
-	sub_route_element = content;
 	// >>>>>>>>>>>>>>>>>>>>>>>>>>> increment the counter inside
 	map.incrementCounter(1);
 }
@@ -38,7 +36,8 @@ function remove_child(sub_route_index){
 
 // 0. 1. 2. 3. .....
 function add_child(sub_route_index){
-	var sub_route_instance = sub_route_element;
+	// "sub_route_element" is a variable set using the form builder in the .html.erb file
+	var sub_route_instance = sub_route_element.toString();
 	var regexp = new RegExp("sub_route_index", "g");
 	var new_sub_route_id;
 	var sub_route_before;

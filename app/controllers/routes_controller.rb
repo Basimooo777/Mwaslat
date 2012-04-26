@@ -64,7 +64,6 @@ class RoutesController < ApplicationController
          i.to_s 
        end
     end
-    puts keys
     for i in 0..keys.length-1
       child_params = children_params[keys[i]]
       child_id = child_params["id"]

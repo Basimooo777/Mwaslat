@@ -25,6 +25,9 @@
 			</tr>
 		</table>
 		<%= f_route.submit(:onclick => "fillPaths();") %><br/>
+		<%javascript_tag do%>
+			window.sub_route_element = <%= get_stop(f_route)%>;
+		<%end%>
 	<% end %>
 	
 	
