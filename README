@@ -1,6 +1,85 @@
                       بسم الله الرحمن الرحيم
+S1
+	As a User *
+	I need to ask for a mwasalat journey from a defined source to a defined destination
+	So that I know how to reach some destination from some source point
 
-The project will be collected here isa
-	commited by aptana
+S2
+	As a User *
+	I need to have the option to use only one type of mwasalat (e.g. I need just to use Microbuses).
 
-Mohammed Shehata
+S3
+	As a User *
+	I need to know the approximate duration for each suggested journey
+	So that I can pick the shortest-duration journey
+
+S4
+	As a User *
+	I need to know the fees for each suggested journey
+	So that I can pick the cheapest journey
+
+S5
+	As a User *
+	I need to have the option to see the suggested journeys either as directions instructions (e.g walk in street x tell street y, then take bus number z to w stop) or as journeys on the map.
+
+S6
+	As a User
+	I need to print a mwasalat journey suggested by the application
+	So that I have an offline copy of the journey
+
+S7
+	As a User
+	I need to see the city map. 
+	To not to have to go to Google Maps again
+
+S8
+	As a User
+	I need to be able to see all the mwasalat journeys in the city, or in an area of the city.
+	http://www.fahrinfo-berlin.de/Liniennetz/index;ref=1?language=en&
+	Some people may need to verify that this is the best solution which the application suggested, or he may want to decide the journey himself.
+	[Problem] Others can have all our data and use it as competitors.
+
+S9
+	As a Registered User
+	I need to have “My Account”, in order to have some personal information on it such as:
+		1. Some points of interest (some popular places I usually visit). This will help me refer to these points quickly (in order to perform the following points). 
+		2. My travelling schedule (e.g. each Monday I travel from this point to that point, and each Friday I travel from this point to that point using these mwasalt journeys). And also my traveling plans (e.g on 15-Nov-2011 I will travle to Cairo to this x place, then to that y place then back to Alex on 16-Nov-2011). This should be shared with my friends so that anyone of them can join me if he has near schedule/plan or even give me a ride if he has his own car. This also can encourage people to create with their friends an “Aboneeh” with car or taxi driver. 
+		3. When the project is used in a large scale, Inshaa Allah, we can use this information collected from users schedules and plans to advice people to change their schedules/plans because of expected crowded mwasalt at specific time (rush hours, many users plan to use this journey, or we can integrate with bey2olak), or because of events (football match), or because of expected bad weather.
+	Note: This feature will increase the traffic to our website as it socialize the website. 
+
+S10
+	As a Registered User *
+	I need to add a mwasalat journey entry to the mwasalat journey base, along with the approximate duration for the journey entry (optional), and the journey fees (optional)
+	So that It can be used in mwasalat query results
+
+S11
+	-As a Mobile User *
+	I need to ask for a mwasalat journey from my current location to a defined destination
+	So that I know how to reach some destination from my location
+
+S12
+	As a Mobile User *
+	I need to ask for a mwasalat journey from a defined source to my current location
+	So that I can tell a friend the path to reach me
+
+S13
+	As a User
+	I need to be able to select the source or the destination using one of the following method:
+		1. From the map. *
+		2. Using street name.
+		3. Using station/stop name (or the nearest station/stop to the selected point of the map).
+		4. Using area name (e.g. Roushdy). *
+		5. Using the current location from GPS (if available) for mobile users, or from IP. *
+
+S14
+	As a Mobile User
+	I need to be able to report a traffic jam or mwasalat absence (e.g. drivers protest). This should help others to know this fact so that they can change their mwasalt journeys (can integrate with bey2ollak).
+
+S15
+	As an Admin *
+	I can add/edit/invalidate a mwasalat journey already defined
+
+S16
+	We need to have some methods for encouraging people to add mwasalat journey entries to the database:
+	1. Stimulate users to add journeys by giving points/badges/awards to top users contributing.
+	
