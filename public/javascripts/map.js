@@ -1,242 +1,477 @@
-var count = 0;
-var src;
-var dest;
-var map;
-var MARKER_TYPE = "marker";
-var POLY_TYPE = "polygon";
-
-function initialize() 
-{
-    var myOptions = 
-    {
-  		center: new google.maps.LatLng(31.246599,29.999199),
-  		zoom: 8,
-  		mapTypeControl: false,
-		scaleControl: true,
-		mapTypeId: google.maps.MapTypeId.ROADMAP
-    };
-	google.maps.Map.prototype.overlays = [];
-	google.maps.Map.prototype.clearOverlays = function()
-	{
-		for(var i = 0; i < this.overlays.length; i++)
-				this.overlays[i].setMap(null);
-	}
-	google.maps.Map.prototype.showOverlays = function()
-	{
-		for(var i = 0; i < this.overlays.length; i++)
-				this.overlays[i].setMap(this);
-	}
-		
-    map = new google.maps.Map(document.getElementById('map_canvas'),
-      myOptions);
+function Map () {
+	var map =  null;
+	var drawingManager = null;
+	var lines = [];
+	var overlays = [];
+	var matchNode = null;
+	var addPlace = null;
+	var polys = [];
 	
-    var drawingManager = new google.maps.drawing.DrawingManager(
+	this.initialize = function () 
 	{
-  		drawingMode: google.maps.drawing.OverlayType.MARKER,
-		drawingControl: true,
-	  	drawingControlOptions: 
-	  	{
-	    	position: google.maps.ControlPosition.TOP_CENTER,
-	    	drawingModes:[
-    	  		google.maps.drawing.OverlayType.MARKER,
-		  		google.maps.drawing.OverlayType.POLYGON ]
-	  	},
-	  	markerOptions: 
-	  	{
-		  	draggable: true,
-			animation: google.maps.Animation.DROP,
-			editable : true,
-			icon: 'http://www.google.com/mapfiles/dd-start.png'
-			// icon: 'http://www.google.com/mapfiles/arrow.png'
-	  	},
-  		polygonOptions: 
-  		{
-  			// strokeColor: "#ffff00",
-			// fillColor: "#ffff00",
-			editable: true
- 		}
-    });
-    drawingManager.setMap(map);
-    google.maps.Marker.prototype.typeName = null;
-    google.maps.Polygon.prototype.typeName = null;
-    
-    google.maps.event.addListener(drawingManager, "markercomplete", function(marker)
-    {
-    	marker.typeName = MARKER_TYPE;
-    	count ++;
-    	var c;
-    	if(count == 1)
-    	{
-    		c = "src";
-    		src = marker;
-    	}
-	 	else
+		var myOptions = {
+	  		center: new google.maps.LatLng(31.246599,29.999199),
+	  		zoom: 8,
+			disableDefaultUI : true,
+			scaleControl: true,
+			zoomControl : true, 
+			mapTypeId: google.maps.MapTypeId.ROADMAP
+	    };
+	    map = new google.maps.Map(document.getElementById('map_canvas'),
+	      myOptions);
+	
+	 	google.maps.Polygon.prototype.id = null;
+		google.maps.Polygon.prototype.district = null;
+	 	google.maps.Polygon.prototype.tip = null;
+	 	google.maps.Polygon.prototype.del = function()
 	 	{
-	 		c = "dest";
-	 		dest = marker;
+	 		this.setMap(null);
+	 		this.tip.setMap(null);
 	 	}
-    	var infoWindow = new google.maps.InfoWindow({
-			content: c,
-			size: new google.maps.Size(25, 25)
-  		});
-  		
-  		if(count == 2)
-  			drawingManager.setMap(null);
-			
-	  	google.maps.event.addListener(marker, 'click', function()
-	  	{
-	  		infoWindow.open(map, marker);
-	  	});
-	  	marker.setTitle(c);
-    });
-    google.maps.event.addListener(drawingManager, "polygoncomplete", function(polygon)
-    {
-    	polygon.typeName = POLY_TYPE;
-    	count ++;
-    	var c;
-    	if (count == 1)
-    	{
-    		c = "src";
-    		src = polygon;	
-    	}
-	 	else
-    	{
-			c = "dest";
-			dest = polygon;    		
-    	} 
-    	var infoWindow = new google.maps.InfoWindow({
-			content: c,
-			size: new google.maps.Size(25, 25)
-  		});
-
-  		if(count == 2)
-			drawingManager.setMap(null);  			
-	  	google.maps.event.addListener(polygon, 'click', function(event)
-	  	{
-	  		infoWindow.setPosition(event.latLng);
-			infoWindow.open(map);
-	  	});
-    });
-    // For controllers    
-    var controlSave = addControl("Save The route", "Save"); 
-	// for the event
-	google.maps.event.addDomListener(controlSave, 'click', function()
+	 	google.maps.Polygon.prototype.getNode = function(){
+			return this.getPath().getAt(0);
+		}
+		google.maps.Polygon.prototype.getPointString = function()
+	 	{
+	 		return google.maps.geometry.encoding.encodePath(this.getPath());	
+	 	}
+	}
+	this.getOverlays = function()
 	{
-		var linePath = [];
-		if(src.typeName == MARKER_TYPE)
+		return overlays;	
+	}
+ 	this.addDrawingManager = function()
+	{
+		google.maps.drawing.DrawingManager.prototype.on = function()
 		{
-			src.setDraggable(false);
-			linePath.push(src.getPosition());
+			this.setDrawingMode(google.maps.drawing.OverlayType.POLYGON);
+		}
+		google.maps.drawing.DrawingManager.prototype.off = function()
+		{
+			this.setDrawingMode(null);
+		}
+		drawingManager = new google.maps.drawing.DrawingManager(
+		{
+	  		drawingMode: null,
+	  		rawingModes:[google.maps.drawing.OverlayType.POLYGON ],
+			drawingControl: false,
+	  		polygonOptions:
+	  		{
+	  			// strokeColor: "#FFFFFF",
+				// fillColor: "#FFFF00" ,
+				editable: true ,
+	 		},
+	 		map: map
+	    });
+	    google.maps.event.addListener(drawingManager, "polygoncomplete", function(polygon)
+	    {
+	    	if(getAddPlace() == "Add Place")
+	    	{
+	    		polygon.setMap(null);
+				polygon = null;
+	    	}
+	    	else
+	    	{
+		    	setAddPlace("Add Place");
+	    		
+				overlayComplete(polygon);
+				google.maps.event.addListener(polygon.getPath() , "set_at", function(){
+					polygon.tip.setMap(null);
+					dragEvent(polygon);
+					addTip(polygon);
+				});
+		    	google.maps.event.addListener(polygon, "rightclick", function(event){
+		    		if(map.rightDelete != null)
+		    			map.rightDelete.setMap(null);
+		    		rightClickDelete(event.latLng, polygon);
+		    	});
+		    	google.maps.event.addListener(polygon, "click", function(event){
+		    		if(map.rightDelete != null)
+		    		{
+		    			map.rightDelete.setMap(null);
+		    			map.rightDelete = null;
+		    		}
+		    	});
+				polys.push(polygon);
+		    	addTip(polygon);
+	    	}
+	    });
+	}
+	function overlayComplete(overlay)
+	{
+		if(overlays.length < 2)     // note that overlays will increment after that
+		{
+			overlays.push(overlay);
+			if(overlays.length == 2)
+				drawLine(1, false);
 		}
 		else
 		{
-			src.setEditable(false);
-			linePath.push(getCenter(src.getPath()));
+			matchNode = overlay;
+			hidePlaceControl();
 		}
-		if(dest.typeName == MARKER_TYPE)
+		drawingManager.off();
+    	addMatchingEvent(overlay);
+	}
+	this.addPlaceControl = function()
+	{
+		addPlace = addControl("adding new place", "Add Place");
+		google.maps.event.addDomListener(addPlace, 'click', function()
 		{
-			dest.setDraggable(false);
-			linePath.push(dest.getPosition());
-		}
-		else
-		{
-			dest.setEditable(false);
-			linePath.push(getCenter(dest.getPath()));
-		}
+			if(getAddPlace() == "Add Place")
+			{
+				setAddPlace("Cancel");
+				drawingManager.on();
+			}
+			else
+			{
+				setAddPlace("Add Place");
+				drawingManager.off();
+			}
+		});
+		showPlaceControl();
+	}
+	function showPlaceControl()
+	{
+		map.controls[google.maps.ControlPosition.TOP_RIGHT].push(addPlace);
+	}
+	function hidePlaceControl()
+	{
+		map.controls[google.maps.ControlPosition.TOP_RIGHT].removeAt(0);
+	}
+	function setAddPlace(text)
+	{
+		addPlace.firstChild.firstChild.innerHTML = text;
+	}
+	function getAddPlace()
+	{
+		return addPlace.firstChild.firstChild.innerHTML;
+	}
+	function addControl(title, text)
+	{
+		var controlDiv = document.createElement("DIV"); // for the outer
+		var controlUI = document.createElement("DIV"); // for the background
+		var controlText = document.createElement("DIV"); // for the Text
+		
+		controlDiv.style.padding = '5px';
+	
+		controlUI.style.backgroundColor = 'white';
+		controlUI.style.borderStyle = 'solid';
+		controlUI.style.borderWidth = '2px';
+		controlUI.style.cursor = 'pointer';
+		controlUI.style.textAlign = 'center';
+		controlUI.title = title;
+		controlDiv.appendChild(controlUI);
+	
+		controlText.style.fontFamily = 'Arial,sans-serif';
+		controlText.style.fontSize = '12px';
+		controlText.style.paddingLeft = '4px';
+		controlText.style.paddingRight = '4px';
+		controlText.style.color = "blue";
+		controlText.innerHTML = text;
+		controlUI.appendChild(controlText);
+
+		return controlDiv;
+	}
+	function drawLine(index, isDrag){
+		var path = [];
+		path.push(overlays[index].getNode());
+		path.push(overlays[index - 1].getNode());
 		var line = new google.maps.Polyline({
-			path: linePath,
-			// strokeColor: "#ffff00",
-			strokeOpacity: 1,
+			path : path,
+			strokeColor : "#0000FF",
+			strokeOpacity : 0.7,
+			strokeWeight : 3
+		});
+		line.setMap(map);
+		if(isDrag)
+			lines[index - 1] = line;
+		else
+		{
+			lines.push(line);
+			addLineEvent(line);
+		}
+	}
+	function dragEvent(overlay)
+	{
+		var index = overlays.indexOf(overlay);
+		if(index > 0) // left except the first overlay
+		{
+			var line1 = lines[index - 1];
+			line1.setMap(null);
+			drawLine(index, true);
+		}
+		if(index < overlays.length - 1 && index >= 0) // rigth except the last overlay
+		{
+			var line2 = lines[index];
+			line2.setMap(null);
+			drawLine(index + 1, true);
+		}
+	}
+	function addMatchingEvent(overlay)
+	{
+		google.maps.event.addListener(overlay, "click", function()
+		{
+			if(matchNode != null)
+			{
+				var index = overlays.indexOf(overlay);
+				if(index == overlays.length - 1)
+				{
+					overlays.push(matchNode);
+					refresh();
+					matchNode = null;
+					showPlaceControl();
+				}
+				else if(index == 0)
+				{
+					overlays.splice(0, 0, matchNode);
+					refresh();
+					matchNode = null;
+					showPlaceControl();
+				}
+			}
+		});
+	}
+	function addLineEvent(line)
+	{
+		google.maps.event.addListener(line, "click", function()
+		{
+			if(matchNode != null)
+			{
+				var index = lines.indexOf(line);
+				overlays.splice(index + 1, 0, matchNode);
+				refresh();
+				matchNode = null;
+				showPlaceControl();
+			}
+		});
+	}
+	function deleteOverlay(overlay)
+	{
+		var index = overlays.indexOf(overlay);
+		if(index >= 0)
+		{
+			var choice = confirm("Are you sure you want to delete stop # " + (index + 1) + " ?");
+			if(choice)
+			{
+				overlays.splice(index, 1);
+				overlay.del();
+				refresh();
+			}
+		}
+		else  // the matching node
+		{
+			var choice = confirm("Are you sure you want to delete the new stop ?");
+			if(choice)
+			{
+				overlay.del();
+				matchNode = null;
+				showPlaceControl();
+			}
+		}
+	}
+	function refresh()
+	{
+		// clear lines
+		for(var i = 0; i < lines.length; i ++)
+		{
+			lines[i].setMap(null);			
+		}
+		lines = [];
+		// change icons and change lines
+		for(var i = 0; i < overlays.length; i ++)
+		{
+			overlays[i].del();
+			addTip(overlays[i]);
+			overlays[i].setMap(map);
+			if(i > 0)
+				drawLine(i, false);
+		}
+	}
+	function addTip(overlay)
+	{
+		var div = document.createElement("Div");
+		div.style.backgroundColor = "yellow";
+		div.style.color = "blue";
+		div.style.position = "absolute";
+		
+		var index = overlays.indexOf(overlay);
+		if(index != -1)
+			div.innerHTML = (index + 1) + "";
+		else
+			div.innerHTML = (overlays.length + 1) + "";
+		overlay.tip = new CustomeOverlay(overlay.getNode(), div);
+	}
+	this.addRightDelete = function()
+	{
+		google.maps.Map.prototype.rightDelete = null;
+		
+		google.maps.event.addListener(map, "rightclick", function(){
+			if(map.rightDelete != null)
+			{
+				map.rightDelete.setMap(null);
+				map.rightDelete = null;
+			}
+		});
+		google.maps.event.addListener(map, "click", function(){
+			if(map.rightDelete != null)
+			{
+				map.rightDelete.setMap(null);
+				map.rightDelete = null;
+			}
+		});
+
+	}
+	function rightClickDelete(pos, overlay)
+	{
+		var div = document.createElement("Div");
+		div.style.backgroundColor = "yellow";
+		div.style.color = "blue";
+		div.style.position = "absolute";
+		var button = document.createElement("Button");
+		button.innerHTML = "Delete";
+		button.onclick = function (){
+			deleteOverlay(overlay);
+		}
+	 	div.appendChild(button);
+		map.rightDelete = new CustomeOverlay(pos, div);
+	}
+	function CustomeOverlay(pos, div)
+	{
+		this.pos = pos;
+		this.div = div;
+		this.setMap(map);
+	}
+	CustomeOverlay.prototype = new google.maps.OverlayView();
+	CustomeOverlay.prototype.onAdd = function()
+	{
+		var panes = this.getPanes();
+	 	panes.overlayMouseTarget.appendChild(this.div)
+	}
+	CustomeOverlay.prototype.draw = function()
+	{
+		var projection = this.getProjection();
+	  	var point = projection.fromLatLngToDivPixel(this.pos);
+
+		var div = this.div;
+		div.style.left = point.x + "px";
+		div.style.top = point.y + "px";
+	}
+	CustomeOverlay.prototype.onRemove = function()
+	{
+		this.div.parentNode.removeChild(this.div);
+		this.div = null;
+	}
+
+	// --------------------------------------------------------------
+
+	this.showMapRoutes = function ()
+	{
+		var ids = [];
+		for(var i = 0; i < roots.length; i ++)
+		{
+			var route = roots[i].route;
+			route.src.path = google.maps.geometry.encoding.decodePath(route.src.path);
+			route.dest.path = google.maps.geometry.encoding.decodePath(route.dest.path);
+			
+			var points = [];
+			
+			if(ids.indexOf(route.src.id) == -1)
+			{
+				addPolygon(route.src);
+				ids.push(route.src.id);
+			}
+			points.push(route.src.path[0]);
+			
+			if(ids.indexOf(route.dest.id) == -1)
+			{
+				addPolygon(route.dest);
+				ids.push(route.dest.id);
+			}
+			points.push(route.dest.path[0]);
+			drawRoute(points);
+		}
+		// confirm(ids.length);
+	}
+	function addPolygon(node)
+	{
+		var poly = new google.maps.Polygon({
+			path: node.path,
+			strokeColor: "#FF0000",
+			fillColor: "#FF0000",
+			editable: false		
+		});
+		poly.setMap(map);
+		google.maps.event.addListener(poly, "rightclick", function()
+		{
+			overlayComplete(poly);
+			addTip(poly);
+		});
+	}
+	function drawRoute(path)
+	{
+		var line = new google.maps.Polyline({
+			path: path,
+			strokeColor: "#FF0000",
+			strokeOpacity: 0.7,
 			strokeWeight: 2
 		});
-	  	line.setMap(map);
-	});
-	
-	// add the control to the map
-	map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlSave);
-	
-	// For show controller
-	var showRoutes = addControl("show all the routes", "show");
-	google.maps.event.addDomListener(showRoutes, 'click', function()
-	{
-		map.showOverlays();
-	});
-	map.controls[google.maps.ControlPosition.TOP_RIGHT].push(showRoutes);
-	// For clear controller
-	var clear = addControl("clear the map", "clear");
-	google.maps.event.addDomListener(clear, 'click', function()
-	{
-		map.clearOverlays();
-	});
-	map.controls[google.maps.ControlPosition.TOP_RIGHT].push(clear);
-  }
-
-function getCenter(points)
-{
-	var bounds = new google.maps.LatLngBounds();
-	
-	for(var i = 0; i < points.length; i++)
-	{
-		bounds.extend(points.getAt(i));
+		line.setMap(map);
 	}
-	return bounds.getCenter();
-}
-function addControl(title, text)
-{
-	var controlDiv = document.createElement("DIV"); // for the outer
-	var controlUI = document.createElement("DIV"); // for the background
-	var controlText = document.createElement("DIV"); // for the Text
 	
-	controlDiv.style.padding = '5px';
-
-	controlUI.style.backgroundColor = 'white';
-	controlUI.style.borderStyle = 'solid';
-	controlUI.style.borderWidth = '2px';
-	controlUI.style.cursor = 'pointer';
-	controlUI.style.textAlign = 'center';
-	controlUI.title = title;
-	controlDiv.appendChild(controlUI);
-
-	controlText.style.fontFamily = 'Arial,sans-serif';
-	controlText.style.fontSize = '12px';
-	controlText.style.paddingLeft = '4px';
-	controlText.style.paddingRight = '4px';
-	controlText.style.color = "blue";
-	controlText.innerHTML = text;
-	controlUI.appendChild(controlText);
-
-	return controlDiv;
-}
-
-// ========================================================= For show all routes
-
-function showMapRoutes(src_lat, src_lng, dest_lat, dest_lng)
-{
-	src_lat = src_lat.split(",");
-	src_lng = src_lng.split(",");
-	dest_lat = dest_lat.split(",");
-	dest_lng = dest_lng.split(",");
+	// -----------------------------------------------------------------------------------
+	var temp_poly = null;
+	var temp_marker1 = null;
+	var temp_marker2 = null;
+	var temp_info = null;
 	
-	var points = [];
-	if(src_lat.length == 1)
+	this.showNode = function(path)
 	{
-		var pos = addMarker(src_lat, src_lng, "src", map);
-		points.push(pos);
-	}
-	else
-	{
-		var path = addPolygon(src_lat, src_lng, "src", map);
-		points.push(getPolyCenter(path));
+		path = google.maps.geometry.encoding.decodePath(path);
+		var poly = new google.maps.Polygon({
+			path: path,
+			strokeColor: "#FF0000",
+			fillColor: "#FF0000",
+			editable: false		
+		});
+		poly.setMap(map);
+		if (temp_poly != null)
+		{
+			temp_poly.setMap(null);
+			temp_info.setMap(null);
+			temp_marker1.setMap(null);
+			temp_marker2.setMap(null);
+		}
+		var bounds = new google.maps.LatLngBounds();
+		// bounds.extend(path[0]);
+		for(var i = 0; i < path.length; i ++)
+		{
+			bounds.extend(path[i]);
+		}
+		map.fitBounds(bounds);
+		var content = "<b>Zoom:</b> " + map.getZoom() + "<br />"
+					+  "<b>Center:</b> " + bounds.getCenter() + "<br />" 
+					+  "<b>North East:</b> " + bounds.getNorthEast() + "<br />"
+					+  "<b>South East:</b> " + bounds.getSouthWest() + "<br />";
+		var info = new google.maps.InfoWindow({
+			content: content,
+			//map: map,
+			position: path[0]
+		});
+		var marker1 = new google.maps.Marker({
+			position: bounds.getNorthEast(),
+			animation: google.maps.Animation.BOUNCE,
+			map: map
+		});
+		var marker2 = new google.maps.Marker({
+			position: bounds.getSouthWest(),
+			animation: google.maps.Animation.BOUNCE,
+			map: map
+		});
+		document.getElementById("data").innerHTML = content;
+		temp_poly = poly;
+		temp_marker1 = marker1;
+		temp_marker2 = marker2;
+		temp_info = info;		
 	}	
-	if(dest_lat.length == 1)
-	{
-		var pos = addMarker(dest_lat, dest_lng, "dest", map);
-		points.push(pos);
-	}
-	else
-	{
-		var path = addPolygon(dest_lat, dest_lng, "dest", map);
-		points.push(getPolyCenter(path));
-	}
-	drawRoute(points, map);
 }

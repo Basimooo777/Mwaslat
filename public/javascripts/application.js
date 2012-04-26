@@ -1,86 +1,120 @@
 // Place your application-specific JavaScript functions and classes here
 // This file is automatically included by javascript_include_tag :defaults
-function setValues()
-{
-	var src_lng;
-	var src_lat ;
-	var dest_lng;
-	var dest_lat;
+var sub_route_element;
+var sub_routes_ids = [];
 
-	if(src.typeName == MARKER_TYPE)
-	{
-		src_lng =	src.getPosition().lng();
-		src_lat = src.getPosition().lat();
-	}
-	else
-	{
-		var obj = joinArray(src.getPath());
-		src_lat = obj.lat;
-		src_lng = obj.lng;
-	}
-	if(dest.typeName == MARKER_TYPE)
-	{
-		dest_lng =	dest.getPosition().lng();
-		dest_lat = dest.getPosition().lat();
-	}
-	else
-	{
-		var obj = joinArray(dest.getPath());
-		dest_lat = obj.lat;
-		dest_lng = obj.lng;
-	}
-	
-	document.getElementById("src_lng").value = src_lng;
-	document.getElementById("src_lat").value = src_lat;
-	document.getElementById("dest_lng").value = dest_lng;
-	document.getElementById("dest_lat").value = dest_lat;
-}
-function joinArray(points)
-{
-	var obj = new Object();
-	var lat = "";
-	var lng = "";
-	for(var i = 0; i < points.length; i ++)
-	{
-		lat += points.getAt(i).lat() + ",";
-		lng += points.getAt(i).lng() + ",";
-	}
-	obj.lat = lat;
-	obj.lng = lng;
-	return obj;
-}
-function add_street(direction)
-{
-	if(direction == "src"){
-		// alert("src");
-		var count = document.getElementById("count_src").value;
-		count ++; 	
-		document.getElementById("count_src").value = count;
-		var table = document.getElementById("streets_src");
-		var row = table.insertRow(table.rows.length);
-		var cell0 = row.insertCell(0);
-		var cell1 = row.insertCell(1);
-	    var e = document.createElement("input");
-	    e.type = "text";
-	    e.size = "30";
-	    e.id = "street_src";
-	    e.name = "street_src"+count;
-		cell1.appendChild(e);
-	}else{
-		// alert("dest");
-		var count = document.getElementById("count_dest").value;
-		count ++; 	
-		document.getElementById("count_dest").value = count;
-		var table = document.getElementById("streets_dest");
-		var row = table.insertRow(table.rows.length);
-		var cell0 = row.insertCell(0);
-		var cell1 = row.insertCell(1);
-	    var e = document.createElement("input");
-	    e.type = "text";
-	    e.size = "30";
-	    e.id = "street_dest";
-	    e.name = "street_dest"+count;
-		cell1.appendChild(e);
-	   }
+function adder(){
+	add_child(parseInt($("to_add").value))
 }
 
+function remover(){
+	remove_child(parseInt($("to_remove").value))
+}
+
+function enable_sub_route(content){
+	sub_route_element = content;
+	// >>>>>>>>>>>>>>>>>>>>>>>>>>> increment the counter inside
+	map.incrementCounter(1);
+}
+
+// 0. 1. 2. 3. ...
+function remove_child(sub_route_index){
+	if(sub_route_index < sub_routes_ids.length && (sub_route_index >= 0)){
+		$(sub_routes_ids[sub_route_index].toString()).hide();
+		$("route_sub_routes_attributes_"+sub_routes_ids[sub_route_index]+"__destroy").value = "1";
+		if(sub_route_index == 0){			// if first node, then hide next duration field
+			sub_routes_ids.shift();
+			hide_time_fields(sub_routes_ids[0]);
+		}
+		else{
+			sub_routes_ids.splice(sub_route_index, 1);
+		}
+	}
+	else{
+		alert("Problem");
+	}
+	rename_stops(sub_route_index);
+}
+
+// 0. 1. 2. 3. .....
+function add_child(sub_route_index){
+	var sub_route_instance = sub_route_element;
+	var regexp = new RegExp("sub_route_index", "g");
+	var new_sub_route_id;
+	var sub_route_before;
+	if(sub_route_index == 0){				// adds a new source stop
+		new_sub_route_id = (sub_routes_ids[0]-1)/2;
+		show_time_fields(sub_routes_ids[0]);
+		$("sub_routes").insert({
+			top: sub_route_instance.replace(regexp, new_sub_route_id)
+		});
+		sub_routes_ids.unshift(new_sub_route_id);
+		hide_time_fields(sub_routes_ids[0]);
+	}
+	else{
+		if(sub_route_index == sub_routes_ids.length){		// adds a new destination stop
+			new_sub_route_id = sub_routes_ids[sub_route_index-1] + 1;
+			sub_route_before = $(sub_routes_ids[sub_route_index-1].toString());
+			sub_route_before.insert({
+				after: sub_route_instance.replace(regexp, new_sub_route_id)
+			});
+			sub_routes_ids.push(new_sub_route_id);
+		}
+		else if (sub_route_index < sub_routes_ids.length && (sub_route_index > 0)){   // adds a new inbetween stop
+			new_sub_route_id = (sub_routes_ids[sub_route_index] + sub_routes_ids[sub_route_index-1])/2;
+			sub_route_before = $(sub_routes_ids[sub_route_index-1].toString());
+			sub_route_before.insert({
+				after: sub_route_instance.replace(regexp, new_sub_route_id)
+			});
+			sub_routes_ids.splice(sub_route_index, 0, new_sub_route_id);
+		}
+		else{
+			alert("Problem");
+		}
+	}
+	rename_stops(sub_route_index);
+}
+
+function rename_stops(start){
+	for(var i=start; i < sub_routes_ids.length; i++){
+		$("route_sub_routes_attributes_"+sub_routes_ids[i]+"_dest_attributes_name").previous(1).innerHTML = "Stop " + (i+1);
+	}
+}
+
+// it makes three actions => first : set numbered names of first 2 stops
+// second : changes ids of first 2 children divs
+// third : hides first time field of first children
+function prepare_form(){
+	// changes ids of sub_routes divs
+	var sub_routes = $("sub_routes").childElements();
+	var index = 0;
+	for(var i=0; i< sub_routes.length; i++){
+		if(sub_routes[i].id == "sub_route_index"){
+			sub_routes[i].id = index;
+			sub_routes_ids.push(index);		// add the index to array of ids
+			index++;
+		}
+	}
+	// assigns numbered names of stops
+	rename_stops(0);
+	// hides first time field
+	hide_time_fields(0)
+}
+
+// shows the time fields of the div of specified id
+function show_time_fields(id){
+	var to_show_field = $("route_sub_routes_attributes_"+id+"_duration");
+	to_show_field.show();
+	to_show_field.previous().show();
+	to_show_field.previous(1).show();
+	to_show_field.next().show();
+}
+
+// hides the time fields of the div of specified id
+function hide_time_fields(id){
+	var to_hide_field = $("route_sub_routes_attributes_"+id+"_duration");
+	to_hide_field.hide();
+	to_hide_field.previous(0).hide();
+	to_hide_field.previous(1).hide();
+	to_hide_field.next().hide();
+}
