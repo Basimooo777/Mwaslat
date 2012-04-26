@@ -5,6 +5,6 @@ module RoutesHelper
     fields = builder.fields_for(:sub_routes, sub_route, :child_index => "sub_route_index") do |f_sub_route|
       render("sub_route_fields", :f => f_sub_route)
     end
-    link_to_function "[+] Add New Stop", "enable_sub_route(\"#{escape_javascript(fields)}\")";
+    #link_to_function "[+] Add New Stop", "enable_sub_route(\"#{escape_javascript(fields)}\")";
   end
 end

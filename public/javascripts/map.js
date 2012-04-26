@@ -221,6 +221,8 @@ function Map () {
 					refresh();
 					matchNode = null;
 					showPlaceControl();
+					
+					add_child(index + 1);
 				}
 				else if(index == 0)
 				{
@@ -228,6 +230,8 @@ function Map () {
 					refresh();
 					matchNode = null;
 					showPlaceControl();
+					
+					add_child(0);
 				}
 			}
 		});
@@ -243,6 +247,8 @@ function Map () {
 				refresh();
 				matchNode = null;
 				showPlaceControl();
+				
+				add_child(index + 1);
 			}
 		});
 	}
@@ -256,6 +262,8 @@ function Map () {
 			{
 				overlays.splice(index, 1);
 				overlay.del();
+				if(overlays.length > 1) // leave the 2 feilds for stop1 and stop2
+					remove_child(index);
 				refresh();
 			}
 		}
