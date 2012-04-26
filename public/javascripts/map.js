@@ -325,16 +325,31 @@ function Map () {
 	function rightClickDelete(pos, overlay)
 	{
 		var div = document.createElement("Div");
-		div.style.backgroundColor = "yellow";
-		div.style.color = "blue";
 		div.style.position = "absolute";
-		var button = document.createElement("Button");
-		button.innerHTML = "Delete";
+		var button = createButton("Delete");
 		button.onclick = function (){
 			deleteOverlay(overlay);
 		}
 	 	div.appendChild(button);
 		map.rightDelete = new CustomeOverlay(pos, div);
+	}
+	function createButton(text)
+	{
+		var button = document.createElement("Button");
+		button.innerHTML = text;
+		button.style.border = "0px";
+		button.style.background = "yellow";
+		button.style.color = "blue";
+		button.style.fontWeight = "bolder";
+		button.onmouseout= function()
+		{
+			this.style.background = 'yellow'	
+		}
+		button.onmouseover= function()
+		{
+			this.style.background = '#33FFCC'	
+		}
+		return button;
 	}
 	function CustomeOverlay(pos, div)
 	{
