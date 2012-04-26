@@ -4,4 +4,4 @@
 require File.expand_path('../config/application', __FILE__)
 require 'rake'
 
-Mwaslat::Application.load_tasks
+Mwaslat1::Application.load_tasks
