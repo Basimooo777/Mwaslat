@@ -1,7 +1,17 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
 
 one:
-  district: MyString
+  name: MyString
+  path: MyString
+  category: MyString
+  zoom: 1
+  center: MyString
+  user: 
 
 two:
-  district: MyString
+  name: MyString
+  path: MyString
+  category: MyString
+  zoom: 1
+  center: MyString
+  user: 
