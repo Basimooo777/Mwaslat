@@ -4,4 +4,4 @@
 # If you change this key, all old signed cookies will become invalid!
 # Make sure the secret is at least 30 characters and all random,
 # no regular words or you'll be exposed to dictionary attacks.
-Mwaslat::Application.config.secret_token = 'e5db79c78d6f8125eba8fe10df682e8c16ce672771840cf52bba246080530527321b486e8aef42481500668f29b93c17e83c7f79eb45104c96b7ba7cf553e5c8'
+Mwaslat1::Application.config.secret_token = '1e75878c9c52ba36f89ccdf6ba4c3fcc1426141cae9f20fd3872d810ae2bd59be6fa52b561c8fb59ebcd5a7ea9ffea1484b85f63f79113f8b324c9744cd7edef'

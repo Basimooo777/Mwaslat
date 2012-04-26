@@ -1,8 +1,7 @@
 development:
   adapter: mysql
   database: mwaslat
-  host: localhost
-  username: root
-  password: 12345
   pool: 5
   timeout: 5000
+  password: root
+  username: root

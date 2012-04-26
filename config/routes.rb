@@ -1,7 +1,15 @@
-Mwaslat::Application.routes.draw do
+Mwaslat1::Application.routes.draw do
+  devise_for :users
+
+  match "/routes/data" => "routes#data"
   get "routes/new"
   #get "routes/search"
   match "routes/search" => "routes#search"
+  match "routes/search/:id" => "routes#destroy"
+  match "routes/search/:id/edit" => "routes#update"
+  match "routes/:id" => "routes#update"
+  match "routes/new/edit" => "routes#edit"
+  match "routes/new/edit/update" => "routes#update"
   root :to => "routes#new"
   resources :routes
   # The priority is based upon order of creation:
