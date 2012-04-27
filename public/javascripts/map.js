@@ -474,6 +474,25 @@ function Map () {
                 rightClickDelete(event.latLng, poly);    
         });
 	}
+	this.showNode = function(name, path)
+    {
+        path = google.maps.geometry.encoding.decodePath(path);
+        var poly = new google.maps.Polygon({
+            path: path,
+            strokeColor: "#FF0000",
+            fillColor: "#FF0000",
+            editable: true
+        });
+        poly.setMap(map);
+        if (map.poly != undefined)
+            map.poly.setMap(null);
+        map.poly = poly;
+        
+        var bounds = new google.maps.LatLngBounds();
+        for(var i = 0; i < path.length; i ++)
+            bounds.extend(path[i]);
+        map.fitBounds(bounds);
+    }
 	// --------------------------------------------------------------
 
 	this.showMapRoutes = function ()
@@ -528,46 +547,31 @@ function Map () {
 		});
 		line.setMap(map);
 	}
-	
 	// -----------------------------------------------------------------------------------
-	var temp_poly = null;
-	var temp_marker1 = null;
-	var temp_marker2 = null;
-	var temp_info = null;
-	
-	this.showNode = function(path)
+	this.showDataNode = function(path)
 	{
 		path = google.maps.geometry.encoding.decodePath(path);
 		var poly = new google.maps.Polygon({
+			map: map,
 			path: path,
 			strokeColor: "#FF0000",
 			fillColor: "#FF0000",
 			editable: false		
 		});
-		poly.setMap(map);
-		if (temp_poly != null)
+		if (map.poly != undefined)
 		{
-			temp_poly.setMap(null);
-			temp_info.setMap(null);
-			temp_marker1.setMap(null);
-			temp_marker2.setMap(null);
+			map.poly.setMap(null);
+			map.marker1.setMap(null);
+			map.marker2.setMap(null);
 		}
 		var bounds = new google.maps.LatLngBounds();
-		// bounds.extend(path[0]);
 		for(var i = 0; i < path.length; i ++)
-		{
 			bounds.extend(path[i]);
-		}
 		map.fitBounds(bounds);
 		var content = "<b>Zoom:</b> " + map.getZoom() + "<br />"
 					+  "<b>Center:</b> " + bounds.getCenter() + "<br />" 
 					+  "<b>North East:</b> " + bounds.getNorthEast() + "<br />"
 					+  "<b>South East:</b> " + bounds.getSouthWest() + "<br />";
-		var info = new google.maps.InfoWindow({
-			content: content,
-			//map: map,
-			position: path[0]
-		});
 		var marker1 = new google.maps.Marker({
 			position: bounds.getNorthEast(),
 			animation: google.maps.Animation.BOUNCE,
@@ -579,9 +583,8 @@ function Map () {
 			map: map
 		});
 		document.getElementById("data").innerHTML = content;
-		temp_poly = poly;
-		temp_marker1 = marker1;
-		temp_marker2 = marker2;
-		temp_info = info;		
+		map.poly = poly;
+		map.marker1 = marker1;
+		map.marker2 = marker2;
 	}	
 }
