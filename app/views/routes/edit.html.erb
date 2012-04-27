@@ -37,3 +37,6 @@
 		},
 		:only => {} ) %>;
 	<% end %>
+	<%= javascript_tag do %>
+		window.nodes = <%=raw Node.all.to_json(:only => [:name, :path, :id] ) %>;
+	<% end %>

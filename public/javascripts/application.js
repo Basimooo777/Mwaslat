@@ -104,3 +104,11 @@ function hide_time_fields(id){
 	to_hide_field.previous(1).hide();
 	to_hide_field.next().hide();
 }
+
+function add_selected_node(name, path, id, sub_route_index){
+	add_child(sub_route_index);
+	var node_id_template = "route_sub_routes_attributes_"+ sub_routes_ids[sub_route_index] +"_dest_attributes_";
+	$(node_id_template + "name").value = name;
+	$(node_id_template + "path").value = path;
+	$(node_id_template + "id").value = id;
+}

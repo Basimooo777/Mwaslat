@@ -32,3 +32,6 @@
 	
 	<div style="left: 50%; top: 1%; position: absolute"><%= link_to "See Data", "routes/data"%></div>
 </body>
+	<%= javascript_tag do %>
+		window.nodes = <%=raw Node.all.to_json(:only => [:name, :path, :id] ) %>;
+	<% end %>
