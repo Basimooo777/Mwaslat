@@ -219,24 +219,23 @@ function Map () {
 				{
 					overlays.push(matchNode);
 					refresh();
-					matchNode = null;
-					showPlaceControl();
-					if(!overlay.exist)
+					if(!matchNode.exist)
 					   add_child(index + 1);
 				    else
-				       add_selected_node(overlay.name, overlay.getPointString(), overlay.id, index + 1); 	             
+				       add_selected_node(matchNode.name, matchNode.getPointString(), matchNode.id, index + 1); 	             
+				    matchNode = null;
+                    showPlaceControl();
 				}
 				else if(index == 0)
 				{
 					overlays.splice(0, 0, matchNode);
 					refresh();
-					matchNode = null;
-					showPlaceControl();
-					
-					if(!overlay.exist)
+					if(!matchNode.exist)
                        add_child(0);
                     else
-                       add_selected_node(overlay.name, overlay.getPointString(), overlay.id, 0);
+                       add_selected_node(matchNode.name, matchNode.getPointString(), matchNode.id, 0);
+                    matchNode = null;
+                    showPlaceControl();
 				}
 			}
 		});
@@ -250,10 +249,13 @@ function Map () {
 				var index = lines.indexOf(line);
 				overlays.splice(index + 1, 0, matchNode);
 				refresh();
+				
+				if(!matchNode.exist)
+				    add_child(index + 1);
+				else
+				    add_selected_node(matchNode.name, matchNode.getPointString(), matchNode.id, index + 1);
 				matchNode = null;
 				showPlaceControl();
-				
-				add_child(index + 1);
 			}
 		});
 	}
@@ -474,6 +476,7 @@ function Map () {
                 rightClickDelete(event.latLng, poly);    
         });
 	}
+	// ------------------------------------------- For Showing Nodes -------------------------
 	this.showNode = function(name, path)
     {
         path = google.maps.geometry.encoding.decodePath(path);
