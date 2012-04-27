@@ -1,0 +1,10 @@
+<body id="bodyId" onload="addStops();prepare_form()">
+	<div id="map_canvas" style="width:100%; height:100%"></div>
+	<p>
+		<%= notice %>
+	</p>
+	<%= form_for @node do |f| %>
+		<%= render 'routes/node_fields',:f => f %>
+		<%= f.submit('Save') %>
+	<% end %> 
+</body>

@@ -10,8 +10,12 @@ Mwaslat1::Application.routes.draw do
   match "routes/:id" => "routes#update"
   match "routes/new/edit" => "routes#edit"
   match "routes/new/edit/update" => "routes#update"
+  match "nodes/delete" => "nodes#destroy"
+  match "nodes/new" => "nodes#new"
+  
   root :to => "routes#new"
   resources :routes
+  resources :nodes
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
