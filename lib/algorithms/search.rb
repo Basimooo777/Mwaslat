@@ -48,7 +48,7 @@ class Search
       pathes[pathes_size]=Array.new path
     end
   end
-
+ 
   def get_dests_(node)
     puts node.class
     return Route.find_by_sql("select * from sub_routes where src_id = '#{node.id}'")
