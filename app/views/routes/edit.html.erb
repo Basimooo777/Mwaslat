@@ -9,7 +9,6 @@
 						<%= render "sub_route_fields", :f => f_sub_routes %>
 				<%end%>
 				<br/>
-			<%= link_to_add_sub_route(f_route)%>
 		</div>
 		<hr width="50%" align="left"/>
 		<table>
@@ -25,10 +24,17 @@
 			</tr>
 		</table>
 		<%= f_route.submit() %><br/>
-	<% end %> 
+	<% end %>
 	<br/>
 	<button onclick = "adder()">Add Route</button>
 	<input type="text" id="to_add"/><br/>
 	<button onclick = "remover()">Remove Route</button>
 	<input type="text" id="to_remove"/>
 </body>
+	<%= javascript_tag do %>
+		window.updatable_stops = <%=raw @route.sub_routes.to_json(
+		:include => {
+			:dest => {:only =>[:path, :name]}
+		},
+		:only => {} ) %>;
+	<% end %>
