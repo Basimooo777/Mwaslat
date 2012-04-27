@@ -5,7 +5,9 @@ function addStops() {
 	map.initialize();
 	map.addDrawingManager();
 	map.addPlaceControl();
-	map.addRightDelete();
+	map.addRightClick();
+	
+	map.showNodes();
 	// map.showMapRoutes();
 }
 function showingNodes()
@@ -20,7 +22,8 @@ function editRoutes()
 	map.initialize();
 	map.addDrawingManager();
 	map.addPlaceControl();
-	map.addRightDelete();
+	map.addRightClick();
+	map.showNodes();
 	
 	map.editRoutes();
 }
