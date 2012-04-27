@@ -114,3 +114,29 @@ function add_selected_node(name, path, id, sub_route_index, isFirst){
 	$(node_id_template + "path").value = path;
 	$(node_id_template + "id").value = id;
 }
+
+
+//remove node from my nodes
+function remove_node(element,id){
+	if (confirm("Are you sure ?")) { 
+ 		new Ajax.Request("/nodes/delete", {
+      		method: 'post',
+      		parameters: "id="+id,
+      		onSuccess:     function(request) { 
+      	    	if(request.responseText=="1"){
+		    		$(element).previous("input[type=hidden]").value = "1";
+					$(element).ancestors()[1].hide();
+			    }else{
+			    	alert ("Cannot be deleted as used by other routes");
+			    }
+      	 	},
+      		onFailure:     function(request) { alert ("Error Contacting server");}
+    	});
+	}
+	
+}
+
+//show node on map
+function showNode(path){
+	alert("Path on map");
+}
