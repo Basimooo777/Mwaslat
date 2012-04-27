@@ -19,8 +19,8 @@ class Search
   end
 
   def depth_ node,dst,visited,pathes
-    puts node.district
-    puts dst.district
+    puts node.name
+    puts dst.name
     pathes_size = pathes.size
     path = pathes[pathes_size - 1]
     path_size = path.size
@@ -51,10 +51,10 @@ class Search
 
   def get_dests_(node)
     puts node.class
-    return Route.find_by_sql("select * from routes where src_id = '#{node.id}'")
+    return Route.find_by_sql("select * from sub_routes where src_id = '#{node.id}'")
   end
 
   def get_route_dest(route)
-    return Node.find_by_sql("select * from nodes where id in(select dest_id from routes where id = '#{route.id}')")
+    return Node.find_by_sql("select * from nodes where id in(select dest_id from sub_routes where id = '#{route.id}')")
   end
 end
