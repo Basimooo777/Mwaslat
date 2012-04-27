@@ -25,7 +25,7 @@ function Map () {
 	 	google.maps.Polygon.prototype.exist = null;
 	 	google.maps.Polygon.prototype.del = function()
 	 	{
-	 		if(this.exist)
+	 		if(!this.exist)
 	 			this.setMap(null);
 	 		this.tip.setMap(null);
 	 	}
@@ -266,7 +266,7 @@ function Map () {
 			if(choice)
 			{
 				overlays.splice(index, 1);
-				overlay.del();
+			    overlay.del();
 				if(overlays.length > 1) // leave the 2 feilds for stop1 and stop2
 					remove_child(index);
 				refresh();
