@@ -53,7 +53,7 @@ class Search
     puts node.class
     return Route.find_by_sql("select * from sub_routes where src_id = '#{node.id}'")
   end
-
+  
   def get_route_dest(route)
     return Node.find_by_sql("select * from nodes where id in(select dest_id from sub_routes where id = '#{route.id}')")
   end
