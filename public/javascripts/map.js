@@ -222,7 +222,7 @@ function Map () {
 					if(!matchNode.exist)
 					   add_child(index + 1);
 				    else
-				       add_selected_node(matchNode.name, matchNode.getPointString(), matchNode.id, index + 1); 	             
+				       add_selected_node(matchNode.name, matchNode.getPointString(), matchNode.id, index + 1, false); 	             
 				    matchNode = null;
                     showPlaceControl();
 				}
@@ -233,7 +233,7 @@ function Map () {
 					if(!matchNode.exist)
                        add_child(0);
                     else
-                       add_selected_node(matchNode.name, matchNode.getPointString(), matchNode.id, 0);
+                       add_selected_node(matchNode.name, matchNode.getPointString(), matchNode.id, 0, false);
                     matchNode = null;
                     showPlaceControl();
 				}
@@ -253,7 +253,7 @@ function Map () {
 				if(!matchNode.exist)
 				    add_child(index + 1);
 				else
-				    add_selected_node(matchNode.name, matchNode.getPointString(), matchNode.id, index + 1);
+				    add_selected_node(matchNode.name, matchNode.getPointString(), matchNode.id, index + 1, false);
 				matchNode = null;
 				showPlaceControl();
 			}
@@ -317,6 +317,18 @@ function Map () {
 			div.innerHTML = (overlays.length + 1) + "";
 		overlay.tip = new CustomeOverlay(overlay.getNode(), div);
 	}
+	function addTitle(overlay)
+	{
+	    google.maps.event.addListener(overlay, "mouseover", function(){
+    	    var div = document.createElement("Div");
+            div.style.backgroundColor = "yellow";
+            div.style.color = "blue";
+            div.style.position = "absolute";
+            div.innerHTML = overlay.name;
+            
+            new CustomeOverlay(overlay.getNode(), div);
+	    });
+	}
 	this.addRightClick = function()
 	{
 		google.maps.Map.prototype.rightClick = null;
@@ -359,6 +371,7 @@ function Map () {
                 overlays.push(overlay);		        
 		        if(overlays.length == 2)
                     drawLine(1, false);
+                add_selected_node(overlay.name, overlay.getPointString(), overlay.id, overlays.length - 1, true);
 		    }
 		    else
 		    {
