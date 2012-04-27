@@ -1,4 +1,4 @@
-<body id="bodyId" onload="addStops();prepare_form()">
+<body id="bodyId" onload="editRoutes();prepare_form()">
 	<div id="map_canvas" style="width:100%; height:100%"></div>
 	<p>
 		<%= notice %>
@@ -23,13 +23,12 @@
 				<td><%= f_route.text_field :cost %></td>
 			</tr>
 		</table>
+		<%javascript_tag do%>
+			window.sub_route_element = <%= get_stop(f_route)%>;
+		<%end%>
 		<%= f_route.submit() %><br/>
 	<% end %>
 	<br/>
-	<button onclick = "adder()">Add Route</button>
-	<input type="text" id="to_add"/><br/>
-	<button onclick = "remover()">Remove Route</button>
-	<input type="text" id="to_remove"/>
 </body>
 	<%= javascript_tag do %>
 		window.updatable_stops = <%=raw @route.sub_routes.to_json(

@@ -5,7 +5,6 @@ function Map () {
 	var overlays = [];
 	var matchNode = null;
 	var addPlace = null;
-	var polys = [];
 	
 	this.initialize = function () 
 	{
@@ -21,11 +20,13 @@ function Map () {
 	      myOptions);
 	
 	 	google.maps.Polygon.prototype.id = null;
-		google.maps.Polygon.prototype.district = null;
+		google.maps.Polygon.prototype.name = null;
 	 	google.maps.Polygon.prototype.tip = null;
+	 	google.maps.Polygon.prototype.update = null;
 	 	google.maps.Polygon.prototype.del = function()
 	 	{
-	 		this.setMap(null);
+	 		if(this.update == null)
+	 			this.setMap(null);
 	 		this.tip.setMap(null);
 	 	}
 	 	google.maps.Polygon.prototype.getNode = function(){
@@ -80,38 +81,37 @@ function Map () {
 					dragEvent(polygon);
 					addTip(polygon);
 				});
-		    	google.maps.event.addListener(polygon, "rightclick", function(event){
-		    		if(map.rightDelete != null)
-		    			map.rightDelete.setMap(null);
-		    		rightClickDelete(event.latLng, polygon);
-		    	});
-		    	google.maps.event.addListener(polygon, "click", function(event){
-		    		if(map.rightDelete != null)
-		    		{
-		    			map.rightDelete.setMap(null);
-		    			map.rightDelete = null;
-		    		}
-		    	});
-				polys.push(polygon);
-		    	addTip(polygon);
+		    	if(overlays.length < 2)     // note that overlays will increment after that
+				{
+					overlays.push(polygon);
+					if(overlays.length == 2)
+						drawLine(1, false);
+				}
+				else
+				{
+					matchNode = polygon;
+					hidePlaceControl();
+				}
+				drawingManager.off();
+		    	addMatchingEvent(polygon);
 	    	}
 	    });
 	}
-	function overlayComplete(overlay)
+	function overlayComplete(polygon)
 	{
-		if(overlays.length < 2)     // note that overlays will increment after that
-		{
-			overlays.push(overlay);
-			if(overlays.length == 2)
-				drawLine(1, false);
-		}
-		else
-		{
-			matchNode = overlay;
-			hidePlaceControl();
-		}
-		drawingManager.off();
-    	addMatchingEvent(overlay);
+		google.maps.event.addListener(polygon, "rightclick", function(event){
+			if(map.rightDelete != null)
+				map.rightDelete.setMap(null);
+			rightClickDelete(event.latLng, polygon);
+		});
+		google.maps.event.addListener(polygon, "click", function(event){
+			if(map.rightDelete != null)
+			{
+				map.rightDelete.setMap(null);
+				map.rightDelete = null;
+			}
+		});
+		addTip(polygon);
 	}
 	this.addPlaceControl = function()
 	{
@@ -173,7 +173,7 @@ function Map () {
 
 		return controlDiv;
 	}
-	function drawLine(index, isDrag){
+	function drawLine(index, dragMode){
 		var path = [];
 		path.push(overlays[index].getNode());
 		path.push(overlays[index - 1].getNode());
@@ -184,7 +184,7 @@ function Map () {
 			strokeWeight : 3
 		});
 		line.setMap(map);
-		if(isDrag)
+		if(dragMode)
 			lines[index - 1] = line;
 		else
 		{
@@ -386,6 +386,28 @@ function Map () {
 		this.div = null;
 	}
 
+	// ------------------------------------------- For editting overlays ---------------------
+	this.editRoutes = function()
+	{
+		for(var i = 0; i < updatable_stops.length; i ++)
+		{
+			var node = updatable_stops[i].sub_route.dest;
+			var poly = new google.maps.Polygon({
+				path: google.maps.geometry.encoding.decodePath(node.path),
+				strokeColor: "#FF0000",
+				fillColor: "#FF0000",
+				editable: false,
+				map: map		
+			});
+			poly.name = node.name;
+			poly.update = true;
+			overlayComplete(poly);
+			overlays.push(poly);
+			addMatchingEvent(poly);
+			if(i > 0)
+				drawLine(i, false);
+		}
+	}
 	// --------------------------------------------------------------
 
 	this.showMapRoutes = function ()
@@ -414,7 +436,6 @@ function Map () {
 			points.push(route.dest.path[0]);
 			drawRoute(points);
 		}
-		// confirm(ids.length);
 	}
 	function addPolygon(node)
 	{

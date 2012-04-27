@@ -14,11 +14,15 @@ function showingNodes()
 	map.initialize();
 }
 
-function edit()
+function editRoutes()
 {
-	// initialize(true);
-	// map.drawingManager.setMap(null);
-	// map.controls[google.maps.ControlPosition.RIGHT_TOP].removeAt(0);
+	map = new Map();
+	map.initialize();
+	map.addDrawingManager();
+	map.addPlaceControl();
+	map.addRightDelete();
+	
+	map.editRoutes();
 }
 
 function showPaths(){

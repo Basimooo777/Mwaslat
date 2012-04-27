@@ -2,14 +2,6 @@
 // This file is automatically included by javascript_include_tag :defaults
 var sub_routes_ids = [];
 
-function adder(){
-	add_child(parseInt($("to_add").value))
-}
-
-function remover(){
-	remove_child(parseInt($("to_remove").value))
-}
-
 // 0. 1. 2. 3. ...
 function remove_child(sub_route_index){
 	if(sub_route_index < sub_routes_ids.length && (sub_route_index >= 0)){
