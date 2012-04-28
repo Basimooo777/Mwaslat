@@ -66,4 +66,14 @@ class NodesController < ApplicationController
            
     
   end
+  
+  #------------------------------------------------------------
+  
+  def districts
+    @names = Node.where("name like ?", "%#{params[:search]}%").limit(5).map(&:name)
+    respond_to do |format|
+        format.json {render :json => @names}
+    end
+  end
+  
 end

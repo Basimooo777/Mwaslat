@@ -1,14 +1,14 @@
-<body onload="initView()">
+<body onload="">
     <div id="search_map" style="width:100%; height:100%"></div>
     <br />
-    <%= form_tag(:action => "search") do %>
+    <%= form_tag(:action => "search") do |f|%>
     <table>
     	<tr>
     		<td>
     			<%= label_tag "Source District"%>			
     		</td>
     		<td>
-    			<%= text_field_tag :src %>			
+    			<%= text_field_tag(:class => "auto") %>			
     		</td>
     	</tr>
     	<tr>
@@ -16,7 +16,7 @@
     			<%= label_tag "Dest District"%>			
     		</td>
     		<td>
-    			<%= text_field_tag :dest %>
+    			<%= text_field_tag(:class => "auto") %>
     		</td>
     		<td>
     			<%= submit_tag("Search") %>

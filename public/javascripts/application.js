@@ -139,3 +139,14 @@ function fillNodePath()
     var overlays = map.getOverlays();
     $("node_path").value = overlays[0].getPointString();
 }
+
+$(function() {
+    $( ".auto" ).autocomplete({
+        source: function( request, response ) {
+            var term = request.term;
+            lastXhr = $.getJSON( "/nodes/districts.json?search=" + term, request, function( data, status, xhr ) {
+                response( data );
+            });
+        }
+    });
+});

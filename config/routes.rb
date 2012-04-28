@@ -16,6 +16,9 @@ Mwaslat1::Application.routes.draw do
   root :to => "routes#new"
   resources :routes
   resources :nodes
+  
+  match "/routes/nodes/districts" => "nodes#districts"
+  
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
