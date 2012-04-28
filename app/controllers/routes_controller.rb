@@ -26,17 +26,20 @@ class RoutesController < ApplicationController
 
   # =================================================================
   
-  def search
-    if(params[:src] != nil)
-        @src = Node.where(:district => params[:src])
-        @dest = Node.where(:district => params[:dest])
-        # @routes = Route.find_by_sql("select * from routes where src_id in 
-          # (select id from nodes where district='#{params[:src]}') and dest_id in (select id from nodes where district='#{params[:dest]}')")
-        s = Search.new
-        nodes = s.search(@src, @dest)
-        @routes = s.get_routes(nodes)
+   def search
+    if(params[:src] != nil and params[:dest] != nil)
+        @src = Node.where(:name => params[:src])
+        @dest = Node.where(:name => params[:dest])
+        search = Search.new
+        @routes = search.searches(@src, @dest)
+        
+        respond_to do |format|
+          format.html
+          format.json {render :json => @routes}
+          format.xml {render :xml => @routes}
+        end
     end
-  end
+  end 
   # =====================================================================    
   
   def destroy
