@@ -1,5 +1,5 @@
-<body onload="initView()">
-    <div id="search_map" style="width:100%; height:100%"></div>
+<body onload="showNode()">
+    <div id="map_canvas" style="width:100%; height:100%"></div>
     <br />
    
    <p id="notice"><%= notice %></p>
@@ -27,7 +27,7 @@
 	
 		<% end %>
 	<%= link_to 'Edit', edit_node_path(node) %> 
-	<input type="button" value="show" name="showOnMap" onclick="showNode('<%= node.path %>')" />
+	<input type="button" value="show" name="showOnMap" onclick="map.showNode('<%= node.name %>', '<%= node.path %>', false)" />
 </p>
 </ol>
 <% end %>

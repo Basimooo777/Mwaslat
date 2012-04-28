@@ -115,7 +115,6 @@ function add_selected_node(name, path, id, sub_route_index, isFirst){
 	$(node_id_template + "id").value = id;
 }
 
-
 //remove node from my nodes
 function remove_node(element,id){
 	if (confirm("Are you sure ?")) { 
@@ -133,10 +132,10 @@ function remove_node(element,id){
       		onFailure:     function(request) { alert ("Error Contacting server");}
     	});
 	}
-	
 }
 
-//show node on map
-function showNode(path){
-	alert("Path on map");
+function fillNodePath()
+{
+    var overlays = map.getOverlays();
+    $("node_path").value = overlays[0].getPointString();
 }

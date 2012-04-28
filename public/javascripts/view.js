@@ -10,12 +10,6 @@ function addStops() {
 	map.showNodes();
 	// map.showMapRoutes();
 }
-function showingNodes()
-{
-	map = new Map();
-	map.initialize();
-}
-
 function editRoutes()
 {
 	map = new Map();
@@ -26,6 +20,26 @@ function editRoutes()
 	map.showNodes();
 	
 	map.editRoutes();
+}
+function showingNodes()
+{
+	map = new Map();
+    map.initialize();
+    map.enableNodeMode();
+    map.addDrawingManager();
+    map.addPlaceControl();
+    map.addRightClick();
+}
+function editNode()
+{
+    map = new Map();
+    map.initialize();
+    map.showNode($("node_name").value, $("node_path").value, true);
+} 
+function showNode()
+{
+    map = new Map();
+    map.initialize();
 }
 
 function showPaths(){

@@ -2,7 +2,7 @@
   <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
 	<title>Data Seed</title>
 </head>
-<body onload="showingNodes()">
+<body onload="showNode()">
 	<div id="map_canvas" style="height: 80%"></div>
 	<div id="data"></div>
 	<div align="center">
@@ -21,7 +21,8 @@
 				<td><%= node.id %></td>
 				<td><%= node.name %></td>
 				<td><%= node.category %></td>
-				<td><button type="button" onclick="map.showNode('<%=node.path%>')">View</button></td>
+				<td><button type="button" onclick="map.showDataNode('<%= node.path %>')">View</button></td>
+				<td><button type="button" onclick="map.showNode('<%= node.name %>', '<%= node.path %>', false)">View</button></td>
 			</tr>
 		<% end %>
 	</table>
