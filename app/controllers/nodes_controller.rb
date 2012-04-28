@@ -70,7 +70,7 @@ class NodesController < ApplicationController
   #------------------------------------------------------------
   
   def districts
-    @names = Node.where("name like ?", "%#{params[:search]}%").limit(5).map(&:name)
+    @names = Node.where("name like ?", "%#{params[:term]}%").limit(5).map(&:name)
     respond_to do |format|
         format.json {render :json => @names}
     end
