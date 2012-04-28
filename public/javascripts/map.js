@@ -27,6 +27,7 @@ function Map () {
 	 	google.maps.Polygon.prototype.id = null;
 		google.maps.Polygon.prototype.name = null;
 	 	google.maps.Polygon.prototype.tip = null;
+	 	google.maps.Polygon.prototype.title = null;
 	 	google.maps.Polygon.prototype.exist = null;
 	 	google.maps.Polygon.prototype.del = function()
 	 	{
@@ -342,28 +343,44 @@ function Map () {
 			div.innerHTML = (index + 1) + "";
 		else
 			div.innerHTML = (overlays.length + 1) + "";
-		overlay.tip = new CustomeOverlay(overlay.getNode(), div);
+		overlay.tip = new CustomeOverlay(overlay.getNode(), div, false);
 	}
 	function addTitle(overlay)
 	{
 	    google.maps.event.addListener(overlay, "mousemove", function(event){
-	        if(overlay.title != undefined)
-	           overlay.title.setMap(null);
-    	    //if(overlay.title == undefined || overlay.title == null)
-    	    //{
-    	        
-        	    var div = document.createElement("Div");
-                div.style.backgroundColor = "yellow";
-                div.style.color = "blue";
-                div.style.position = "absolute";
-                div.innerHTML = overlay.name;
-                div.style = "overflow: auto; background-color:y"
-                overlay.title = new CustomeOverlay(event.latLng, div);
-    	    //}
+	        if(map.rightClick == null)
+	        {
+    	        if(overlay.title)
+    	        {
+                    overlay.title.pos = event.latLng;
+                    overlay.title.redraw();    	            
+    	        }
+    	        else
+    	        {
+            	    var div = document.createElement("Div");
+                    div.style.backgroundColor = "yellow";
+                    div.style.color = "blue";
+                    div.style.position = "absolute";
+                    div.innerHTML = overlay.name;
+                    div.style.width = (overlay.name.length - overlay.name.length/3) + "em";
+    
+                    overlay.title = new CustomeOverlay(event.latLng, div, true);
+    	        }
+	        }
 	    });
 	    google.maps.event.addListener(overlay, "mouseout", function(){
-	        overlay.title.setMap(null);
-	        overlay.title = null;
+	        if(overlay.title)
+	        {
+    	        overlay.title.setMap(null);
+    	        overlay.title = null;
+	        }
+        });
+        google.maps.event.addListener(overlay, "rightclick", function(){
+            if(overlay.title)
+            {
+                overlay.title.setMap(null);
+                overlay.title = null;
+            }
         });
 	}
 	this.addRightClick = function()
@@ -395,7 +412,7 @@ function Map () {
 			deleteOverlay(overlay);
 		}
 	 	div.appendChild(button);
-		map.rightClick = new CustomeOverlay(pos, div);
+		map.rightClick = new CustomeOverlay(pos, div, false);
 	}
 	function rightClickSelect(pos, overlay)
 	{
@@ -420,7 +437,7 @@ function Map () {
 			addMatchingEvent(overlay);
 		}
 	 	div.appendChild(button);
-		map.rightClick = new CustomeOverlay(pos, div);
+		map.rightClick = new CustomeOverlay(pos, div, false);
 	}
 	function createButton(text)
 	{
@@ -440,11 +457,12 @@ function Map () {
 		}
 		return button;
 	}
-	function CustomeOverlay(pos, div)
+	function CustomeOverlay(pos, div, isTitle)
 	{
 		this.pos = pos;
 		this.div = div;
 		this.setMap(map);
+		this.isTitle = isTitle;
 	}
 	CustomeOverlay.prototype = new google.maps.OverlayView();
 	CustomeOverlay.prototype.onAdd = function()
@@ -458,8 +476,23 @@ function Map () {
 	  	var point = projection.fromLatLngToDivPixel(this.pos);
 
 		var div = this.div;
-		div.style.left = point.x + "px";
-		div.style.top = point.y + "px";
+		if(this.isTitle)
+		{
+		    div.style.left = point.x + 15 + "px";
+            div.style.top = point.y + 15 + "px";
+		}
+		else
+		{
+    		div.style.left = point.x + "px";
+    		div.style.top = point.y + "px";
+		}
+	}
+	CustomeOverlay.prototype.redraw = function()
+	{
+        var projection = this.getProjection();
+        var point = projection.fromLatLngToDivPixel(this.pos);
+        this. div.style.left = point.x + 15 + "px";
+        this.div.style.top = point.y + 15 + "px";
 	}
 	CustomeOverlay.prototype.onRemove = function()
 	{
@@ -467,7 +500,7 @@ function Map () {
 		this.div = null;
 	}
 
-	// ------------------------------------------- For editting overlays ---------------------
+	// ------------------------------------------- For editting Routes ---------------------
 	this.editRoutes = function()
 	{
 		for(var i = 0; i < updatable_stops.length; i ++)
@@ -506,7 +539,8 @@ function Map () {
 			poly.id = node.id;
 			poly.exist = true;
 		    addNodeEvents(poly);
-		    //addTitle(poly);
+		    
+		    addTitle(poly);
 		}
 	}
 	function addNodeEvents(poly)
@@ -537,6 +571,7 @@ function Map () {
             fillColor: "#FF0000",
             editable: isEdit
         });
+        poly.name = name;
         poly.setMap(map);
         if (overlays[0])
             overlays[0].setMap(null);
@@ -546,6 +581,9 @@ function Map () {
         for(var i = 0; i < path.length; i ++)
             bounds.extend(path[i]);
         map.fitBounds(bounds);
+        
+        if(!isEdit)
+            addTitle(poly);    
     }
     this.clearNode = function()
     {
