@@ -527,7 +527,7 @@ function Map () {
                 rightClickDelete(event.latLng, poly);    
         });
 	}
-	// ------------------------------------------- For Showing Nodes -------------------------
+	// ------------------------------------------- For Showing one Node and clear it -------------------------
 	this.showNode = function(name, path, isEdit)
     {
         path = google.maps.geometry.encoding.decodePath(path);
@@ -547,6 +547,14 @@ function Map () {
             bounds.extend(path[i]);
         map.fitBounds(bounds);
     }
+    this.clearNode = function()
+    {
+        try
+        {
+            overlays[0].setMap(null);
+        }
+        catch(err){}
+    } 
 	// --------------------------------------------------------------
 
 	this.showMapRoutes = function ()

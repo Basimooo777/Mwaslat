@@ -23,7 +23,7 @@
 <p>
 	<%= fields_for :node do |f|%>
 			<%= f.hidden_field :_destroy %>
-			<input type="button" value="remove" name="removeNode" onclick="remove_node(this,'<%= node.id %> ')" />
+			<input type="button" value="remove" name="removeNode" onclick="map.clearNode();remove_node(this,'<%= node.id %> ')" />
 	
 		<% end %>
 	<%= link_to 'Edit', edit_node_path(node) %> 
