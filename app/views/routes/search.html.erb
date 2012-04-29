@@ -46,9 +46,9 @@
 		<% route.each do |r| %>
 			<tr>
 				<td><%= r.id %></td>
-				<td><%= r.cost %></td>
-				<td><%= r.time %></td>
-				<td><%= r.transportation.name %></td>
+				<td><%= r.route.cost %></td>
+				<td><%= r.duration %></td>
+				<td><%= r.route.transportation.category%></td>
 				<td><%= link_to "Delete", :action => "destroy", :id => r.id %></td>
 				<td><%= link_to "Edit", :action => "edit", :id => r.id %></td>
 			</tr>

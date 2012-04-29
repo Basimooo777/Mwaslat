@@ -51,7 +51,7 @@ class Search
  
   def get_dests_(node)
     puts node.class
-    return Route.find_by_sql("select * from sub_routes where src_id = '#{node.id}'")
+    return SubRoute.find_by_sql("select * from sub_routes where src_id = '#{node.id}'")
   end
   
   def get_route_dest(route)
