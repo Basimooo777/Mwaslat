@@ -41,18 +41,15 @@ function showNode()
     map = new Map();
     map.initialize();
 }
-
+function search()
+{
+    map = new Map();
+    map.initialize();
+}
 function showPaths(){
 	var overlays = map.getOverlays();
 	for(var i = 0; i < overlays.length; i++) {
 		confirm(overlays[i].getPointString());
-	}
-}
-function fillPaths() {
-	var overlays = map.getOverlays();
-	for(var i = 0; i < sub_routes_ids.length; i++) {
-		hidden_path_id = "route_sub_routes_attributes_" + sub_routes_ids[i] + "_dest_attributes_path";
-		$(hidden_path_id).value = overlays[i].getPointString();
 	}
 }
 // var counter = 2;

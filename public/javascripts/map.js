@@ -593,8 +593,15 @@ function Map () {
         }
         catch(err){}
     } 
-	// --------------------------------------------------------------
-
+	// ------------------------------------------ For searching --------------------
+    this.showRoute = function(nodes)
+    {
+        nodes = nodes.split(",");
+        for(var i = 0; i < nodes.length; i ++)
+        {
+     //      var path = 
+        }
+    }
 	this.showMapRoutes = function ()
 	{
 		var ids = [];
