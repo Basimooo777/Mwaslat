@@ -1,8 +1,6 @@
 <div id = "sub_route_index">
-	<hr width="50%" align="left"/>
 	<%= f.label :duration, "Duration to reach next stop"%>
 	<%= f.text_field :duration%>
-	<hr width="50%" align="left"/>
 	<%= f.fields_for :dest do|f_dest|%>
 		<%= render "node_fields", :f => f_dest%>
 	<% end %>

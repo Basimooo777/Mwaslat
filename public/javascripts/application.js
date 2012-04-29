@@ -1,12 +1,30 @@
 // Place your application-specific JavaScript functions and classes here
 // This file is automatically included by javascript_include_tag :defaults
 var sub_routes_ids = [];
+var remove_counter = -10;
+var template_1 = "route_sub_routes_attributes_index_";
+var template_2 = "route_sub_routes_attributes_index_dest_attributes_";
+var to_replace = new RegExp("index", "g");
+
+ // $(document).ready(function() {
+ 	  // // var a = "sub_routes";
+      // // var div = $("#"+"sub_routes");
+      // // div.attr("id", remove_counter);
+      // // div = $("#"+"sub_routes");
+      // // rename_stops(0);
+      // hide_time_fields(0);
+      // alert("ewq");
+      // show_time_fields(0);
+   // });
+
 
 // 0. 1. 2. 3. ...
 function remove_child(sub_route_index){
 	if(sub_route_index < sub_routes_ids.length && (sub_route_index >= 0)){
-		$(sub_routes_ids[sub_route_index].toString()).hide();
-		$("route_sub_routes_attributes_"+sub_routes_ids[sub_route_index]+"__destroy").value = "1";
+		var div_index = sub_routes_ids[sub_route_index];
+		var div = $("#"+div_index);
+		div.hide();
+		$("#"+ template_1.replace(to_replace, div_index).replace(".", "\\.") +"_destroy").val("1");
 		if(sub_route_index == 0){			// if first node, then hide next duration field
 			sub_routes_ids.shift();
 			hide_time_fields(sub_routes_ids[0]);
@@ -29,29 +47,25 @@ function add_child(sub_route_index){
 	var new_sub_route_id;
 	var sub_route_before;
 	if(sub_route_index == 0){				// adds a new source stop
-		new_sub_route_id = (sub_routes_ids[0]-1)/2;
-		show_time_fields(sub_routes_ids[0]);
-		$("sub_routes").insert({
-			top: sub_route_instance.replace(regexp, new_sub_route_id)
-		});
+		new_sub_route_id = (sub_routes_ids[0]-1)/2;		// (-1 + index)/2 => new source id
+		show_time_fields(sub_routes_ids[0]);			// show the old source time fields
+		sub_route_before = $("#" + sub_routes_ids[0]);	// old source element
+		sub_route_before.before(sub_route_instance.replace(regexp, new_sub_route_id));
 		sub_routes_ids.unshift(new_sub_route_id);
+		alert($("#sub_routes").html());
 		hide_time_fields(sub_routes_ids[0]);
 	}
 	else{
 		if(sub_route_index == sub_routes_ids.length){		// adds a new destination stop
 			new_sub_route_id = sub_routes_ids[sub_route_index-1] + 1;
-			sub_route_before = $(sub_routes_ids[sub_route_index-1].toString());
-			sub_route_before.insert({
-				after: sub_route_instance.replace(regexp, new_sub_route_id)
-			});
+			sub_route_before = $("#" + sub_routes_ids[sub_route_index-1]);
+			sub_route_before.after(sub_route_instance.replace(regexp, new_sub_route_id));
 			sub_routes_ids.push(new_sub_route_id);
 		}
 		else if (sub_route_index < sub_routes_ids.length && (sub_route_index > 0)){   // adds a new inbetween stop
 			new_sub_route_id = (sub_routes_ids[sub_route_index] + sub_routes_ids[sub_route_index-1])/2;
-			sub_route_before = $(sub_routes_ids[sub_route_index-1].toString());
-			sub_route_before.insert({
-				after: sub_route_instance.replace(regexp, new_sub_route_id)
-			});
+			sub_route_before = $("#" + sub_routes_ids[sub_route_index-1]);
+			sub_route_before.after(sub_route_instance.replace(regexp, new_sub_route_id));
 			sub_routes_ids.splice(sub_route_index, 0, new_sub_route_id);
 		}
 		else{
@@ -63,23 +77,20 @@ function add_child(sub_route_index){
 
 function rename_stops(start) {
 	for(var i=start; i < sub_routes_ids.length; i++){
-		$("route_sub_routes_attributes_"+sub_routes_ids[i]+"_dest_attributes_name").previous(1).innerHTML = "Stop " + (i+1);
+		$("label[for=" + template_2.replace(to_replace, sub_routes_ids[i]).replace(".", "\\.") + "name]").html("Stop " + (i+1));
 	}
 }
 
-// it makes three actions => first : set numbered names of first 2 stops
-// second : changes ids of first 2 children divs
-// third : hides first time field of first children
+// it makes three actions => 
+// first : set numbered names of initial stops
+// second : changes ids of the initial children divs
+// third : hides first time field of first child
 function prepare_form(){
 	// changes ids of sub_routes divs
-	var sub_routes = $("sub_routes").childElements();
-	var index = 0;
+	var sub_routes = $("#sub_routes #sub_route_index");
 	for(var i=0; i< sub_routes.length; i++){
-		if(sub_routes[i].id == "sub_route_index"){
-			sub_routes[i].id = index;
-			sub_routes_ids.push(index);		// add the index to array of ids
-			index++;
-		}
+		sub_routes.eq(i).attr("id", i);
+		sub_routes_ids.push(i);		// add the index to array of ids
 	}
 	// assigns numbered names of stops
 	rename_stops(0);
@@ -89,30 +100,26 @@ function prepare_form(){
 
 // shows the time fields of the div of specified id
 function show_time_fields(id){
-	var to_show_field = $("route_sub_routes_attributes_"+id+"_duration");
-	to_show_field.show();
-	to_show_field.previous().show();
-	to_show_field.previous(1).show();
-	to_show_field.next().show();
+	var element_key = template_1.replace(to_replace, id).replace(".", "\\.")+"duration";
+	$("#" + element_key).show();
+	$("label[for=" + element_key + "]").show();
 }
 
 // hides the time fields of the div of specified id
 function hide_time_fields(id){
-	var to_hide_field = $("route_sub_routes_attributes_"+id+"_duration");
-	to_hide_field.hide();
-	to_hide_field.previous(0).hide();
-	to_hide_field.previous(1).hide();
-	to_hide_field.next().hide();
+	var element_key = template_1.replace(to_replace, id).replace(".", "\\.")+"duration";
+	$("#" + element_key).hide();
+	$("label[for=" + element_key + "]").hide();
 }
 // isFirst attribute is set to true when it's first node or second node
 function add_selected_node(name, path, id, sub_route_index, isFirst){
 	if(!isFirst){
 		add_child(sub_route_index);
 	}
-	var node_id_template = "route_sub_routes_attributes_"+ sub_routes_ids[sub_route_index] +"_dest_attributes_";
-	$(node_id_template + "name").value = name;
-	$(node_id_template + "path").value = path;
-	$(node_id_template + "id").value = id;
+	var node_id_template = "#" + template_2.replace(to_replace, sub_routes_ids[sub_route_index]).replace(".", "\\.");
+	$(node_id_template + "name").val(name);
+	$(node_id_template + "path").val(path);
+	$(node_id_template + "id").val(id);
 }
 
 //remove node from my nodes
