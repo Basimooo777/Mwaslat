@@ -6,18 +6,6 @@ var template_1 = "route_sub_routes_attributes_index_";
 var template_2 = "route_sub_routes_attributes_index_dest_attributes_";
 var to_replace = new RegExp("index", "g");
 
- // $(document).ready(function() {
- 	  // // var a = "sub_routes";
-      // // var div = $("#"+"sub_routes");
-      // // div.attr("id", remove_counter);
-      // // div = $("#"+"sub_routes");
-      // // rename_stops(0);
-      // hide_time_fields(0);
-      // alert("ewq");
-      // show_time_fields(0);
-   // });
-
-
 // 0. 1. 2. 3. ...
 function remove_child(sub_route_index){
 	if(sub_route_index < sub_routes_ids.length && (sub_route_index >= 0)){
@@ -52,7 +40,6 @@ function add_child(sub_route_index){
 		sub_route_before = $("#" + sub_routes_ids[0]);	// old source element
 		sub_route_before.before(sub_route_instance.replace(regexp, new_sub_route_id));
 		sub_routes_ids.unshift(new_sub_route_id);
-		alert($("#sub_routes").html());
 		hide_time_fields(sub_routes_ids[0]);
 	}
 	else{
@@ -120,6 +107,14 @@ function add_selected_node(name, path, id, sub_route_index, isFirst){
 	$(node_id_template + "name").val(name);
 	$(node_id_template + "path").val(path);
 	$(node_id_template + "id").val(id);
+}
+
+function fillPaths() {
+	var overlays = map.getOverlays();
+	for(var i = 0; i < sub_routes_ids.length; i++) {
+		var hidden_path_id = "#" + template_2.replace(to_replace, sub_routes_ids[i]).replace(".", "\\.") + "path";
+		$(hidden_path_id).val(overlays[i].getPointString());
+	}
 }
 
 //remove node from my nodes

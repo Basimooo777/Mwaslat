@@ -9,12 +9,39 @@ class RoutesController < ApplicationController
   # =================================================================
   
   def create
-    @route = Route.new(params[:route])
-    sub_routes = @route.sub_routes
-    for i in 1..sub_routes.length-1
-      sub_routes[i].src = sub_routes[i-1].dest
+    children = []
+    children_params = params[:route]["sub_routes_attributes"]
+    keys = children_params.keys
+    keys.collect! {|i| i.to_f}
+    keys.sort!
+    keys.collect! do |i|
+       if i == i.to_i
+         i.to_i.to_s
+       else
+         i.to_s 
+       end
     end
-    @route.sub_routes = sub_routes.drop(1)    # removes first sub-route
+    puts keys.to_s
+    for i in 0..keys.length-1
+      child_params = children_params[keys[i]]
+      dest_params = child_params["dest_attributes"]
+      dest_id = dest_params["id"]
+      if child_params["_destroy"] != "1"
+        child = SubRoute.new
+        dest = Node.find_or_initialize_by_id(dest_id, dest_params)
+        child.dest = dest
+        child.duration = child_params["duration"].to_f
+        children.push(child)
+      end
+    end
+    params[:route].delete("sub_routes_attributes")
+    @route = Route.new(params[:route])
+    for i in 1..children.length-1
+      children[i].src = children[i-1].dest
+      children[i].save
+    end
+    children = children.drop(1)    # removes first sub-route
+    @route.sub_routes = children
     respond_to do |format|
       if @route.save
         format.html { redirect_to(new_route_path, :notice => "Successfully Added") }
