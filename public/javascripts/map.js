@@ -594,13 +594,52 @@ function Map () {
         catch(err){}
     } 
 	// ------------------------------------------ For searching --------------------
-    this.showRoute = function(nodes)
+    // var "nodes" is ajson object of a 2d array of subroutes
+    // var "row" is the index of the required showing route 
+    this.showRoute = function(row)
     {
-        nodes = nodes.split(",");
+        for(var i = 0; i < overlays.length; i ++)
+            overlays[i].setMap(null);
+        for(var i = 0; i < lines.length; i ++)
+            lines[i].setMap(null);
+
+        overlays = []
+        lines = []
+        var bounds = new google.maps.LatLngBounds();
+        var path = google.maps.geometry.encoding.decodePath(nodes[row][0].sub_route.src.path);
+        var name = nodes[row][0].sub_route.src.name
+        overlays.push(addPolygon(path, name)); 
+        fitBounds(bounds, path);
+        addTip(overlays[0])
+        addTitle(overlays[0]);
         for(var i = 0; i < nodes.length; i ++)
         {
-     //      var path = 
+            var path = google.maps.geometry.encoding.decodePath(nodes[row][i].sub_route.dest.path);
+            var name = nodes[row][i].sub_route.dest.name
+            overlays.push(addPolygon(path, name));
+            fitBounds(bounds, path);
+            drawLine(i+1, true);  // here i set drag_mode to prevent from adding line event
+            addTip(overlays[i + 1])
+            addTitle(overlays[i + 1]);
         }
+        map.fitBounds(bounds);
+    }
+    function fitBounds(bounds, path)
+    {
+        for(var i = 0; i < path.length; i ++)
+            bounds.extend(path[i]);
+    }
+    function addPolygon(path, name)
+    {
+        var poly = new google.maps.Polygon({
+            path: path,
+            strokeColor: "#707070",
+            fillColor: "#707070",
+            editable: false     
+        });
+        poly.setMap(map);
+        poly.name = name
+        return poly;
     }
 	this.showMapRoutes = function ()
 	{
@@ -628,31 +667,6 @@ function Map () {
 			points.push(route.dest.path[0]);
 			drawRoute(points);
 		}
-	}
-	function addPolygon(node)
-	{
-		var poly = new google.maps.Polygon({
-			path: node.path,
-			strokeColor: "#FF0000",
-			fillColor: "#FF0000",
-			editable: false		
-		});
-		poly.setMap(map);
-		google.maps.event.addListener(poly, "rightclick", function()
-		{
-			overlayComplete(poly);
-			addTip(poly);
-		});
-	}
-	function drawRoute(path)
-	{
-		var line = new google.maps.Polyline({
-			path: path,
-			strokeColor: "#FF0000",
-			strokeOpacity: 0.7,
-			strokeWeight: 2
-		});
-		line.setMap(map);
 	}
 	// -----------------------------------------------------------------------------------
 	this.showDataNode = function(path)

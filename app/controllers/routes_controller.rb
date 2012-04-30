@@ -62,8 +62,9 @@ class RoutesController < ApplicationController
         
         respond_to do |format|
           format.html
-          format.json {render :json => @routes}
-          format.xml {render :xml => @routes}
+          if params[:key] == "1234"
+            format.xml       # search.xml
+          end
         end
     end
   end 

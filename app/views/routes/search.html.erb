@@ -10,8 +10,6 @@
     		<td>
     			<input id="src" name="src" type="text" class="auto"/>						
     		</td>
-    	</tr>
-    	<tr>
     		<td>
     			<%= label_tag "Dest District"%>			
     		</td>
@@ -25,41 +23,42 @@
     </table>
     <% end %>
     <br />
-    
     <%= notice %>
-    
-    <% if(@routes != nil) %>
-	<style type="text/css">
-		td
-		{
-			vertical-align: top;
-		}
-	</style>
-
+    <% if(@routes != nil) ;row = -1%>
 	<% @routes.each do|route| %>
-	<% nodes = ""%>
 	<table border="1">
 		<th>ID</th>
+		<th>Src</th>
+		<th>Dest</th>
 		<th>Cost</th>
 		<th>Time</th>
 		<th>Transportation</th>
 		<% route.each do |r| %>
 			<tr>
 				<td><%= r.id %></td>
+				<td><%= r.src.name %></td>
+				<td><%= r.dest.name %></td>
 				<td><%= r.route.cost %></td>
 				<td><%= r.duration %></td>
 				<td><%= r.route.transportation.category%></td>
 				<td><%= link_to "Delete", :action => "destroy", :id => r.id %></td>
 				<td><%= link_to "Edit", :action => "edit", :id => r.id %></td>
 			</tr>
-			<% nodes += r.src.path + "," %>
 		<% end %>
-		<% nodes += route.last.dest.path %>
 		</table>
-		<button type="button" onclick="view('<%=nodes%>')">View</button>
+		<button type="button" onclick="map.showRoute(<%= row += 1%>)">View</button>
 		<hr />
 	<% end %>
+	    <%= javascript_tag do %>
+			window.nodes = <%=raw @routes.to_json(
+			:include => {
+				:src => {:only => [:path, :name]} ,
+				:dest => {:only => [:path, :name]}
+			},
+			:only=>{} ) %>;
+		<% end %>
 	<%end%>
     <br />
     <%= link_to "Back", new_route_path %>
+    
 </body>
