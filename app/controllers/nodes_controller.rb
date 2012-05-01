@@ -2,7 +2,7 @@ class NodesController < ApplicationController
   before_filter :authenticate_user!
 
   def index
-    @nodes = Node.where(:user_id => '1')
+    @nodes =current_user.nodes
     respond_to do |format|
       format.html # show.html.erb
     end
@@ -16,7 +16,7 @@ class NodesController < ApplicationController
   def create
     puts "noooooooooooooooooo"
     new_node = Node.new(params[:node])
-    new_node.user_id=1
+    new_node.user_id=current_user.id
     #setting node parent 
     
     
