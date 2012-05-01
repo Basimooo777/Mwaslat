@@ -40,8 +40,8 @@ function showNode()
 {
     map = new Map();
     map.initialize();
-$('#hasmap').equalHeights();
-$('#hasmap').equalWidths();
+// $('#hasmap').equalHeights();
+// $('#hasmap').equalWidths();
 }
 function search()
 {
