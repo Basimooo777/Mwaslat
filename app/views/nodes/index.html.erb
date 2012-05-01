@@ -18,12 +18,11 @@
 					</thead>
 					<tbody>
 						<% @nodes.each do |node| %>
-						<tr>
+						<tr id="row<%= node.id %>">
 							<td><%= node.name %></td>
 							<td><%= node.category %></td>
 							<td> <%= fields_for :node do |f|%>
-							<%= f.hidden_field :_destroy %>
-							<input type="button" class="btn btn-small btn-danger" value="remove" name="removeNode" onclick="map.clearNode();remove_node(this,'<%= node.id %> ')" />
+							<input type="button" class="btn btn-small btn-danger" value="remove" name="removeNode" onclick="map.clearNode();remove_node('<%= node.id %> ')" />
 							<% end %>
 							<%= link_to 'Edit', edit_node_path(node), :class =>'btn btn-small btn-primary' %>
 							<input type="button" class="btn btn-small btn-success" value="show" name="showOnMap" onclick="map.showNode('<%= node.name %>', '<%= node.path %>', false)" />
