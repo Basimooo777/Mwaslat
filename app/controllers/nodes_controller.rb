@@ -1,5 +1,5 @@
 class NodesController < ApplicationController
-  before_filter :authenticate_user!
+  before_filter :authenticate_user!, :except => [:districts]
 
   def index
     @nodes = Node.where(:user_id => '1')
