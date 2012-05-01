@@ -1,4 +1,6 @@
 class RoutesController < ApplicationController
+  before_filter :authenticate_user!, :except => [:search]
+  
   def new
     @route = Route.new
     2.times do

@@ -1,4 +1,5 @@
 class NodesController < ApplicationController
+  before_filter :authenticate_user!
 
   def index
     @nodes = Node.where(:user_id => '1')

@@ -4,6 +4,9 @@ class Route < ActiveRecord::Base
   has_many :sub_routes
   accepts_nested_attributes_for :transportation
   accepts_nested_attributes_for :sub_routes, :allow_destroy => true
+  has_many :srcs, :through => :sub_routes ,:class_name => "Node", :foreign_key => "src_id"
+  has_many :dests, :through => :sub_routes ,:class_name => "Node", :foreign_key => "dest_id"
+  
   def order_sub_routes
       dest_hash = {}
       src_hash = {}
