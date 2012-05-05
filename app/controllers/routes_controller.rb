@@ -1,6 +1,20 @@
 class RoutesController < ApplicationController
   before_filter :authenticate_user!, :except => [:search]
   
+  
+  def show
+    @route = Route.find(params[:id])
+    @route.order_sub_routes
+    @route.sub_routes = @route.sub_routes.unshift(SubRoute.new(:dest=> @route.sub_routes[0].src))
+    respond_to do |format|
+      format.html # show.html.erb
+    end
+  end
+  
+  def index
+   @routes = Route.scoped.page(params[:page]).per_page(5)
+  end
+  
   def new
     @route = Route.new
     2.times do

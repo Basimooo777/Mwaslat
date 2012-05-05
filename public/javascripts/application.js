@@ -6,6 +6,19 @@ var template_1 = "route_sub_routes_attributes_index_";
 var template_2 = "route_sub_routes_attributes_index_dest_attributes_";
 var to_replace = new RegExp("index", "g");
 
+
+$(document).ready(function() {
+	$("#routes_table").dataTable( {
+		"sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+		"sPaginationType": "bootstrap",
+		"oLanguage": {
+			"sLengthMenu": "_MENU_ records per page"
+		},
+		"aoColumnDefs": [{ "bSortable": false, "aTargets": [5, 6] }, { "bSearchable": false, "aTargets": [5, 6] }],
+		"bPaginate": false
+	} );
+} );
+
 // 0. 1. 2. 3. ...
 function remove_child(sub_route_index){
 	if(sub_route_index < sub_routes_ids.length && (sub_route_index >= 0)){
