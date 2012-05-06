@@ -8,6 +8,8 @@ gem 'rails', '3.0.10'
 gem 'mysql'
 gem 'devise'
 gem 'jquery-rails'
+gem 'polylines'
+gem 'will_paginate'
 # Use unicorn as the web server
 # gem 'unicorn'
 
