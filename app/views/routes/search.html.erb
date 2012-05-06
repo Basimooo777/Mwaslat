@@ -3,24 +3,22 @@
 		<div class="row-fluid" id="hasmap" style="height: 100%; " >
 			<div class="span6" >
 				<%= form_tag(:action => "search" ,:html => { :class => 'form-horizontal' }) do |f|%>
-				<p>
 					<fieldset>
 						<div class="control-group">
-							<%= label_tag "Source District" %>
+							<label class="control-label" style="float:left;padding-right: 5%">Source District</label>
 							<div class="controls">
-								<input id="src" name="src" type="text" class="auto search-query"/>
+								<input id="src" name="src" type="text" class="auto search-query text_field"/>
 							</div>
 						</div>
 						<div class="control-group">
-							<%= label_tag "Dest District"%>
+							<label class="control-label" style="float:left;padding-right: 1.3%">Destination District</label>
 							<div class="controls">
-								<input id="dest" name="dest" type="text" class="auto  search-query" />
+								<input id="dest" name="dest" type="text" class="auto search-query text_field" />
 							</div>
 						</div>
 					</fieldset>
-				</p>
 				<div class="form-actions">
-					<%= submit_tag("Search",:class =>'btn btn-small btn-primary') %>
+					<%= submit_tag("Search",:class =>'btn btn-small btn-primary',:style =>'margin-left:45%;') %>
 				</div>
 				<% end %>
 			</div>
