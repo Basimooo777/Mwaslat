@@ -21,39 +21,48 @@
 					<%= submit_tag("Search",:class =>'btn btn-small btn-primary',:style =>'margin-left:45%;') %>
 				</div>
 				<% end %>
+				
+				<%= notice %>
+				<% if(@routes != nil) ;row = -1%>
+				<% @routes.each do|route| %>
+				<table class="table table-striped" >
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>Src</th>
+							<th>Dest</th>
+							<th>Cost</th>
+							<th>Time</th>
+							<th>Transportation</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+						<% route.each do |r| %>
+						<tr>
+							<td><%= r.id %></td>
+							<td><%= r.src.name %></td>
+							<td><%= r.dest.name %></td>
+							<td><%= r.route.cost %></td>
+							<td><%= r.duration %></td>
+							<td><%= r.route.transportation.category%></td>
+							
+						</tr>
+						<% end %>
+						</table>
+						<button type="button" style="margin-left: 90% ;" class="btn btn-big btn-success" onclick="map.showRoute(<%= row += 1%>)" >
+							View
+						</button>
+						<hr />
+						<% end %>
+	
+					</tbody>
+				</table>
 			</div>
 			<div class="span6" id="map_canvas" style="height: 100%" ></div>
 		</div>
 	</div>
-	<br />
-	<%= notice %>
-	<% if(@routes != nil) ;row = -1%>
-	<% @routes.each do|route| %>
-	<table border="1">
-		<th>ID</th>
-		<th>Src</th>
-		<th>Dest</th>
-		<th>Cost</th>
-		<th>Time</th>
-		<th>Transportation</th>
-		<% route.each do |r| %>
-		<tr>
-			<td><%= r.id %></td>
-			<td><%= r.src.name %></td>
-			<td><%= r.dest.name %></td>
-			<td><%= r.route.cost %></td>
-			<td><%= r.duration %></td>
-			<td><%= r.route.transportation.category%></td>
-			<td><%= link_to "Delete", :action => "destroy", :id => r.id %></td>
-			<td><%= link_to "Edit", :action => "edit", :id => r.id %></td>
-		</tr>
-		<% end %>
-	</table>
-	<button type="button" onclick="map.showRoute(<%= row += 1%>)">
-		View
-	</button>
-	<hr />
-	<% end %>
+		
 	<%= javascript_tag do %>
 	window.nodes = <%= raw @routes.to_json(
     :include => {
@@ -64,5 +73,4 @@
 	<% end %>
 	<%end%>
 	<br />
-	<%= link_to "Back", new_route_path %>
 </body>
