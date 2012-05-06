@@ -3,5 +3,5 @@ development:
   database: mwaslat
   pool: 5
   timeout: 5000
-  password: root
   username: root
+  password:
