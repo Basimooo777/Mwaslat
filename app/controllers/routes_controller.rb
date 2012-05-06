@@ -12,7 +12,8 @@ class RoutesController < ApplicationController
   end
   
   def index
-   @routes = Route.scoped.page(params[:page]).per_page(5)
+   @search = Route.search(params[:search])
+   @routes = @search.page(params[:page]).per_page(5)
   end
   
   def new
