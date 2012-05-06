@@ -146,7 +146,7 @@ function remove_node(id){
 function fillNodePath()
 {
     var overlays = map.getOverlays();
-    $("node_path").value = overlays[0].getPointString();
+    document.getElementById("node_path").value = overlays[0].getPointString();
 }
 
 $(function() {
