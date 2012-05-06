@@ -34,7 +34,7 @@ function editNode()
 {
     map = new Map();
     map.initialize();
-    map.showNode($("node_name").value, $("node_path").value, true);
+    map.showNode(document.getElementById("node_name").value, document.getElementById("node_path").value, true);
 } 
 function showNode()
 {
