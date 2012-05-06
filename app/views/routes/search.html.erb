@@ -1,30 +1,35 @@
-<body onload="search()">
-    <div id="map_canvas" style="width:100%; height:100%"></div>
-    <br />
-    <%= form_tag(:action => "search") do |f|%>
-    <table>
-    	<tr>
-    		<td>
-    			<%= label_tag "Source District"%>			
-    		</td>
-    		<td>
-    			<input id="src" name="src" type="text" class="auto"/>						
-    		</td>
-    		<td>
-    			<%= label_tag "Dest District"%>			
-    		</td>
-    		<td>
-    			<input id="dest" name="dest" type="text" class="auto" />
-    		</td>
-    		<td>
-    			<%= submit_tag("Search") %>
-    		</td>
-    	</tr>
-    </table>
-    <% end %>
-    <br />
-    <%= notice %>
-    <% if(@routes != nil) ;row = -1%>
+<body onload="search()" style="height:90%;">
+	<div class="container-fluid" style="height: 100%;">
+		<div class="row-fluid" id="hasmap" style="height: 100%; " >
+			<div class="span6" >
+				<%= form_tag(:action => "search" ,:html => { :class => 'form-horizontal' }) do |f|%>
+				<p>
+					<fieldset>
+						<div class="control-group">
+							<%= label_tag "Source District" %>
+							<div class="controls">
+								<input id="src" name="src" type="text" class="auto search-query"/>
+							</div>
+						</div>
+						<div class="control-group">
+							<%= label_tag "Dest District"%>
+							<div class="controls">
+								<input id="dest" name="dest" type="text" class="auto  search-query" />
+							</div>
+						</div>
+					</fieldset>
+				</p>
+				<div class="form-actions">
+					<%= submit_tag("Search",:class =>'btn btn-small btn-primary') %>
+				</div>
+				<% end %>
+			</div>
+			<div class="span6" id="map_canvas" style="height: 100%" ></div>
+		</div>
+	</div>
+	<br />
+	<%= notice %>
+	<% if(@routes != nil) ;row = -1%>
 	<% @routes.each do|route| %>
 	<table border="1">
 		<th>ID</th>
@@ -34,31 +39,32 @@
 		<th>Time</th>
 		<th>Transportation</th>
 		<% route.each do |r| %>
-			<tr>
-				<td><%= r.id %></td>
-				<td><%= r.src.name %></td>
-				<td><%= r.dest.name %></td>
-				<td><%= r.route.cost %></td>
-				<td><%= r.duration %></td>
-				<td><%= r.route.transportation.category%></td>
-				<td><%= link_to "Delete", :action => "destroy", :id => r.id %></td>
-				<td><%= link_to "Edit", :action => "edit", :id => r.id %></td>
-			</tr>
+		<tr>
+			<td><%= r.id %></td>
+			<td><%= r.src.name %></td>
+			<td><%= r.dest.name %></td>
+			<td><%= r.route.cost %></td>
+			<td><%= r.duration %></td>
+			<td><%= r.route.transportation.category%></td>
+			<td><%= link_to "Delete", :action => "destroy", :id => r.id %></td>
+			<td><%= link_to "Edit", :action => "edit", :id => r.id %></td>
+		</tr>
 		<% end %>
-		</table>
-		<button type="button" onclick="map.showRoute(<%= row += 1%>)">View</button>
-		<hr />
+	</table>
+	<button type="button" onclick="map.showRoute(<%= row += 1%>)">
+		View
+	</button>
+	<hr />
 	<% end %>
-	    <%= javascript_tag do %>
-			window.nodes = <%=raw @routes.to_json(
-			:include => {
-				:src => {:only => [:path, :name]} ,
-				:dest => {:only => [:path, :name]}
-			},
-			:only=>{} ) %>;
-		<% end %>
+	<%= javascript_tag do %>
+	window.nodes = <%= raw @routes.to_json(
+    :include => {
+    :src => {:only => [:path, :name]} ,
+    :dest => {:only => [:path, :name]}
+    },
+    :only=>{} ) %>;
+	<% end %>
 	<%end%>
-    <br />
-    <%= link_to "Back", new_route_path %>
-    
+	<br />
+	<%= link_to "Back", new_route_path %>
 </body>
