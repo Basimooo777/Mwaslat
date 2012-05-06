@@ -10,6 +10,8 @@ gem 'devise'
 gem 'jquery-rails'
 gem 'polylines'
 gem 'will_paginate'
+gem 'hirb'
+gem 'meta_search'
 # Use unicorn as the web server
 # gem 'unicorn'
 
