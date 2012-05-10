@@ -8,7 +8,7 @@ function addStops() {
 	map.addRightClick();
 	
 	map.showNodes();
-	// map.showMapRoutes();
+	map.addSelectEventToNodes();
 }
 function editRoutes()
 {
@@ -18,7 +18,7 @@ function editRoutes()
 	map.addPlaceControl();
 	map.addRightClick();
 	map.showNodes();
-	
+	map.addSelectEventToNodes();
 	map.editRoutes();
 }
 function showingNodes()
@@ -40,6 +40,7 @@ function showNode()
 {
     map = new Map();
     map.initialize();
+
 // $('#hasmap').equalHeights();
 // $('#hasmap').equalWidths();
 }
@@ -47,6 +48,9 @@ function search()
 {
     map = new Map();
     map.initialize();
+    map.showNodes();
+    map.addRightClick();
+    map.addSearchEventToNodes();
 }
 function showPaths(){
 	var overlays = map.getOverlays();

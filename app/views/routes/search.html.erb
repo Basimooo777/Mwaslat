@@ -2,7 +2,7 @@
 	<div class="container-fluid" style="height: 100%;">
 		<div class="row-fluid" id="hasmap" style="height: 100%; " >
 			<div class="span6" >
-				<%= form_tag(:action => "search" ,:html => { :class => 'form-horizontal' }) do |f|%>
+				<%= form_tag("/routes/search" ,:html => { :class => 'form-horizontal' }, :method => "get") do |f|%>
 					<fieldset>
 						<div class="control-group">
 							<label class="control-label" style="float:left;padding-right: 5%">Source District</label>
@@ -24,6 +24,14 @@
 				
 				<%= notice %>
 				<% if(@routes != nil) ;row = -1%>
+					<%= javascript_tag do %>
+						window.searchNodes = <%= raw @routes.to_json(
+					    :include => {
+					    :src => {:only => [:path, :name]} ,
+					    :dest => {:only => [:path, :name]}
+					    },
+					    :only=>{} ) %>;
+					<% end %>		
 				<% @routes.each do|route| %>
 				<table class="table table-striped" >
 					<thead>
@@ -58,19 +66,15 @@
 	
 					</tbody>
 				</table>
+			<%end%>
 			</div>
 			<div class="span6" id="map_canvas" style="height: 100%" ></div>
 		</div>
 	</div>
-		
-	<%= javascript_tag do %>
-	window.nodes = <%= raw @routes.to_json(
-    :include => {
-    :src => {:only => [:path, :name]} ,
-    :dest => {:only => [:path, :name]}
-    },
-    :only=>{} ) %>;
-	<% end %>
-	<%end%>
 	<br />
+	
+	<%= javascript_tag do %>
+		window.nodes = <%=raw Node.all.to_json(:only => [:name, :path, :id] ) %>;
+	<% end %>
+	
 </body>
