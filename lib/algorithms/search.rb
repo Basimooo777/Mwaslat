@@ -10,7 +10,7 @@ class Search
       puts sr.class
       if(sr.category != "District")
          src << sr.districts
-      else
+      else 
          src << sr
       end  
     end
