@@ -1,8 +1,28 @@
 class Search
-  def searches(src, dest)    # src , dest are arrays of nodes
+  def searches(srcs, dests)    # src , dest are arrays of nodes
     puts "I am in search"
+    
     total_pathes=Array.new
     visited=Hash.new
+    src=Array.new
+    dest=Array.new
+    srcs.each do |sr|
+      puts sr.class
+      if(sr.category != "District")
+         src << sr.districts
+      else
+         src << sr
+      end  
+    end
+    dests.each do |ds|
+      puts ds.class
+      if(ds.category != "District")
+         dest << ds.districts
+      else
+         dest << ds
+      end  
+    end
+ 
     src.each do |sr|
       dest.each do |ds|
         pathes=Array.new
