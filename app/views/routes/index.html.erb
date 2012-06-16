@@ -1,0 +1,53 @@
+<div class="container-fluid" style="height: 100%;">
+	<div class="row-fluid" id="hasmap" style="height: 100%; " >
+		<p id="notice">
+			<%= notice %>
+		</p>
+		<h2>All Routes</h2>
+		<% form_for @search do |f| %>
+		<p>
+			<%= f.label :srcs_name_like, "Passing By: " %>
+			<%= f.text_field :srcs_name_like %>
+		</p>
+		<p>
+			<%= f.label :cost_gte, "Cost Range: " %>
+			<%= f.text_field :cost_gte %> - <%= f.text_field :cost_lte %>
+			<br />
+		</p>
+		<p>
+		<%= f.submit "Search" %>
+		<br />
+		<b> <u> Sort By: </u> </b>
+		<%= sort_link @search, :cost %>
+		<%= sort_link @search, :transportation_category %>
+		</p>
+		<% end %>
+		<table id="routes_table" class="table table-striped table-bordered" >
+			<thead>
+				<tr>
+					<th>Id</th>
+					<th>Cost</th>
+					<th>Transportation Type</th>
+					<th>Transportation Way</th>
+					<th>User</th>
+					<th></th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				<% @routes.each do |route| %>
+				<tr id="row<%= route.id %>">
+					<td><%= route.id %></td>
+					<td><%= route.cost %></td>
+					<td><%= route.transportation.category %></td>
+					<td><%= route.transportation.way %></td>
+					<td><%= route.try(:user).try(:email) %></td>
+					<td><%= link_to 'Edit', edit_route_path(route) %></td>
+					<td><%= link_to 'Show', route %></td>
+				</tr>
+				<% end %>
+			</tbody>
+		</table>
+		<%= will_paginate @routes%> <h3 > <%= link_to 'New', :action => "new" %> </h3>
+	</div>
+</div>

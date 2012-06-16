@@ -6,4 +6,7 @@ class Node < ActiveRecord::Base
   has_many :districts, :through => :as_district
   has_many :as_poi, :class_name => "Containing", :foreign_key => "district_id"
   has_many :pois, :through => :as_poi
+  validates :name, :presence => true
+  validates :path, :presence => true
+  validates :category, :presence => true
 end

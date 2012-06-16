@@ -7,13 +7,12 @@ Mwaslat1::Application.routes.draw do
   match "routes/search" => "routes#search"
   match "routes/search/:id" => "routes#destroy"
   match "routes/search/:id/edit" => "routes#update"
-  match "routes/:id" => "routes#update"
   match "routes/new/edit" => "routes#edit"
   match "routes/new/edit/update" => "routes#update"
   match "nodes/delete" => "nodes#destroy"
   match "nodes/new" => "nodes#new"
   
-  root :to => "routes#new"
+  root :to => "routes#search"
   resources :routes
   resources :nodes
   

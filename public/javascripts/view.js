@@ -8,7 +8,7 @@ function addStops() {
 	map.addRightClick();
 	
 	map.showNodes();
-	// map.showMapRoutes();
+	map.addSelectEventToNodes();
 }
 function editRoutes()
 {
@@ -18,7 +18,7 @@ function editRoutes()
 	map.addPlaceControl();
 	map.addRightClick();
 	map.showNodes();
-	
+	map.addSelectEventToNodes();
 	map.editRoutes();
 }
 function showingNodes()
@@ -34,25 +34,28 @@ function editNode()
 {
     map = new Map();
     map.initialize();
-    map.showNode($("node_name").value, $("node_path").value, true);
+    map.showNode(document.getElementById("node_name").value, document.getElementById("node_path").value, true);
 } 
 function showNode()
 {
     map = new Map();
     map.initialize();
-}
 
+// $('#hasmap').equalHeights();
+// $('#hasmap').equalWidths();
+}
+function search()
+{
+    map = new Map();
+    map.initialize();
+    map.showNodes();
+    map.addRightClick();
+    map.addSearchEventToNodes();
+}
 function showPaths(){
 	var overlays = map.getOverlays();
 	for(var i = 0; i < overlays.length; i++) {
 		confirm(overlays[i].getPointString());
-	}
-}
-function fillPaths() {
-	var overlays = map.getOverlays();
-	for(var i = 0; i < sub_routes_ids.length; i++) {
-		hidden_path_id = "route_sub_routes_attributes_" + sub_routes_ids[i] + "_dest_attributes_path";
-		$(hidden_path_id).value = overlays[i].getPointString();
 	}
 }
 // var counter = 2;

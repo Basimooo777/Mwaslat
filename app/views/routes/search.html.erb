@@ -1,65 +1,80 @@
-<body onload="">
-    <div id="search_map" style="width:100%; height:100%"></div>
-    <br />
-    <%= form_tag(:action => "search") do |f|%>
-    <table>
-    	<tr>
-    		<td>
-    			<%= label_tag "Source District"%>			
-    		</td>
-    		<td>
-    			<input id="src" name="src" type="text" class="auto"/>						
-    		</td>
-    	</tr>
-    	<tr>
-    		<td>
-    			<%= label_tag "Dest District"%>			
-    		</td>
-    		<td>
-    			<input id="dest" name="dest" type="text" class="auto" />
-    		</td>
-    		<td>
-    			<%= submit_tag("Search") %>
-    		</td>
-    	</tr>
-    </table>
-    <% end %>
-    <br />
-    
-    <%= notice %>
-    
-    <% if(@routes != nil) %>
-	<style type="text/css">
-		td
-		{
-			vertical-align: top;
-		}
-	</style>
-
-	<% @routes.each do|route| %>
-	<% nodes = ""%>
-	<table border="1">
-		<th>ID</th>
-		<th>Cost</th>
-		<th>Time</th>
-		<th>Transportation</th>
-		<% route.each do |r| %>
-			<tr>
-				<td><%= r.id %></td>
-				<td><%= r.route.cost %></td>
-				<td><%= r.duration %></td>
-				<td><%= r.route.transportation.category%></td>
-				<td><%= link_to "Delete", :action => "destroy", :id => r.id %></td>
-				<td><%= link_to "Edit", :action => "edit", :id => r.id %></td>
-			</tr>
-			<% nodes += r.src.path + "," %>
-		<% end %>
-		<% nodes += route.last.dest.path %>
-		</table>
-		<button type="button" onclick="view('<%=nodes%>')">View</button>
-		<hr />
+<body onload="search()" style="height:90%;">
+	<div class="container-fluid" style="height: 100%;">
+		<div class="row-fluid" id="hasmap" style="height: 100%; " >
+			<div class="span6" >
+				<%= form_tag("/routes/search" ,:html => { :class => 'form-horizontal' }, :method => "get") do |f|%>
+					<fieldset>
+						<div class="control-group">
+							<label class="control-label" style="float:left;padding-right: 5%">Source District</label>
+							<div class="controls">
+								<input id="src" name="src" type="text" class="auto search-query text_field"/>
+							</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label" style="float:left;padding-right: 1.3%">Destination District</label>
+							<div class="controls">
+								<input id="dest" name="dest" type="text" class="auto search-query text_field" />
+							</div>
+						</div>
+					</fieldset>
+				<div class="form-actions">
+					<%= submit_tag("Search",:class =>'btn btn-small btn-primary',:style =>'margin-left:45%;') %>
+				</div>
+				<% end %>
+				
+				<%= notice %>
+				<% if(@routes != nil) ;row = -1%>
+					<%= javascript_tag do %>
+						window.searchNodes = <%= raw @routes.to_json(
+					    :include => {
+					    :src => {:only => [:path, :name]} ,
+					    :dest => {:only => [:path, :name]}
+					    },
+					    :only=>{} ) %>;
+					<% end %>		
+				<% @routes.each do|route| %>
+				<table class="table table-striped" >
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>Src</th>
+							<th>Dest</th>
+							<th>Cost</th>
+							<th>Time</th>
+							<th>Transportation</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+						<% route.each do |r| %>
+						<tr>
+							<td><%= r.id %></td>
+							<td><%= r.src.name %></td>
+							<td><%= r.dest.name %></td>
+							<td><%= r.route.cost %></td>
+							<td><%= r.duration %></td>
+							<td><%= r.route.transportation.category%></td>
+							
+						</tr>
+						<% end %>
+						</table>
+						<button type="button" style="margin-left: 90% ;" class="btn btn-big btn-success" onclick="map.showRoute(<%= row += 1%>)" >
+							View
+						</button>
+						<hr />
+						<% end %>
+	
+					</tbody>
+				</table>
+			<%end%>
+			</div>
+			<div class="span6" id="map_canvas" style="height: 100%" ></div>
+		</div>
+	</div>
+	<br />
+	
+	<%= javascript_tag do %>
+		window.nodes = <%=raw Node.all.to_json(:only => [:name, :path, :id] ) %>;
 	<% end %>
-	<%end%>
-    <br />
-    <%= link_to "Back", new_route_path %>
+	
 </body>

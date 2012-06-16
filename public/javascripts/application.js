@@ -6,6 +6,19 @@ var template_1 = "route_sub_routes_attributes_index_";
 var template_2 = "route_sub_routes_attributes_index_dest_attributes_";
 var to_replace = new RegExp("index", "g");
 
+
+$(document).ready(function() {
+	$("#routes_table").dataTable( {
+		"sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+		"sPaginationType": "bootstrap",
+		"oLanguage": {
+			"sLengthMenu": "_MENU_ records per page"
+		},
+		"aoColumnDefs": [{ "bSortable": false, "aTargets": [5, 6] }, { "bSearchable": false, "aTargets": [5, 6] }],
+		"bPaginate": false
+	} );
+} );
+
 // 0. 1. 2. 3. ...
 function remove_child(sub_route_index){
 	if(sub_route_index < sub_routes_ids.length && (sub_route_index >= 0)){
@@ -118,28 +131,22 @@ function fillPaths() {
 }
 
 //remove node from my nodes
-function remove_node(element,id){
+function remove_node(id){
 	if (confirm("Are you sure ?")) { 
- 		new Ajax.Request("/nodes/delete", {
-      		method: 'post',
-      		parameters: "id="+id,
-      		onSuccess:     function(request) { 
-      	    	if(request.responseText=="1"){
-		    		$(element).previous("input[type=hidden]").value = "1";
-					$(element).ancestors()[1].hide();
+            lastXhr = $.getJSON( "/nodes/delete", { "id": id }, function( response ) {
+                if(response=="1"){
+                	$("#row"+ id).hide();
 			    }else{
 			    	alert ("Cannot be deleted as used by other routes");
 			    }
-      	 	},
-      		onFailure:     function(request) { alert ("Error Contacting server");}
-    	});
-	}
+            });
+    }
 }
 
 function fillNodePath()
 {
     var overlays = map.getOverlays();
-    $("node_path").value = overlays[0].getPointString();
+    document.getElementById("node_path").value = overlays[0].getPointString();
 }
 
 $(function() {

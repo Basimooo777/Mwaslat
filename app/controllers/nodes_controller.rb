@@ -1,29 +1,27 @@
 class NodesController < ApplicationController
-
+  before_filter :authenticate_user!, :except => [:districts]
   def index
-    @nodes = Node.where(:user_id => '1')
+    @nodes =current_user.nodes
     respond_to do |format|
       format.html # show.html.erb
     end
   end
-  
+
   def edit
     puts "helllo"
     @node = Node.find(params[:id])
   end
-  
+
   def create
-    puts "noooooooooooooooooo"
-    new_node = Node.new(params[:node])
-    new_node.user_id=1
-    #setting node parent 
+    @node = Node.new(params[:node])
+    @node.user=current_user
     
+    #Setting node parent
     
     
     
     respond_to do |format|
-      if new_node.save
-        puts "shehataaaaaaaa"
+      if @node.save
         format.html { redirect_to(nodes_path, :notice => "Successfully Created") }
       else
         format.html { render :action => "new" }
@@ -34,7 +32,7 @@ class NodesController < ApplicationController
   def new
     @node =Node.new
   end
-  
+
   def update
     @node = Node.find(params[:id])
     new_node = Node.new(params[:node])
@@ -46,34 +44,33 @@ class NodesController < ApplicationController
       format.html { redirect_to(nodes_path, :notice => "Successfully updated") }
     end
   end
-  
+
   def destroy
     puts "heelllo ahmed"
     #puts params[:id]
     found=SubRoute.where(:src_id => params[:id]).exists?
     if(!found)
-      found=SubRoute.where(:dest_id => params[:id]).exists?
+    found=SubRoute.where(:dest_id => params[:id]).exists?
     end
     if(!found)
-        #can be deleted
-        my_node = Node.find(params[:id])
-        my_node.destroy
-        render :text => "1" 
+    #can be deleted
+    my_node = Node.find(params[:id])
+    my_node.destroy
+    render :text => "1"
     else
-      #cannot be deleted
-        render :text => "0" 
+    #cannot be deleted
+    render :text => "0"
     end
-           
-    
+
   end
-  
+
   #------------------------------------------------------------
-  
+
   def districts
     @names = Node.where("name like ?", "%#{params[:term]}%").limit(5).map(&:name)
     respond_to do |format|
-        format.json {render :json => @names}
+      format.json {render :json => @names}
     end
   end
-  
+
 end

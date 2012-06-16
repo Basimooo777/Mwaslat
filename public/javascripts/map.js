@@ -7,6 +7,8 @@ function Map () {
 	var addPlace = null;
     var nodeMode = false;
     
+    var oldOverlays = [];
+        
     this.enableNodeMode = function()
     {
         nodeMode = true
@@ -23,7 +25,7 @@ function Map () {
 	    };
 	    map = new google.maps.Map(document.getElementById('map_canvas'),
 	      myOptions);
-	
+        google.maps.Map.highlight = null;
 	 	google.maps.Polygon.prototype.id = null;
 		google.maps.Polygon.prototype.name = null;
 	 	google.maps.Polygon.prototype.tip = null;
@@ -350,6 +352,8 @@ function Map () {
 	    google.maps.event.addListener(overlay, "mousemove", function(event){
 	        if(map.rightClick == null)
 	        {
+	            if(map.highlight != null)
+	               overlay = map.highlight;
     	        if(overlay.title)
     	        {
                     overlay.title.pos = event.latLng;
@@ -439,17 +443,36 @@ function Map () {
 	 	div.appendChild(button);
 		map.rightClick = new CustomeOverlay(pos, div, false);
 	}
+	function rightClickSearch(pos, overlay)
+	{
+	    var div = document.createElement("Div");
+        div.style.position = "absolute";
+        var srcButton = createButton("Select as a source");
+        var destButton = createButton("Select as a destination");
+        srcButton.onclick = function (){
+            document.getElementById("src").value = overlay.name
+        }
+        destButton.onclick = function (){
+            document.getElementById("dest").value = overlay.name
+        }
+        srcButton.style.width = "150px"
+        destButton.style.width = "150px"
+        
+        div.appendChild(srcButton);
+        div.appendChild(destButton);
+        map.rightClick = new CustomeOverlay(pos, div, false);
+	}
 	function createButton(text)
 	{
 		var button = document.createElement("Button");
 		button.innerHTML = text;
 		button.style.border = "0px";
-		button.style.background = "yellow";
+		button.style.background = "white";
 		button.style.color = "blue";
 		button.style.fontWeight = "bolder";
 		button.onmouseout= function()
 		{
-			this.style.background = 'yellow'	
+			this.style.background = 'white'	
 		}
 		button.onmouseover= function()
 		{
@@ -523,26 +546,74 @@ function Map () {
 				drawLine(i, false);
 		}
 	}
+	
+	/*
+	 * ===================================== For Showing nodes 
+	 *     highlight it
+     *     add titles for them
+	 */
 	this.showNodes = function()
 	{
+	    oldOverlays = [];
 		for(var i = 0; i < nodes.length; i ++)
 		{
 			var node = nodes[i].node;
 			var poly = new google.maps.Polygon({
 				path: google.maps.geometry.encoding.decodePath(node.path),
-				strokeColor: "#700000",
-				fillColor: "#700000",
-				editable: false,
-				map: map		
+				strokeColor: "#000000",
+                strokeOpacity: 0.8,
+                strokeWeight: 1,
+                fillColor: "#FFFF33",
+                fillOpacity: 0
 			});
 			poly.name = node.name;
 			poly.id = node.id;
 			poly.exist = true;
+			poly.area = computeArea(poly.getPath());  // must be MVCArray
 		    addNodeEvents(poly);
-		    
 		    addTitle(poly);
+		    
+		    oldOverlays.push(poly);
 		}
+		
+		oldOverlays.sort(function(a, b){
+            return a.area < b.area
+        });
+        for(var i = 0; i < oldOverlays.length; i ++)
+        {
+            oldOverlays[i].index = i;
+            oldOverlays[i].setMap(map);
+        }
 	}
+	this.addSelectEventToNodes = function ()
+	{
+	    for(var i = 0; i < oldOverlays.length; i ++)
+	        setNodeEvent(oldOverlays[i])
+        function setNodeEvent(poly)
+        {
+	        google.maps.event.addListener(poly, "rightclick", function(event){
+                if(map.rightClick != null)
+                    map.rightClick.setMap(null);
+                if(overlays.indexOf(poly) < 0)  // not selected before
+                    rightClickSelect(event.latLng, poly);
+                else
+                    rightClickDelete(event.latLng, poly);    
+            });
+        }
+	}
+	this.addSearchEventToNodes = function ()
+    {
+        for(var i = 0; i < oldOverlays.length; i ++)
+            setNodeEvent(oldOverlays[i])
+        function setNodeEvent(poly)
+        {
+            google.maps.event.addListener(poly, "rightclick", function(event){
+                if(map.rightClick != null)
+                    map.rightClick.setMap(null);
+                rightClickSearch(event.latLng, poly);
+            });
+        }
+    }
 	function addNodeEvents(poly)
 	{
 	    google.maps.event.addListener(poly, "click", function(){
@@ -552,15 +623,87 @@ function Map () {
                 map.rightClick = null;
             }
         });
-        google.maps.event.addListener(poly, "rightclick", function(event){
-            if(map.rightClick != null)
-                map.rightClick.setMap(null);
-            if(overlays.indexOf(poly) < 0)  // not selected before
-                rightClickSelect(event.latLng, poly);
-            else
-                rightClickDelete(event.latLng, poly);    
+        google.maps.event.addListener(poly, "mouseout", function(){
+            if(map.highlight != null)
+            {
+                refreshHighlight(2);
+                map.highlight = null;
+            }
+        });
+        google.maps.event.addListener(poly, "mousemove", function(event){
+            if(map.highlight != null)
+            {
+                refreshHighlight(2);
+                map.highlight = null;
+            }
+            heighlight(poly, event.latLng);
         });
 	}
+    function heighlight(poly, point)
+    {
+        var index = poly.index
+        var flag = false;
+        for(var i =  overlays.length - 1; i > index; i --)
+        {
+            if(google.maps.geometry.poly.containsLocation(point, overlays[i]))
+            {
+                map.highlight = overlays[i]
+                flag = true
+                refreshHighlight(1);
+                break
+            }
+        }
+        if(!flag)
+        {
+            map.highlight = poly
+            refreshHighlight(1);
+        }
+    }
+    function refreshHighlight(option)    // 1 for hightlighting // 2 for returnning to originals
+    {
+        map.highlight.setMap(null);
+        if(option == 1)
+        {
+            map.highlight.fillOpacity = 0.5
+            map.highlight.strokeColor = "#FFFF00";
+            map.highlight.strokeWeight = 3;
+        }
+        else
+        {
+            map.highlight.fillOpacity = 0;
+            map.highlight.strokeColor = "#000000";
+            map.highlight.strokeWeight = 1;
+        }     
+        map.highlight.setMap(map);            
+    }
+	/*
+     * For computing the area
+     */
+    function computeArea(path)  // path is MVCArray
+    {
+        if(path.length < 3)
+            return 0;
+        // y is latitude
+        // x is logitude
+        // p0p1 = (x1 - x0),(y1 - y0)
+         
+        var area = 0;
+        for(var i = 1; i < path.length - 1; i ++)
+        {
+            var p0pi = new google.maps.LatLng((path.getAt(i).lat() - path.getAt(0).lat()), (path.getAt(i).lng() - path.getAt(0).lng()));
+            var p0pi1 = new google.maps.LatLng((path.getAt(i + 1).lat() - path.getAt(0).lat()), (path.getAt(i + 1).lng() - path.getAt(0).lng()));
+            
+            area += cartProduct(p0pi, p0pi1);
+        }
+        
+        // cartesian product for p1 X p2
+        // p1 X p2 = x1 * y2 - x2 * y1
+        function cartProduct(p1, p2)
+        {
+            return p1.lng() * p2.lat() - p2.lng() * p1.lat();
+        }
+        return Math.abs(area) / 2.0;
+    }
 	// ------------------------------------------- For Showing one Node and clear it -------------------------
 	this.showNode = function(name, path, isEdit)
     {
@@ -593,9 +736,55 @@ function Map () {
         }
         catch(err){}
     } 
-	// --------------------------------------------------------------
+	// ------------------------------------------ For searching --------------------
+    // var "searchNodes" is ajson object of a 2d array of subroutes
+    // var "row" is the index of the required showing route 
+    this.showRoute = function(row)
+    {
+        for(var i = 0; i < overlays.length; i ++)
+            overlays[i].setMap(null);
+        for(var i = 0; i < lines.length; i ++)
+            lines[i].setMap(null);
 
-	this.showMapRoutes = function ()
+        overlays = []
+        lines = []
+        var bounds = new google.maps.LatLngBounds();
+        var path = google.maps.geometry.encoding.decodePath(searchNodes[row][0].sub_route.src.path);
+        var name = searchNodes[row][0].sub_route.src.name
+        overlays.push(addPolygon(path, name)); 
+        fitBounds(bounds, path);
+        addTip(overlays[0])
+        addTitle(overlays[0]);
+        for(var i = 0; i < searchNodes.length; i ++)
+        {
+            var path = google.maps.geometry.encoding.decodePath(searchNodes[row][i].sub_route.dest.path);
+            var name = searchNodes[row][i].sub_route.dest.name
+            overlays.push(addPolygon(path, name));
+            fitBounds(bounds, path);
+            drawLine(i+1, true);  // here i set drag_mode to prevent from adding line event
+            addTip(overlays[i + 1])
+            addTitle(overlays[i + 1]);
+        }
+        map.fitBounds(bounds);
+    }
+    function fitBounds(bounds, path)
+    {
+        for(var i = 0; i < path.length; i ++)
+            bounds.extend(path[i]);
+    }
+    function addPolygon(path, name)
+    {
+        var poly = new google.maps.Polygon({
+            path: path,
+            strokeColor: "#707070",
+            fillColor: "#707070",
+            editable: false     
+        });
+        poly.setMap(map);
+        poly.name = name
+        return poly;
+    }
+	/*this.showMapRoutes = function ()
 	{
 		var ids = [];
 		for(var i = 0; i < roots.length; i ++)
@@ -621,32 +810,7 @@ function Map () {
 			points.push(route.dest.path[0]);
 			drawRoute(points);
 		}
-	}
-	function addPolygon(node)
-	{
-		var poly = new google.maps.Polygon({
-			path: node.path,
-			strokeColor: "#FF0000",
-			fillColor: "#FF0000",
-			editable: false		
-		});
-		poly.setMap(map);
-		google.maps.event.addListener(poly, "rightclick", function()
-		{
-			overlayComplete(poly);
-			addTip(poly);
-		});
-	}
-	function drawRoute(path)
-	{
-		var line = new google.maps.Polyline({
-			path: path,
-			strokeColor: "#FF0000",
-			strokeOpacity: 0.7,
-			strokeWeight: 2
-		});
-		line.setMap(map);
-	}
+	}*/
 	// -----------------------------------------------------------------------------------
 	this.showDataNode = function(path)
 	{
