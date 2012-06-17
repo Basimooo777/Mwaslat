@@ -12,10 +12,11 @@ Mwaslat1::Application.routes.draw do
   match "nodes/delete" => "nodes#destroy"
   match "nodes/new" => "nodes#new"
   
+  resources :users
+  
   root :to => "routes#search"
   resources :routes
   resources :nodes
-  
   match "/routes/nodes/districts" => "nodes#districts"
   
   # The priority is based upon order of creation:

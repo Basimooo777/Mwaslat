@@ -9,4 +9,10 @@ class Node < ActiveRecord::Base
   validates :name, :presence => true
   validates :path, :presence => true
   validates :category, :presence => true
+  
+  def self.all_categories
+    ["District", "Automotive", "Business", "Education", "Emergency", "Entertainment", "Food & Drink",
+      "Government", "Lodging", "Public Services", "Shops", "Tourist Attraction",
+      "Travel", "Recreation", "Other"]
+  end
 end

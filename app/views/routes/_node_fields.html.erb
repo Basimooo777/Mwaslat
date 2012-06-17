@@ -9,11 +9,10 @@
 		<div class="control-group">
 			<%= f.label :category ,:class =>'control-label' %>
 			<div class="controls">
-			<%= f.text_field :category,:class =>'text_field' %>					
+				<%= f.select :category, Node.all_categories, {}, {:onchange => "show_category_description()"} %>
+				<label id = "category_description"> Nieghbouhood, District </label>
 			</div>
 		</div>
-		
-		
 	<%= f.hidden_field :path %>
 	<%= f.hidden_field :id %>
 	</fieldset>

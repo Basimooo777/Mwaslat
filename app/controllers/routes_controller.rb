@@ -1,19 +1,24 @@
 class RoutesController < ApplicationController
-  before_filter :authenticate_user!, :except => [:search]
+  #before_filter :authenticate_user!, :except => [:search]
   
   
   def show
     @route = Route.find(params[:id])
-    @route.order_sub_routes
-    @route.sub_routes = @route.sub_routes.unshift(SubRoute.new(:dest=> @route.sub_routes[0].src))
-    respond_to do |format|
-      format.html # show.html.erb
+    if current_user.admin? || @route.user == current_user
+      @route.order_sub_routes
+      @route.sub_routes = @route.sub_routes.unshift(SubRoute.new(:dest=> @route.sub_routes[0].src))
+    else
+      error_page
     end
   end
   
   def index
-   @search = Route.search(params[:search])
-   @routes = @search.page(params[:page]).per_page(5)
+   if current_user.admin?
+     @search = Route.search(params[:search])
+     @routes = @search.group("id").page(params[:page]).per_page(5)
+   else
+     @routes = current_user.routes
+   end
   end
   
   def new
@@ -23,7 +28,6 @@ class RoutesController < ApplicationController
       sub_route.dest = Node.new
     end
   end
-  # =================================================================
   
   def create
     children = []
@@ -88,14 +92,29 @@ class RoutesController < ApplicationController
   # =====================================================================    
   
   def destroy
-    Route.find(params[:id]).destroy
-    redirect_to :action => "search"
+    route = Route.find(params[:id])
+    if (route.user == current_user)
+      route.destroy
+      redirect_to(:back)
+    elsif(current_user.admin?)
+      notification_msg = "Admin has deleted your route between " + route.src.name + " and " + route.dest.name;
+      notification = Notification.new(:msg => notification_msg, :user => route.user)
+      notification.save
+      route.destroy           # sub routes are deleted subsequently
+      redirect_to(:back)
+    else
+      redirect_to "/404.html"
+    end
   end
   
   def edit
     @route = Route.find(params[:id])
-    @route.order_sub_routes
-    @route.sub_routes = @route.sub_routes.unshift(SubRoute.new(:dest=> @route.sub_routes[0].src))
+    if(current_user == @route.user || current_user.admin?)
+      @route.order_sub_routes
+      @route.sub_routes = @route.sub_routes.unshift(SubRoute.new(:dest=> @route.sub_routes[0].src))
+    else
+      redirect_to "/404.html"
+    end
   end
   
   def update

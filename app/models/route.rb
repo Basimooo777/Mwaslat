@@ -1,11 +1,11 @@
 class Route < ActiveRecord::Base
   belongs_to :transportation
   belongs_to :user
-  has_many :sub_routes
+  has_many :sub_routes, :dependent => :destroy
   accepts_nested_attributes_for :transportation
   accepts_nested_attributes_for :sub_routes, :allow_destroy => true
-  has_many :srcs, :through => :sub_routes ,:class_name => "Node", :foreign_key => "src_id"
-  has_many :dests, :through => :sub_routes ,:class_name => "Node", :foreign_key => "dest_id"
+  has_many :srcs, :through => :sub_routes, :class_name => "Node", :foreign_key => "src_id"
+  has_many :dests, :through => :sub_routes, :class_name => "Node", :foreign_key => "dest_id"
   
   def order_sub_routes
       dest_hash = {}
@@ -32,5 +32,29 @@ class Route < ActiveRecord::Base
       ordered_routes.each do |r|
         self.sub_routes.push(r)
       end
+  end
+  
+  def src
+    dests_ids = []
+    self.dests.each do |dest|
+      dests_ids.push(dest.id)
+    end
+    self.srcs.each do |src|
+      if(dests_ids.index(src.id) == nil)
+        return src
+      end
+    end
+  end
+  
+  def dest
+    srcs_ids = []
+    self.srcs.each do |src|
+      srcs_ids.push(src.id)
+    end
+    self.dests.each do |dest|
+      if(srcs_ids.index(dest.id) == nil)
+        return dest
+      end
+    end
   end
 end

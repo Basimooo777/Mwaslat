@@ -1,7 +1,7 @@
 class NodesController < ApplicationController
-  before_filter :authenticate_user!, :except => [:districts]
+  # before_filter :authenticate_user!, :except => [:districts]
   def index
-    @nodes =current_user.nodes
+    @nodes = Node.limit(100) #current_user.nodes
     respond_to do |format|
       format.html # show.html.erb
     end
@@ -14,7 +14,7 @@ class NodesController < ApplicationController
 
   def create
     @node = Node.new(params[:node])
-    @node.user=current_user
+    @node.user = current_user
     
     #Setting node parent
     
@@ -30,7 +30,7 @@ class NodesController < ApplicationController
   end
 
   def new
-    @node =Node.new
+    @node = Node.new
   end
 
   def update
