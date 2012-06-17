@@ -48,17 +48,36 @@
 						</tr>
 					</thead>
 					<tbody>
-					
-						<% route.each do |r| %>
-						<tr>
-							<td><%= r.src.name %></td>
-							<td><%= r.dest.name %></td>
-							<td><%= r.route.cost %></td>
-							<td><%= r.duration %></td>
-							<td><%= r.route.transportation.category%></td>
+						<%
+						i = 0
+						while i < route.length
+							cost = route[i].route.cost
+							trans = route[i].route.transportation.category
+							time = route[i].duration
 							
-						</tr>
+							if flags[row + 1][i][0]
+								src = route[i].src.name
+							else
+								src = route[i - 1].dest.name
+							end
+							
+							while !flags[row + 1][i][1]
+								i += 1
+								time += route[i].duration
+							end
+							dest = route[i].dest.name
+							i += 1
+						%>
+						<tr>
+							<td><%= src %></td>
+							<td><%= dest %></td>
+							<td><%= cost %></td>
+							<td><%= time %></td>
+							<td><%= trans %></td>
+							
+						</tr>							
 						<% end %>
+						
 						</table>
 						<button type="button" style="margin-left: 90% ;" class="btn btn-big btn-success" onclick="map.showRoute(<%= row += 1%>)" >
 							View
