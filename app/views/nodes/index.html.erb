@@ -20,11 +20,10 @@
 						<tr id="row<%= node.id %>">
 							<td><%= node.name %></td>
 							<td><%= node.category %></td>
-							<td> <%= fields_for :node do |f|%>
-							<input type="button" class="btn btn-small btn-danger" value="remove" name="removeNode" onclick="map.clearNode();remove_node('<%= node.id %> ')" />
-							<% end %>
-							<%= link_to 'Edit', edit_node_path(node), :class =>'btn btn-small btn-primary' %>
-							<input type="button" class="btn btn-small btn-success" value="show" name="showOnMap" onclick="map.showNode('<%= node.name %>', '<%= node.path %>', false)" />
+							<td>
+								<%= link_to 'Destroy', node, :confirm => 'Are you sure?', :method => :delete, :class =>'btn btn-small btn-danger' %>
+								<%= link_to 'Edit', edit_node_path(node), :class =>'btn btn-small btn-primary' %>
+								<input type="button" class="btn btn-small btn-success" value="show" name="showOnMap" onclick="map.showNode('<%= node.name %>', '<%= node.path %>', false)" />
 							</td>
 						</tr>
 						<% end %>

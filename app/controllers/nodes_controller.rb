@@ -8,8 +8,10 @@ class NodesController < ApplicationController
   end
 
   def edit
-    puts "helllo"
     @node = Node.find(params[:id])
+    if(!current_user.admin? && current_user != @node.user)
+      redirect_to "/404.html"
+    end
   end
 
   def create
@@ -33,6 +35,10 @@ class NodesController < ApplicationController
     @node = Node.new
   end
 
+  def show_deleted
+    @ids = params[:ids]
+  end
+
   def update
     @node = Node.find(params[:id])
     new_node = Node.new(params[:node])
@@ -46,22 +52,23 @@ class NodesController < ApplicationController
   end
 
   def destroy
-    puts "heelllo ahmed"
-    #puts params[:id]
-    found=SubRoute.where(:src_id => params[:id]).exists?
-    if(!found)
-    found=SubRoute.where(:dest_id => params[:id]).exists?
-    end
-    if(!found)
-    #can be deleted
-    my_node = Node.find(params[:id])
-    my_node.destroy
-    render :text => "1"
+    node = Node.find(params[:id])
+    if(current_user.admin? || current_user == node.user)
+      node_src_routes = node.src_routes
+      node_dest_routes = node.dest_routes
+      if(node_src_routes.empty? && node_dest_routes.empty?)
+        node.destroy
+        redirect_to(:back)
+      else
+        if(current_user.admin?)
+          
+        else
+          redirect_to (:back), :notice => "Can't be deleted"
+        end
+      end
     else
-    #cannot be deleted
-    render :text => "0"
+      redirect_to "/404.html"      
     end
-
   end
 
   #------------------------------------------------------------
