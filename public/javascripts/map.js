@@ -1,18 +1,29 @@
 function Map () {
-	var map =  null;
-	var drawingManager = null;
-	var lines = [];
-	var overlays = [];
-	var matchNode = null;
-	var addPlace = null;
-    var nodeMode = false;
+	var map =  null;     // for google maps
+	var drawingManager = null;     // for the drawing the new polygons
+	var lines = [];    // array of all lines in the new route
+	var overlays = [];     // for the overlays that used for the route
+	var matchNode = null;    // for new node that its position not added 
+	var addPlace = null;       // the button AddPlace and Cancel
+    var nodeMode = false;       // differ between the adding route mode and adding node mode        
     
-    var oldOverlays = [];
-        
-    this.enableNodeMode = function()
-    {
-        nodeMode = true
-    }	
+    var oldOverlays = [];       // the exists areas in our system 
+    
+	/*
+	 * initailize google map and puts the map in DIV(#map_canvas)
+	 * adding some new properyties for "Map" obj. like
+	 *     highlight  => the overlay that is highlighted when mouse over
+	 * adding some new properyties for "Polygon" obj. like
+	 *     id      => id for the existing overlay in the system
+	 *     name    => name for the existing overlay in the system
+	 *     tip     => tip for the order of positions for overlays in the routes eg. 1,2,3,...   
+	 *     title   => title show name for the existing overlay in the system when mouse over
+	 *     exist   => check if the overlay is from the old or new overlays
+	 *     function del => delete the overlay with its tip
+	 *     function getNode => return the first node from the path of polygon using it to draw
+	 *         the route from it
+	 *     function getPointString => return the array of path as encoded string     
+	 */
 	this.initialize = function () 
 	{
 		var myOptions = {
@@ -45,10 +56,30 @@ function Map () {
 	 		return google.maps.geometry.encoding.encodePath(this.getPath());	
 	 	}
 	}
+	/*
+     * default mode is adding routes
+     * so this function enable the node mode
+     */    
+    this.enableNodeMode = function()
+    {
+        nodeMode = true
+    }   
+    /*
+     * return the array of overlays that used in the route
+     */
 	this.getOverlays = function()
 	{
 		return overlays;	
 	}
+ 	/*
+ 	 * adding drawing manager for drawing the polygons
+ 	 * is used when 
+ 	 *    1- adding new route
+ 	 *    2- adding new node
+ 	 * adding some new prototypes for the "DrawingManager" obj.
+ 	 *    function on => activate the drawing manager to draw
+ 	 *    function off => deactivate the drawing manager to draw   
+ 	 */
  	this.addDrawingManager = function()
 	{
 		google.maps.drawing.DrawingManager.prototype.on = function()
@@ -72,9 +103,15 @@ function Map () {
 	 		},
 	 		map: map
 	    });
+	    /*
+	     * this event "polygoncomplete"
+	     * check if the user press cancel
+	     * check if the adding in node mode or route node
+	     * adding some events for completed polygon
+	     */
 	    google.maps.event.addListener(drawingManager, "polygoncomplete", function(polygon)
 	    {
-	    	if(getAddPlace() == "Add Place")
+	    	if(getAddPlace() == "Add Place")     // after pressing cancel button
 	    	{
 	    		polygon.setMap(null);
 				polygon = null;
@@ -115,7 +152,10 @@ function Map () {
 	    	}
 	    });
 	}
-	function overlayComplete(polygon)
+	/*
+	 * adding some events to remove the right click div  when click or right click on over the map
+	 */
+    function overlayComplete(polygon)
 	{
 		google.maps.event.addListener(polygon, "rightclick", function(event){
 			if(map.rightClick != null)
@@ -130,6 +170,9 @@ function Map () {
 			}
 		});
 	}
+    /*
+     * used to add "Add Place" button and its events
+     */
 	this.addPlaceControl = function()
 	{
 		addPlace = addControl("adding new place", "Add Place");
@@ -138,33 +181,51 @@ function Map () {
 			if(getAddPlace() == "Add Place")
 			{
 				setAddPlace("Cancel");
-				drawingManager.on();
+				drawingManager.on();        // activate the drawing mode
 			}
 			else
 			{
 				setAddPlace("Add Place");
-				drawingManager.off();
+				drawingManager.off();       // deactivate the drawing mode
 			}
 		});
 		showPlaceControl();
 	}
+    /*
+     * show the Adding place button after overlay is completed
+     */
 	function showPlaceControl()
 	{
 		map.controls[google.maps.ControlPosition.TOP_RIGHT].push(addPlace);
 	}
-	function hidePlaceControl()
+    /*
+     * hide the adding place button after pressing it to be free in drawing polygons
+     */	
+    function hidePlaceControl()
 	{
 		map.controls[google.maps.ControlPosition.TOP_RIGHT].removeAt(0);
 	}
+	/*
+	 * is used to set the text of the top right button (Add place, Cancel)
+	 */
 	function setAddPlace(text)
 	{
 		addPlace.firstChild.firstChild.innerHTML = text;
 	}
-	function getAddPlace()
+	/*
+	 * is used to get the text of the top right button
+	 */
+    function getAddPlace()
 	{
 		return addPlace.firstChild.firstChild.innerHTML;
 	}
-	function addControl(title, text)
+	/*
+	 * is a generic function is used for adding control to the map
+	 * @param(title) is the title when mouse over the control
+	 * @param(text) is the text displayed on the control
+	 * in future we will provie it with nice CSS
+	 */
+    function addControl(title, text)
 	{
 		var controlDiv = document.createElement("DIV"); // for the outer
 		var controlUI = document.createElement("DIV"); // for the background
@@ -190,7 +251,12 @@ function Map () {
 
 		return controlDiv;
 	}
-	function drawLine(index, dragMode){
+	/*
+	 * draw line between two overlay with index and index-1 
+	 * @param(index) is the index of the seconde overlay
+	 * @param(dragMod) is a boolean to check if it is a new line or existing line but dragged
+	 */
+    function drawLine(index, dragMode){
 		var path = [];
 		path.push(overlays[index].getNode());
 		path.push(overlays[index - 1].getNode());
@@ -209,7 +275,13 @@ function Map () {
 			addLineEvent(line);
 		}
 	}
-	function dragEvent(overlay)
+    /*
+     * is the drag event for the overlay
+     * when its first point that used to draw route dragged
+     * it make the left and right lines to be dragging with it
+     * @param(overlay) is the overlay that its point is dragged
+     */	
+    function dragEvent(overlay)
 	{
 		var index = overlays.indexOf(overlay);
 		if(index > 0) // left except the first overlay
@@ -225,7 +297,16 @@ function Map () {
 			drawLine(index + 1, true);
 		}
 	}
-	function addMatchingEvent(overlay)
+	/*
+	 * this event for adding the new node to the first or last of the route
+	 * after clicking on the first or last node 
+	 *      1- matching line between the first node or last node with new node
+     *      2- add new fields in the form
+	 *      3- check if it is a new node or selected node to fill its fields with data
+	 * @param(overlay) is the overlay in the new route that user want to match between it
+	 *     and the new node
+	 */
+    function addMatchingEvent(overlay)
 	{
 		google.maps.event.addListener(overlay, "click", function()
 		{
@@ -257,7 +338,12 @@ function Map () {
 			}
 		});
 	}
-	function addLineEvent(line)
+	/*
+	 * event when clicking the line between 2 overlays in the new route and 
+	 *     wanted to put the new added overlay between them
+	 * @param(line) is the line wanted to add click event for it   
+	 */
+    function addLineEvent(line)
 	{
 		google.maps.event.addListener(line, "click", function()
 		{
@@ -276,7 +362,11 @@ function Map () {
 			}
 		});
 	}
-	function deleteOverlay(overlay)
+	/*
+	 * delete the overlay from the new route
+	 * @param(overlay) is the overlay wanted to delete
+	 */
+    function deleteOverlay(overlay)
 	{
 	    if(nodeMode)
 	    {
@@ -315,6 +405,10 @@ function Map () {
     		}
 	    }
 	}
+	/*
+	 * this method used redraw lines and nodes with their new tips of order
+	 * is called after added new overlay to the route
+	 */
 	function refresh()
 	{
 		// clear lines
@@ -333,7 +427,10 @@ function Map () {
 				drawLine(i, false);
 		}
 	}
-	function addTip(overlay)
+	/*
+	 * create tip of order(1, 2, 3, ..) for the overlay added in the route
+	 */
+    function addTip(overlay)
 	{
 		var div = document.createElement("Div");
 		div.style.backgroundColor = "yellow";
@@ -347,7 +444,11 @@ function Map () {
 			div.innerHTML = (overlays.length + 1) + "";
 		overlay.tip = new CustomeOverlay(overlay.getNode(), div, false);
 	}
-	function addTitle(overlay)
+	/*
+	 * add animated title for the overlay (is the name of existing node)
+	 * or showing it if it has a title
+	 */
+    function addTitle(overlay)
 	{
 	    google.maps.event.addListener(overlay, "mousemove", function(event){
 	        if(map.rightClick == null)
@@ -387,6 +488,9 @@ function Map () {
             }
         });
 	}
+	/*
+	 * add right click component to the map
+	 */
 	this.addRightClick = function()
 	{
 		google.maps.Map.prototype.rightClick = null;
@@ -407,7 +511,12 @@ function Map () {
 		});
 
 	}
-	function rightClickDelete(pos, overlay)
+	/*
+	 * add "right click delete" to the overlay to delete the overlay from the  route
+	 * @param(overlay) the "right click" menu on it
+	 * @param(pos) the positon of the event for "right click" on the overlay
+	 */
+    function rightClickDelete(pos, overlay)
 	{
 		var div = document.createElement("Div");
 		div.style.position = "absolute";
@@ -418,7 +527,12 @@ function Map () {
 	 	div.appendChild(button);
 		map.rightClick = new CustomeOverlay(pos, div, false);
 	}
-	function rightClickSelect(pos, overlay)
+    /*
+     * add "right click" for the existing overlays to select the overlay for the route
+     * @param(overlay) the "right click" menu on it
+     * @param(pos) the positon of the event for "right click" on the overlay
+     */
+    function rightClickSelect(pos, overlay)
 	{
 		var div = document.createElement("Div");
 		div.style.position = "absolute";
@@ -443,10 +557,17 @@ function Map () {
 	 	div.appendChild(button);
 		map.rightClick = new CustomeOverlay(pos, div, false);
 	}
-	function rightClickSearch(pos, overlay)
+	/*
+     * add "right click" for the existing overlays to allow the user to select 
+     *  the source or the desitnation from the map 
+     * @param(overlay) the "right click" menu on it
+     * @param(pos) the positon of the event for "right click" on the overlay
+     */
+    function rightClickSearch(pos, overlay)
 	{
 	    var div = document.createElement("Div");
         div.style.position = "absolute";
+        div.style.backgroundColor = "white";
         var srcButton = createButton("Select as a source");
         var destButton = createButton("Select as a destination");
         srcButton.onclick = function (){
@@ -455,14 +576,20 @@ function Map () {
         destButton.onclick = function (){
             document.getElementById("dest").value = overlay.name
         }
-        srcButton.style.width = "150px"
-        destButton.style.width = "150px"
+        srcButton.style.width = "200px";
+        srcButton.style.textAlign = "left";
+        destButton.style.width = "200px";
+        destButton.style.textAlign = "left";
         
         div.appendChild(srcButton);
         div.appendChild(destButton);
         map.rightClick = new CustomeOverlay(pos, div, false);
 	}
-	function createButton(text)
+	/*
+	 * create a button with some CSS
+	 * @return the button
+	 */
+    function createButton(text)
 	{
 		var button = document.createElement("Button");
 		button.innerHTML = text;
@@ -480,13 +607,20 @@ function Map () {
 		}
 		return button;
 	}
-	function CustomeOverlay(pos, div, isTitle)
+	/*
+	 * careate custome overlays like tips and titles 
+	 * @param(pos) position of the overlay
+	 * @param(div) the div that will used as overlay
+	 * @param(isTitle) to differ between the title and tip
+	 */
+    function CustomeOverlay(pos, div, isTitle)
 	{
 		this.pos = pos;
 		this.div = div;
 		this.setMap(map);
 		this.isTitle = isTitle;
 	}
+	// inherit it from OverlayView
 	CustomeOverlay.prototype = new google.maps.OverlayView();
 	CustomeOverlay.prototype.onAdd = function()
 	{
@@ -524,6 +658,10 @@ function Map () {
 	}
 
 	// ------------------------------------------- For editting Routes ---------------------
+	/*
+	 * "updatable_stops" is an array of the sub routes of the route that wanted
+	 *     to be updated
+	 */
 	this.editRoutes = function()
 	{
 		for(var i = 0; i < updatable_stops.length; i ++)
@@ -546,11 +684,11 @@ function Map () {
 				drawLine(i, false);
 		}
 	}
-	
 	/*
-	 * ===================================== For Showing nodes 
+	 * For Showing nodes 
 	 *     highlight it
      *     add titles for them
+     * "nodes" arrays of nodes
 	 */
 	this.showNodes = function()
 	{
@@ -585,6 +723,11 @@ function Map () {
             oldOverlays[i].setMap(map);
         }
 	}
+	/*
+	 * add "right click" events for existing overlays that may be 
+	 *     select menu
+	 *     delete menu
+	 */
 	this.addSelectEventToNodes = function ()
 	{
 	    for(var i = 0; i < oldOverlays.length; i ++)
@@ -595,12 +738,18 @@ function Map () {
                 if(map.rightClick != null)
                     map.rightClick.setMap(null);
                 if(overlays.indexOf(poly) < 0)  // not selected before
-                    rightClickSelect(event.latLng, poly);
+                {
+                    if (matchNode == null)
+                        rightClickSelect(event.latLng, poly);
+                }
                 else
                     rightClickDelete(event.latLng, poly);    
             });
         }
 	}
+	/*
+	 * add "right click" events for existing overlays "for the search page" search menu 
+	 */
 	this.addSearchEventToNodes = function ()
     {
         for(var i = 0; i < oldOverlays.length; i ++)
@@ -614,7 +763,10 @@ function Map () {
             });
         }
     }
-	function addNodeEvents(poly)
+	/*
+	 * add some events for old overlays for highlighting
+	 */
+    function addNodeEvents(poly)
 	{
 	    google.maps.event.addListener(poly, "click", function(){
             if(map.rightClick != null)
@@ -639,6 +791,11 @@ function Map () {
             heighlight(poly, event.latLng);
         });
 	}
+    /*
+     * @param(poly) is the overlay that the event occurs
+     * @param(point) is the point on the overlay at which the event occurs
+     * find the smallest area that has this point and highlight it 
+     */
     function heighlight(poly, point)
     {
         var index = poly.index
@@ -742,7 +899,7 @@ function Map () {
     this.showRoute = function(row)
     {
         for(var i = 0; i < overlays.length; i ++)
-            overlays[i].setMap(null);
+            overlays[i].del();
         for(var i = 0; i < lines.length; i ++)
             lines[i].setMap(null);
 
