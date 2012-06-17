@@ -12,6 +12,7 @@ gem 'polylines'
 gem 'will_paginate'
 gem 'hirb'
 gem 'meta_search'
+gem 'georuby'
 # Use unicorn as the web server
 # gem 'unicorn'
 
