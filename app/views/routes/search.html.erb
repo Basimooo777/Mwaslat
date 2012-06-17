@@ -24,7 +24,11 @@
 				
 				<%= notice %>
 				<% if(@routes != nil) ;row = -1%>
+					<%
+						flags = @routes.pop 
+					%>
 					<%= javascript_tag do %>
+						window.searchFlags = <%= flags %> 
 						window.searchNodes = <%= raw @routes.to_json(
 					    :include => {
 					    :src => {:only => [:path, :name]} ,
@@ -36,7 +40,6 @@
 				<table class="table table-striped" >
 					<thead>
 						<tr>
-							<th>ID</th>
 							<th>Src</th>
 							<th>Dest</th>
 							<th>Cost</th>
@@ -48,7 +51,6 @@
 					
 						<% route.each do |r| %>
 						<tr>
-							<td><%= r.id %></td>
 							<td><%= r.src.name %></td>
 							<td><%= r.dest.name %></td>
 							<td><%= r.route.cost %></td>

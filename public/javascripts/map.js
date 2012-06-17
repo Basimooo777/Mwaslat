@@ -46,7 +46,10 @@ function Map () {
 	 	{
 	 		if(!this.exist)
 	 			this.setMap(null);
-	 		this.tip.setMap(null);
+     	    try{
+    	 		this.tip.setMap(null);
+     	    }
+     	    catch(err){}
 	 	}
 	 	google.maps.Polygon.prototype.getNode = function(){
 			return this.getPath().getAt(0);
@@ -895,7 +898,8 @@ function Map () {
     } 
 	// ------------------------------------------ For searching --------------------
     // var "searchNodes" is ajson object of a 2d array of subroutes
-    // var "row" is the index of the required showing route 
+    // var "searchFlags" is an array of what is the real stops  
+    // @param(row) is the index of the required showing route 
     this.showRoute = function(row)
     {
         for(var i = 0; i < overlays.length; i ++)
@@ -912,15 +916,17 @@ function Map () {
         fitBounds(bounds, path);
         addTip(overlays[0])
         addTitle(overlays[0]);
-        for(var i = 0; i < searchNodes.length; i ++)
+        for(var i = 0; i < searchNodes[row].length; i ++)
         {
             var path = google.maps.geometry.encoding.decodePath(searchNodes[row][i].sub_route.dest.path);
             var name = searchNodes[row][i].sub_route.dest.name
             overlays.push(addPolygon(path, name));
             fitBounds(bounds, path);
             drawLine(i+1, true);  // here i set drag_mode to prevent from adding line event
-            addTip(overlays[i + 1])
             addTitle(overlays[i + 1]);
+            
+            if(searchFlags[row][i][1])
+                addTip(overlays[i + 1])
         }
         map.fitBounds(bounds);
     }
