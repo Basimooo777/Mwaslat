@@ -38,5 +38,5 @@
 		:only => {} ) %>;
 	<% end %>
 	<%= javascript_tag do %>
-		window.nodes = <%=raw Node.all.to_json(:only => [:name, :path, :id] ) %>;
+		window.nodes = <%=raw Node.search(:category_eq => "District").all.to_json(:only => [:name, :path, :id] ) %>;
 	<% end %>

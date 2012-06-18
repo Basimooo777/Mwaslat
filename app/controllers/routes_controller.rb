@@ -63,6 +63,7 @@ class RoutesController < ApplicationController
     end
     children = children.drop(1)    # removes first sub-route
     @route.sub_routes = children
+    @route.user = current_user
     respond_to do |format|
       if @route.save
         format.html { redirect_to(new_route_path, :notice => "Successfully Added") }
@@ -175,6 +176,11 @@ class RoutesController < ApplicationController
     @route.sub_routes = children
     respond_to do |format|
       if @route.save
+        if(current_user.admin? && current_user != @route.user)
+          notification_msg = "Admin has updated your route between " + @route.src.name + " and " + @route.dest.name;
+          notification = Notification.new(:msg => notification_msg, :user => @route.user)
+          notification.save
+        end
         format.html { redirect_to(new_route_path, :notice => "Successfully Updated") }
       else
         format.html { render :action => "new" }

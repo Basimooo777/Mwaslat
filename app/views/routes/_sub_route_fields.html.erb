@@ -2,7 +2,7 @@
 	<%= f.label :duration, "Duration to reach next stop"%>
 	<%= f.text_field :duration%>
 	<%= f.fields_for :dest do|f_dest|%>
-		<%= render "node_fields", :f => f_dest%>
+		<%= render "nodes/node_fields", :f => f_dest%>
 	<% end %>
 	<%= f.hidden_field :_destroy %>
 	<%= f.hidden_field :id %>

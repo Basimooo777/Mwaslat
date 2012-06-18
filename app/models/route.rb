@@ -1,6 +1,6 @@
 class Route < ActiveRecord::Base
-  belongs_to :transportation
   belongs_to :user
+  belongs_to :transportation, :dependent => :destroy
   has_many :sub_routes, :dependent => :destroy
   accepts_nested_attributes_for :transportation
   accepts_nested_attributes_for :sub_routes, :allow_destroy => true

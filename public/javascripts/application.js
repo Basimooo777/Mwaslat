@@ -243,11 +243,15 @@ function is_used(id){
 //remove node from my nodes
 function remove_node(id){
 	if (confirm("Are you sure ?")) { 
-            lastXhr = $.getJSON( "/nodes/delete", { "id": id }, function( response ) {
+            $.getJSON( "/nodes/delete", { "id": id }, function( response ) {
                 if(response=="1"){
-                	$("#row"+ id).hide();
-			    }else{
-			    	alert ("Cannot be deleted as used by other routes");
+                	$("#" + id).hide();
+			    }
+			    else if(response == "0"){
+			    	alert ("Sorry, node can't be deleted as it's used by other routes");
+			    }
+			    else{
+			    	alert ("Sorry, you only can delete your own nodes");
 			    }
             });
     }

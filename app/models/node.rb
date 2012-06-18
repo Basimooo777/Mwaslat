@@ -87,4 +87,12 @@ class Node < ActiveRecord::Base
       "Government", "Lodging", "Public Services", "Shops", "Tourist Attraction",
       "Travel", "Recreation", "Other"]
   end
+  
+  def self.getAllPios
+    Node.search(:category_ne => "District").all
+  end
+  
+  def self.getAllDistricts
+    Node.search(:category_eq => "District").all
+  end
 end
