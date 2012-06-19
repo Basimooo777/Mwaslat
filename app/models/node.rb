@@ -95,4 +95,8 @@ class Node < ActiveRecord::Base
   def self.getAllDistricts
     Node.search(:category_eq => "District").all
   end
+  
+  def name
+    super().force_encoding('UTF-8')
+  end
 end
