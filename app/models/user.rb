@@ -2,6 +2,7 @@ class User < ActiveRecord::Base
   has_many :nodes
   has_many :routes
   has_many :notifications
+  has_many :likes, :dependent => :destroy
   # Include default devise modules. Others available are:
   # :token_authenticatable, :encryptable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable,
@@ -9,4 +10,19 @@ class User < ActiveRecord::Base
 
   # Setup accessible (or protected) attributes for your model
   attr_accessible :email, :password, :password_confirmation, :remember_me
+  
+  
+  # returns -1 if disliked, 1 if liked, 0 if neutral
+  def likedRoute(route)
+    result = Like.search(:route_id_eq => route.id, :user_id_eq => self.id).all
+    if(result.empty?)
+      0                         # neutral
+    else
+      if(result[0].status?)
+        1                       # liked
+      else
+        -1                      # disliked
+      end
+    end
+  end
 end
