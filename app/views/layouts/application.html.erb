@@ -49,7 +49,10 @@
 						 </li>
 					</ul>
 					<ul class="nav pull-right">
-						<li ><a href="#" id="example"">Notifications</a></li>
+						<li >
+							<% if current_user != nil %>
+								<a href="/notifications" id="example"">Notifications</a></li>
+							<%end%>
 						<li>
 							<%= render 'devise/menu/registration_items' %>
 						</li>
