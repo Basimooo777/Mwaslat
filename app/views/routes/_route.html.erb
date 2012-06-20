@@ -6,7 +6,7 @@
 	<td><%= route.transportation.category %></td>
 	<td><%= route.transportation.way %></td>
 	<td><%= route.try(:user).try(:email) %></td>
-	<td><%= link_to 'Edit', edit_route_path(route) %></td>
-	<td><%= link_to 'Destroy', route, :confirm => 'Are you sure?', :method => :delete %></td>
-	<td><%= link_to 'Show', route %></td>
+	<td><%= link_to 'Edit', edit_route_path(route),:class =>'btn btn-mini btn-primary' %></td>
+	<td><%= link_to 'Destroy', route, :confirm => 'Are you sure?', :method => :delete ,:class =>'btn btn-mini btn-danger'%></td>
+	<td><%= link_to 'Show', route ,:class=>'btn btn-mini btn-success'%></td>
 </tr>
