@@ -12,12 +12,21 @@
 		</div>
 		<hr width="50%" align="left"/>
 		<table>
-			<tr>
 			<%= f_route.fields_for :transportation, Transportation.new  do |f_trans| %>
-				<td><%= f_trans.label :category, "Transportation" %></td>
-				<td><%= f_trans.text_field :category %></td>
-			<% end %>
+			<tr>
+				<td>
+					<%= f_trans.label :category, "Transportation" %>
+				</td>
+				<td>
+					<%= f_trans.select :category, ["Autobus", "Microbus", "Tram", "Train"] %>
+				</td>
 			</tr>
+			<tr>
+				<td><%= f_trans.label :way %></td>
+				<td> <%= f_trans.text_field :way %> </td>
+			</tr>
+			<% end %>
+			<hr width="50%" align="left"/>
 			<tr>
 				<td><%= f_route.label :cost, "Cost" %></td>
 				<td><%= f_route.text_field :cost %></td>
@@ -33,5 +42,5 @@
 	<div style="left: 50%; top: 1%; position: absolute"><%= link_to "See Data", "routes/data"%></div>
 </body>
 	<%= javascript_tag do %>
-		window.nodes = <%=raw Node.all.to_json(:only => [:name, :path, :id] ) %>;
+		window.nodes = <%=raw Node.search(:category_eq => "District").all.to_json(:only => [:name, :path, :id] ) %>;
 	<% end %>

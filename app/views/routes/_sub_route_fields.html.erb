@@ -1,9 +1,15 @@
-<div id = "sub_route_index">
-	<%= f.label :duration, "Duration to reach next stop"%>
-	<%= f.text_field :duration%>
-	<%= f.fields_for :dest do|f_dest|%>
-		<%= render "node_fields", :f => f_dest%>
-	<% end %>
-	<%= f.hidden_field :_destroy %>
-	<%= f.hidden_field :id %>
+<div id="sub_route_index">
+	<fieldset>
+		<div class="control-group">
+			<%= f.label :duration, "Duration to reach next stop" , :class =>'control-label' %>
+			<div class="controls">
+				<%= f.text_field :duration , :class =>'text_field' %>
+			</div>
+		</div>
+		<%= f.fields_for :dest , :html => { :class => 'form-horizontal' } do|f_dest|%>
+		<%= render "nodes/node_fields", :f => f_dest%>
+		<% end %>
+		<%= f.hidden_field :_destroy %>
+		<%= f.hidden_field :id %>
+	</fieldset>
 </div>
