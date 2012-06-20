@@ -49,35 +49,42 @@ class NodesController < ApplicationController
 
   def destroy
     node = Node.find(params[:id])
-    if(current_user.admin?)
-      node_src_routes = node.src_routes
-      node_dest_routes = node.dest_routes
-      if(node_src_routes.empty? && node_dest_routes.empty?)
-        node.destroy
-        redirect_to (:back), :notice => "Node successfully deleted"
-      else
-        routes_ids = []
-        node_src_routes.each do |sub_route|
-          routes_ids.push(sub_route.route.id)
+    if(request.xhr?)
+      if(current_user == node.user)
+        node_src_routes = node.src_routes
+        node_dest_routes = node.dest_routes
+        if(node_src_routes.empty? && node_dest_routes.empty?)
+          @id = node.id
+          node.destroy
+          @destroyed = true
+        else
+          @destroyed = false
         end
-        node_dest_routes.each do |sub_route|
-          if(!routes_ids.include? sub_route.route.id)
-            routes_ids.push(sub_route.route.id)
-          end
-        end
-        redirect_to :action => "confirm_deletion", :node_id => node.id, :routes_ids => routes_ids, :escape => false
-      end
-    elsif(current_user == node.user)
-      node_src_routes = node.src_routes
-      node_dest_routes = node.dest_routes
-      if(node_src_routes.empty? && node_dest_routes.empty?)
-        node.destroy
-        render :text => "1"
-      else
-        render :text => "0"
+        render "destroy.js"
       end
     else
-        render :text => "2"
+      if(current_user.admin?)
+        node_src_routes = node.src_routes
+        node_dest_routes = node.dest_routes
+        if(node_src_routes.empty? && node_dest_routes.empty?)
+          notify_node_deletion(node)
+          node.destroy
+          redirect_to (:back), :notice => "Node successfully deleted"
+        else
+          routes_ids = []
+          node_src_routes.each do |sub_route|
+            routes_ids.push(sub_route.route.id)
+          end
+          node_dest_routes.each do |sub_route|
+            if(!routes_ids.include? sub_route.route.id)
+              routes_ids.push(sub_route.route.id)
+            end
+          end
+          redirect_to :action => "confirm_deletion", :node_id => node.id, :routes_ids => routes_ids, :escape => false
+        end
+      else
+        redirect_to "/404.html"
+      end
     end
   end
   
@@ -94,8 +101,12 @@ class NodesController < ApplicationController
     routes_ids = params[:routes_ids]
     node_id = params[:node_id]
     routes_ids.each do |id|
-      Route.destroy(id)
+      route = Route.find(id)
+      notify_route_deletion(route)
+      route.destroy
     end
+    node = Node.find(node_id)
+    notify_node_deletion(node)        # adds notification for deletion
     Node.destroy(node_id)
     redirect_to :action => "index"
   end
@@ -108,5 +119,4 @@ class NodesController < ApplicationController
       format.json {render :json => @names}
     end
   end
-
 end

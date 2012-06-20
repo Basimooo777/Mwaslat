@@ -114,9 +114,7 @@ class RoutesController < ApplicationController
       route.destroy
       redirect_to(:back)
     elsif(current_user.admin?)
-      notification_msg = "Admin has deleted your route between " + route.src.name + " and " + route.dest.name;
-      notification = Notification.new(:msg => notification_msg, :user => route.user)
-      notification.save
+      notify_route_deletion(route)
       route.destroy           # sub routes are deleted subsequently
       redirect_to(:back)
     else
@@ -177,9 +175,7 @@ class RoutesController < ApplicationController
     respond_to do |format|
       if @route.save
         if(current_user.admin? && current_user != @route.user)
-          notification_msg = "Admin has updated your route between " + @route.src.name + " and " + @route.dest.name;
-          notification = Notification.new(:msg => notification_msg, :user => @route.user)
-          notification.save
+          notify_route_update(@route)
         end
         format.html { redirect_to(new_route_path, :notice => "Successfully Updated") }
       else

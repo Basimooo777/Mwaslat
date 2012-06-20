@@ -241,23 +241,6 @@ function is_used(id){
 	return false;
 }
 
-//remove node from my nodes
-function remove_node(id){
-	if (confirm("Are you sure ?")) { 
-            $.getJSON( "/nodes/delete", { "id": id }, function( response ) {
-                if(response=="1"){
-                	$("#" + id).hide();
-			    }
-			    else if(response == "0"){
-			    	alert ("Sorry, node can't be deleted as it's used by other routes");
-			    }
-			    else{
-			    	alert ("Sorry, you only can delete your own nodes");
-			    }
-            });
-    }
-}
-
 function fillNodePath()
 {
     var overlays = map.getOverlays();

@@ -1,0 +1,5 @@
+<%if @destroyed%>
+	$("#" + <%=@id%>).hide();
+<%else%>
+	alert("Sorry, node can't be deleted as it's used by other routes");
+<%end%>
