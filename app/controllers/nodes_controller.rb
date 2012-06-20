@@ -17,13 +17,13 @@ class NodesController < ApplicationController
   def create
     @node = Node.new(params[:node])
     @node.user = current_user
-    
-    #Setting node parent
-    
-    
-    
     respond_to do |format|
       if @node.save
+        if(@node.category == "District")
+          @node.setChildren()
+        else
+          @node.setParents()
+        end
         format.html { redirect_to(nodes_path, :notice => "Successfully Created") }
       else
         format.html { render :action => "new" }
@@ -38,9 +38,9 @@ class NodesController < ApplicationController
   def update
     @node = Node.find(params[:id])
     new_node = Node.new(params[:node])
-    @node.path=new_node.path
-    @node.name=new_node.name
-    @node.category=new_node.category
+    @node.path = new_node.path
+    @node.name = new_node.name
+    @node.category = new_node.category
     @node.save
     respond_to do |format|
       format.html { redirect_to(nodes_path, :notice => "Successfully updated") }
@@ -111,7 +111,7 @@ class NodesController < ApplicationController
     redirect_to :action => "index"
   end
   
-  #------------------------------------------------------------
+  #---------------------------  pool: 5---------------------------------
 
   def districts
     @names = Node.where("name like ?", "%#{params[:term]}%").limit(5).map(&:name)

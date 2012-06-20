@@ -4,9 +4,9 @@ class Node < ActiveRecord::Base
   belongs_to :user
   has_many :src_routes, :class_name => "SubRoute", :foreign_key => "src_id"
   has_many :dest_routes, :class_name => "SubRoute", :foreign_key => "dest_id"
-  has_many :as_district, :class_name => "Containing", :foreign_key => "poi_id"
+  has_many :as_district, :class_name => "Containing", :foreign_key => "poi_id", :dependent => :destroy
   has_many :districts, :through => :as_district
-  has_many :as_poi, :class_name => "Containing", :foreign_key => "district_id"
+  has_many :as_poi, :class_name => "Containing", :foreign_key => "district_id", :dependent => :destroy
   has_many :pois, :through => :as_poi
   validates :name, :presence => true
   validates :path, :presence => true
@@ -88,12 +88,34 @@ class Node < ActiveRecord::Base
       "Travel", "Recreation", "Other"]
   end
   
-  def self.getAllPios
+  def self.getAllPois
     Node.search(:category_ne => "District").all
   end
   
   def self.getAllDistricts
     Node.search(:category_eq => "District").all
+  end
+  
+  def setParents
+    all_districts = Node.getAllDistricts()
+    self.decode_path()
+    all_districts.each do |district|
+      district.decode_path()
+      if(district.include_node? self)
+        Containing.new(:district => district, :poi => self).save
+      end
+    end
+  end
+
+  def setChildren
+    all_pois = Node.getAllPois()
+    self.decode_path()
+    all_pois.each do |poi|
+      poi.decode_path()
+      if(self.include_node? poi)
+        Containing.new(:district => self, :poi => poi).save
+      end
+    end
   end
   
   def name
