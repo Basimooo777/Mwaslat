@@ -32,7 +32,7 @@ function Map () {
 			disableDefaultUI : true,
 			scaleControl: true,
 			zoomControl : true, 
-			mapTypeId: google.maps.MapTypeId.ROADMAP
+			mapTypeId: google.maps.MapTypeId.HYBRID
 	    };
 	    map = new google.maps.Map(document.getElementById('map_canvas'),
 	      myOptions);
