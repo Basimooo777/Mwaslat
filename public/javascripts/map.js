@@ -46,7 +46,10 @@ function Map () {
 	 	{
 	 		if(!this.exist)
 	 			this.setMap(null);
-	 		this.tip.setMap(null);
+     	    try{
+    	 		this.tip.setMap(null);
+     	    }
+     	    catch(err){}
 	 	}
 	 	google.maps.Polygon.prototype.getNode = function(){
 			return this.getPath().getAt(0);
@@ -129,11 +132,11 @@ function Map () {
 				else
 				{
     	    		polygon.exist = false;
-    				addTip(polygon);
+    				addTip(polygon, overlays.length + 1);
     				google.maps.event.addListener(polygon.getPath() , "set_at", function(){
     					polygon.tip.setMap(null);
     					dragEvent(polygon);
-    					addTip(polygon);
+    					addTip(polygon, overlays.indexOf(polygon) + 1);
     				});
     		    	if(overlays.length < 2)     // note that overlays will increment after that
     				{
@@ -421,7 +424,7 @@ function Map () {
 		for(var i = 0; i < overlays.length; i ++)
 		{
 			overlays[i].del();
-			addTip(overlays[i]);
+			addTip(overlays[i], i + 1);
 			overlays[i].setMap(map);
 			if(i > 0)
 				drawLine(i, false);
@@ -430,18 +433,14 @@ function Map () {
 	/*
 	 * create tip of order(1, 2, 3, ..) for the overlay added in the route
 	 */
-    function addTip(overlay)
+    function addTip(overlay, tip)
 	{
 		var div = document.createElement("Div");
 		div.style.backgroundColor = "yellow";
 		div.style.color = "blue";
 		div.style.position = "absolute";
 		
-		var index = overlays.indexOf(overlay);
-		if(index != -1)
-			div.innerHTML = (index + 1) + "";
-		else
-			div.innerHTML = (overlays.length + 1) + "";
+		div.innerHTML = tip + " ";
 		overlay.tip = new CustomeOverlay(overlay.getNode(), div, false);
 	}
 	/*
@@ -538,20 +537,25 @@ function Map () {
 		div.style.position = "absolute";
 		var button = createButton("Select");
 		button.onclick = function (){
+		    tip = 0
 		    if(overlays.length < 2)
 		    {
-                overlays.push(overlay);		        
+                overlays.push(overlay);
 		        if(overlays.length == 2)
                     drawLine(1, false);
                 add_selected_node(overlay.name, overlay.getPointString(), overlay.id, overlays.length - 1, true);
+                
+                tip = overlays.length;
 		    }
 		    else
 		    {
     			matchNode = overlay;
     			hidePlaceControl();
     			drawingManager.off();
+    			
+    			tip = overlays.length + 1;
 		    }
-			addTip(overlay);
+			addTip(overlay, tip);
 			addMatchingEvent(overlay);
 		}
 	 	div.appendChild(button);
@@ -677,7 +681,7 @@ function Map () {
 			poly.name = node.name;
 			poly.exist = true;
 			overlayComplete(poly);
-			addTip(poly);
+			addTip(poly, i+1);
 			overlays.push(poly);
 			addMatchingEvent(poly);
 			if(i > 0)
@@ -895,7 +899,8 @@ function Map () {
     } 
 	// ------------------------------------------ For searching --------------------
     // var "searchNodes" is ajson object of a 2d array of subroutes
-    // var "row" is the index of the required showing route 
+    // var "searchFlags" is an array of what is the real stops  
+    // @param(row) is the index of the required showing route 
     this.showRoute = function(row)
     {
         for(var i = 0; i < overlays.length; i ++)
@@ -910,17 +915,24 @@ function Map () {
         var name = searchNodes[row][0].sub_route.src.name
         overlays.push(addPolygon(path, name)); 
         fitBounds(bounds, path);
-        addTip(overlays[0])
+        addTip(overlays[0], 1)
         addTitle(overlays[0]);
-        for(var i = 0; i < searchNodes.length; i ++)
+        
+        counter = 2;
+        for(var i = 0; i < searchNodes[row].length; i ++)
         {
             var path = google.maps.geometry.encoding.decodePath(searchNodes[row][i].sub_route.dest.path);
             var name = searchNodes[row][i].sub_route.dest.name
             overlays.push(addPolygon(path, name));
             fitBounds(bounds, path);
             drawLine(i+1, true);  // here i set drag_mode to prevent from adding line event
-            addTip(overlays[i + 1])
             addTitle(overlays[i + 1]);
+            
+            if(searchFlags[row][i][1])
+            {
+                addTip(overlays[i + 1], counter);
+                counter ++;
+            }
         }
         map.fitBounds(bounds);
     }

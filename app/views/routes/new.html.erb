@@ -1,46 +1,61 @@
 <body id="bodyId" onload="addStops();prepare_form()">
 	<div id="map_canvas" style="width:100%; height:100%"></div>
-	<p>
-		<%= notice %>
-	</p>
-	<%= form_for @route do |f_route| %>
-		<div id="sub_routes">
-				<%= f_route.fields_for :sub_routes do |f_sub_routes|%>
-						<%= render "sub_route_fields", :f => f_sub_routes %>
-				<%end%>
+	<div class="container">
+		<div class="row">
+			<div class="span9">
+				<p>
+					<%= notice %>
+				</p>
+				<%= form_for @route , :html => { :class => 'form-horizontal' } do |f_route| %>
+				<div id="sub_routes">
+					<%= f_route.fields_for :sub_routes , :html => { :class => 'form-horizontal' } do |f_sub_routes|%>
+					<%= render "sub_route_fields", :f => f_sub_routes %>
+					<%end%>
+					<br/>
+				</div>
+				<hr width="50%" align="left"/>
+				
+				<div>
+					<fieldset>
+						<%= f_route.fields_for :transportation, Transportation.new , :html => { :class => 'form-horizontal' }  do |f_trans| %>
+						<div class="control-group">
+	 						<%= f_trans.label :category, "Transportation" ,:class =>'control-label'%>
+	 						<div class="controls">
+							<%= f_trans.select :category, ["Autobus", "Microbus", "Tram", "Train"]  %>
+							</div>
+						</div>
+						<div class="control-group">
+							<%= f_trans.label :way ,:class =>'control-label'%>
+							<div class="controls">
+								 <%= f_trans.text_field :way ,:class =>'text_field' %>
+							</div>
+						</div>
+						<%end%>
+						<div class="control-group">
+							<%= f_route.label :cost, "Cost",:class =>'control-label' %>
+							<div class="controls">
+								 <%= f_route.text_field :cost ,:class =>'text_field' %>
+							</div>
+						</div>
+					</fieldset>
+				</div>
+				
+			 <div class="form-actions">
+				 	
+				<%= f_route.submit(:onclick => "fillPaths();",:class =>'btn btn-small btn-primary')  %>
+				</div>
 				<br/>
+				<%javascript_tag do%>
+				window.sub_route_element = <%= get_stop(f_route)%>;
+				<%end%>
+				<% end %>
+				<!-- <div style="left: 50%; top: 15%; position: absolute">
+					<%= link_to "See Data", "routes/data"%>
+				</div> -->
+			</div>
 		</div>
-		<hr width="50%" align="left"/>
-		<table>
-			<%= f_route.fields_for :transportation, Transportation.new  do |f_trans| %>
-			<tr>
-				<td>
-					<%= f_trans.label :category, "Transportation" %>
-				</td>
-				<td>
-					<%= f_trans.select :category, ["Autobus", "Microbus", "Tram", "Train"] %>
-				</td>
-			</tr>
-			<tr>
-				<td><%= f_trans.label :way %></td>
-				<td> <%= f_trans.text_field :way %> </td>
-			</tr>
-			<% end %>
-			<hr width="50%" align="left"/>
-			<tr>
-				<td><%= f_route.label :cost, "Cost" %></td>
-				<td><%= f_route.text_field :cost %></td>
-			</tr>
-		</table>
-		<%= f_route.submit(:onclick => "fillPaths();") %><br/>
-		<%javascript_tag do%>
-			window.sub_route_element = <%= get_stop(f_route)%>;
-		<%end%>
-	<% end %>
-	
-	
-	<div style="left: 50%; top: 1%; position: absolute"><%= link_to "See Data", "routes/data"%></div>
+	</div>
 </body>
-	<%= javascript_tag do %>
-		window.nodes = <%=raw Node.search(:category_eq => "District").all.to_json(:only => [:name, :path, :id] ) %>;
-	<% end %>
+<%= javascript_tag do %>
+window.nodes = <%= raw Node.search(:category_eq => "District").all.to_json(:only => [:name, :path, :id] ) %>;
+<% end %>

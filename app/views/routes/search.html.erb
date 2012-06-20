@@ -24,7 +24,11 @@
 
 				<%= notice %>
 				<% if(@routes != nil) ;row = -1%>
+				<%
+ flags = @routes.pop
+%>
 				<%= javascript_tag do %>
+				window.searchFlags = <%= flags %>
 				window.searchNodes = <%= raw @routes.to_json(
           :include => {
           :src => {:only => [:path, :name]} ,
@@ -36,7 +40,6 @@
 				<table class="table table-striped" >
 					<thead>
 						<tr>
-							<th>ID</th>
 							<th>Src</th>
 							<th>Dest</th>
 							<th>Cost</th>
@@ -45,14 +48,32 @@
 						</tr>
 					</thead>
 					<tbody>
-						<% route.each do |r| %>
+						<%
+						i = 0
+						while i < route.length
+						cost = route[i].route.cost
+						trans = route[i].route.transportation.category
+						time = route[i].duration
+
+						if flags[row + 1][i][0]
+						src = route[i].src.name
+						else
+						src = route[i - 1].dest.name
+						end
+
+						while !flags[row + 1][i][1]
+						i += 1
+						time += route[i].duration
+						end
+						dest = route[i].dest.name
+						i += 1
+						%>
 						<tr>
-							<td><%= r.id %></td>
-							<td><%= r.src.name %></td>
-							<td><%= r.dest.name %></td>
-							<td><%= r.route.cost %></td>
-							<td><%= r.duration %></td>
-							<td><%= r.route.transportation.category%></td>
+							<td><%= src %></td>
+							<td><%= dest %></td>
+							<td><%= cost %></td>
+							<td><%= time %></td>
+							<td><%= trans %></td>
 						</tr>
 						<% end %>
 				</table>
@@ -65,87 +86,11 @@
 				</tbody>
 				</table>
 				<%end%>
-				<table id="example7" class="table table-striped">
-					<thead>
-						<th></th>
-					<th>
-						1
-					</th>
-					<th>2</th>
-					</thead>
-					<tbody>
-					<tr>
-						<td id="expand">+</td>
-						<td>
-							ah
-						</td>
-						<td>
-							ads
-							</td>
-					</tr>
-					<tr>
-						<td id="expand">+</td>
-						<td>
-							ah
-						</td>
-						<td>
-							ads
-							</td>
-					</tr>
-					</tbody>
-					</table>
-					<!-- <table id="ali" >
-						<tr  >
-						<td id="">+</td>
-						<td>
-							ah
-						</td>
-						<td>
-							ads
-							</td>
-					</tr>
-					
-					</table> -->
 			</div>
 			<div class="span6" id="map_canvas" style="height: 100%" ></div>
 		</div>
 	</div>
 	<br />
-	<script>
-		$(document).ready(function() {
-			var oTable = $('#example7').dataTable();		
-			function fnFormatDetails ( oTable, nTr )
-			{
-				var sOut = '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">';
-				sOut += '<tr><td>Rendering engine:</td><td>sad</td></tr>';
-				sOut += '<tr><td>Link to source:</td><td>Could provide a link here</td></tr>';
-				sOut += '<tr><td>Extra info:</td><td>And any further details here (images etc)</td></tr>';
-				sOut += '</table>';
-				alert(sOut);
-				return sOut;
-			}
-
-			$('#expand').live('click',function(){
-				alert('f');
-				var nTr = this.parentNode.parentNode;
-				if ( this.innerHTML.match('-') )
-				{
-					/* This row is already open - close it */
-					this.innerHTML = "+";
-					oTable.fnClose(nTr );
-				}
-				else
-				{
-					/* Open this row */
-					this.innerHTML = "-";
-					oTable.fnOpen( nTr, fnFormatDetails(oTable, nTr) , 'table table-striped' );
-				}
-
-			});
-		
-		});
-
-	</script>
 	<%= javascript_tag do %>
 	window.nodes = <%= raw Node.all.to_json(:only => [:name, :path, :id] ) %>;
 	<% end %>

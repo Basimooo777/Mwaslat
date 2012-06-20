@@ -63,6 +63,7 @@ class RoutesController < ApplicationController
     end
     children = children.drop(1)    # removes first sub-route
     @route.sub_routes = children
+    @route.user = current_user
     respond_to do |format|
       if @route.save
         format.html { redirect_to(new_route_path, :notice => "Successfully Added") }
@@ -81,12 +82,28 @@ class RoutesController < ApplicationController
         search = Search.new
         @routes = search.searches(@src, @dest)
         
+        array = []        
+        @routes.each do |r|
+          arr = []
+          arr[0] = [true, true]
+          for j in 1..(r.length-1)
+            if r[j].route == r[j - 1].route
+              arr[j - 1][1] = false
+            end
+            arr[j] = [false, true]
+          end
+          array.push arr
+        end
+        @routes.push array
+        puts ">>>>>>>>>>>>>>>>>>>>> #{array}"
+        
         respond_to do |format|
           format.html
           if params[:key] == "1234"
             format.xml       # search.xml
           end
         end
+        
     end
   end 
   # =====================================================================    
@@ -159,6 +176,11 @@ class RoutesController < ApplicationController
     @route.sub_routes = children
     respond_to do |format|
       if @route.save
+        if(current_user.admin? && current_user != @route.user)
+          notification_msg = "Admin has updated your route between " + @route.src.name + " and " + @route.dest.name;
+          notification = Notification.new(:msg => notification_msg, :user => @route.user)
+          notification.save
+        end
         format.html { redirect_to(new_route_path, :notice => "Successfully Updated") }
       else
         format.html { render :action => "new" }

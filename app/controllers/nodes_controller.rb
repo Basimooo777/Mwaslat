@@ -1,7 +1,7 @@
 class NodesController < ApplicationController
   # before_filter :authenticate_user!, :except => [:districts]
   def index
-    @nodes = Node.limit(100) #current_user.nodes
+    @nodes = Node.page(params[:page]).per_page(10) #current_user.nodes
     respond_to do |format|
       format.html # show.html.erb
     end
@@ -35,10 +35,6 @@ class NodesController < ApplicationController
     @node = Node.new
   end
 
-  def show_deleted
-    @ids = params[:ids]
-  end
-
   def update
     @node = Node.find(params[:id])
     new_node = Node.new(params[:node])
@@ -53,24 +49,57 @@ class NodesController < ApplicationController
 
   def destroy
     node = Node.find(params[:id])
-    if(current_user.admin? || current_user == node.user)
+    if(current_user.admin?)
       node_src_routes = node.src_routes
       node_dest_routes = node.dest_routes
       if(node_src_routes.empty? && node_dest_routes.empty?)
         node.destroy
-        redirect_to(:back)
+        redirect_to (:back), :notice => "Node successfully deleted"
       else
-        if(current_user.admin?)
-          
-        else
-          redirect_to (:back), :notice => "Can't be deleted"
+        routes_ids = []
+        node_src_routes.each do |sub_route|
+          routes_ids.push(sub_route.route.id)
         end
+        node_dest_routes.each do |sub_route|
+          if(!routes_ids.include? sub_route.route.id)
+            routes_ids.push(sub_route.route.id)
+          end
+        end
+        redirect_to :action => "confirm_deletion", :node_id => node.id, :routes_ids => routes_ids, :escape => false
+      end
+    elsif(current_user == node.user)
+      node_src_routes = node.src_routes
+      node_dest_routes = node.dest_routes
+      if(node_src_routes.empty? && node_dest_routes.empty?)
+        node.destroy
+        render :text => "1"
+      else
+        render :text => "0"
       end
     else
-      redirect_to "/404.html"      
+        render :text => "2"
     end
   end
-
+  
+  def confirm_deletion    
+    @routes = []
+    @routes_ids = params[:routes_ids]
+    @node_id = params[:node_id]
+    @routes_ids.each do |id|
+      @routes.push(Route.find(id))
+    end
+  end
+  
+  def deletion_confirmed
+    routes_ids = params[:routes_ids]
+    node_id = params[:node_id]
+    routes_ids.each do |id|
+      Route.destroy(id)
+    end
+    Node.destroy(node_id)
+    redirect_to :action => "index"
+  end
+  
   #------------------------------------------------------------
 
   def districts

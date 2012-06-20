@@ -8,7 +8,7 @@
 		<% form_for @search do |f| %>
 		<p>
 			<%= f.label :srcs_name_or_dests_name_like, "Passing By: " %>
-			<%= f.text_field :srcs_name_like %>
+			<%= f.text_field :srcs_name_like, :class => "auto" %>
 		</p>
 		<p>
 			<%= f.label :cost_gte, "Cost Range: " %>
@@ -28,27 +28,19 @@
 			<thead>
 				<tr>
 					<th>Id</th>
+					<th>Source</th>
+					<th>Destination</th>
 					<th>Cost</th>
 					<th>Transportation Type</th>
 					<th>Transportation Way</th>
 					<th>User</th>
 					<th></th>
 					<th></th>
+					<th></th>
 				</tr>
 			</thead>
 			<tbody>
-				<% @routes.each do |route| %>
-				<tr id="row<%= route.id %>">
-					<td><%= route.id %></td>
-					<td><%= route.cost %></td>
-					<td><%= route.transportation.category %></td>
-					<td><%= route.transportation.way %></td>
-					<td><%= route.try(:user).try(:email) %></td>
-					<td><%= link_to 'Edit', edit_route_path(route) %></td>
-					<td><%= link_to 'Destroy', route, :confirm => 'Are you sure?', :method => :delete %></td>
-					<td><%= link_to 'Show', route %></td>
-				</tr>
-				<% end %>
+				<%= render @routes %>
 			</tbody>
 		</table>
 		<% if current_user.admin?%>
