@@ -2,11 +2,6 @@ development:
   adapter: mysql
   database: mwaslat
   username: root
-  password: 12345
+  password: 
   pool: 5
   timeout: 5000
-<<<<<<< HEAD
-  username: root
-  password:
-=======
->>>>>>> e66f8dae9b545f6c893136bf7eaece88cca83b6d
