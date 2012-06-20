@@ -20,12 +20,12 @@
 <%= stylesheet_link_tag :all %>
 		<%= stylesheet_link_tag "ui-darkness/jquery-ui-1.8.20.custom.css" %>
 		<%= javascript_include_tag :defaults, "map.js" ,"view.js", "bootstrap.min.js",
-      "jquery-1.7.1.min.js", "jquery-ui-1.8.18.custom.min.js", "equalheight.js",
+      "jquery-1.7.1.min.js", "jquery-ui-1.8.18.custom.min.js", "equalheight.js","dropdown.js",
       "jquery.dataTables.min.js", "twitter_extension.js", "bootstrap-tooltip.js","bootstrap-popover.js" %>
 		<style type="text/css">
 		
 			body {
-				padding-top: 42px
+				padding-top: 50px
 			}
 		</style>
 		<%= csrf_meta_tag %>
@@ -34,33 +34,32 @@
 		<div class="navbar navbar-fixed-top">
 			<div class="navbar-inner">
 				<div class="container-fluid">
-					<a class="brand" href="/nodes">Home</a>
-					<ul class="nav">
+					<a class="brand" href="/routes/search">Home</a>
+					<ul class="nav nav-pills">
+						 <li class="dropdown" id="menu1">
+						 <a class="dropdown-toggle" data-toggle="dropdown" href="#menu1">
+						 Go To
+						 <b class="caret"></b>
+						 </a>
+						 <ul class="dropdown-menu">
+						 <li><a href="/nodes">My Nodes</a></li>
+						 <li class="divider"></li>
+						 <li><a href="/routes">My Routes</a></li>
+						 </ul>
+						 </li>
+					</ul>
+					<ul class="nav pull-right">
+						<li ><a href="#" id="example"">Notifications</a></li>
 						<li>
 							<%= render 'devise/menu/registration_items' %>
 						</li>
 						<li>
 							<%= render 'devise/menu/login_items' %>
 						</li>
-						<li ><a href="#" id="example" onclick="timto()"  >hover for popover</a></li>
 					</ul>
 				</div>
 			</div>
 		</div>
-		 <script>  
- $(function ()  
- { $("#example").popover({content:"<a style='margin-left:40%;'>see more</a>",placement:'bottom',trigger:'manual'}); 
- });  
- 
- function timto(){
-$('#example').popover('toggle');
-document.getElementById("n1").innerHTML="Ahndsasdsassdsd sa dasd sa a aaaaaaaaa adsadsadsed";
-document.getElementById("n2").innerHTML="Ahned";
-document.getElementById("n3").innerHTML="Ahndsasdsassdsd sa dasd sa a aaaaaaaaa adsadsadsed";
-document.getElementById("n4").innerHTML="Ahndsasdsassdsd sa dasd sa a aaaaaaaaa adsadsadsed";
-document.getElementById("n5").innerHTML="Ahndsasdsassdsd sa dasd sa a aaaaaaaaa adsadsadsed";
- }
- </script> 
 		<%= yield %>
 	</body>
 </html>
