@@ -19,7 +19,13 @@ function editRoutes()
 	map.addRightClick();
 	map.showNodes();
 	map.addSelectEventToNodes();
-	map.editRoutes();
+	map.showingRoute(true);
+}
+function showRoute()
+{
+    map = new Map();
+    map.initialize();
+    map.showingRoute(false);
 }
 function showingNodes()
 {

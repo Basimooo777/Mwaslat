@@ -32,7 +32,7 @@ function Map () {
 			disableDefaultUI : true,
 			scaleControl: true,
 			zoomControl : true, 
-			mapTypeId: google.maps.MapTypeId.HYBRID
+			mapTypeId: google.maps.MapTypeId.ROADMAP
 	    };
 	    map = new google.maps.Map(document.getElementById('map_canvas'),
 	      myOptions);
@@ -50,6 +50,7 @@ function Map () {
  			    this.isSelected = false
 		        this.fillOpacity = 0;
                 this.strokeColor = "#000000";
+                this.fillColor = "#FFFF33";
                 this.strokeWeight = 1;
  			    this.setMap(map);   
  			}
@@ -682,16 +683,15 @@ function Map () {
 		this.div = null;
 	}
 
-	// ------------------------------------------- For editting Routes ---------------------
+	// ------------------------------------------- For showing and editting Routes ---------------------
 	/*
-	 * "updatable_stops" is an array of the sub routes of the route that wanted
-	 *     to be updated
+	 * "routeStops" is an array of the sub routes of the route that wanted to show or edit
 	 */
-	this.editRoutes = function()
+	this.showingRoute = function(isEdit)
 	{
-		for(var i = 0; i < updatable_stops.length; i ++)
+		for(var i = 0; i < routeStops.length; i ++)
 		{
-			var node = updatable_stops[i].sub_route.dest;
+			var node = routeStops[i].sub_route.dest;
 			var poly = new google.maps.Polygon({
 				path: google.maps.geometry.encoding.decodePath(node.path),
 				strokeColor: "#FF0000",
@@ -699,14 +699,19 @@ function Map () {
 				editable: false,
 				map: map		
 			});
-			poly.name = node.name;
-			poly.exist = true;
-			overlayComplete(poly);
+	        poly.name = node.name;
+			
 			addTip(poly, i+1);
 			overlays.push(poly);
-			addMatchingEvent(poly);
 			if(i > 0)
 				drawLine(i, false);
+		    addTitle(poly);
+			if(isEdit)
+			{
+                poly.exist = true;
+                overlayComplete(poly);    
+    			addMatchingEvent(poly);
+			}
 		}
 	}
 	/*
