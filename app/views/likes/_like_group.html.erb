@@ -1,0 +1,41 @@
+<div id="<%=id%>" >
+<% like = current_user.likedRoute(@route)%>
+<% if (like == nil)%>
+	<%= form_for like = current_user.likes.build(:route => @route), :remote => true do |f| %>
+		<%= f.hidden_field :route_id%>
+		<%= f.hidden_field :user_id %>
+		<%= hidden_field_tag :status, 1 %>
+	    <%= hidden_field_tag :div_id, id %>
+		<%= f.submit "Like"%>
+	<% end %>
+	<%= form_for like = current_user.likes.build(:route => @route), :remote => true do |f| %>
+		<%= f.hidden_field :route_id %>
+		<%= f.hidden_field :user_id %>
+		<%= hidden_field_tag :status, 0 %>
+		<%= hidden_field_tag :div_id, id %>
+		<%= f.submit "Dislike" %>
+	<% end %>
+<% elsif (like.status == true) %>
+	<%= form_for like, :html => { :method => :delete }, :remote => true do |f| %>
+		<%= f.submit "Unlike" %>
+		<%= hidden_field_tag :div_id, id %>
+	<% end %>
+	
+	<%= form_for like, :remote => true do |f| %>
+		<%= hidden_field_tag :status, 0 %>
+		<%= hidden_field_tag :div_id, id %>
+		<%= f.submit "Dislike" %>
+	<% end %>
+	
+<% else %>
+	<%= form_for like, :remote => true do |f| %>
+		<%= hidden_field_tag :status, 1 %>
+		<%= hidden_field_tag :div_id, id %>
+		<%= f.submit "Like" %>
+	<% end %>
+	<%= form_for like, :html => { :method => :delete }, :remote => true do |f| %>
+		<%= f.submit "Undislike" %>
+		<%= hidden_field_tag :div_id, id %>
+	<% end %>
+<% end %>
+</div>

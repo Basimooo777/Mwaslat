@@ -16,13 +16,10 @@ class User < ActiveRecord::Base
   def likedRoute(route)
     result = Like.search(:route_id_eq => route.id, :user_id_eq => self.id).all
     if(result.empty?)
-      0                         # neutral
+      nil
     else
-      if(result[0].status?)
-        1                       # liked
-      else
-        -1                      # disliked
-      end
+      result[0]
     end
   end
+  
 end

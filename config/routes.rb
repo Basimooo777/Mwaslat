@@ -8,6 +8,7 @@ Mwaslat1::Application.routes.draw do
   match "nodes/new" => "nodes#new"
   match "nodes/delete" => "nodes#destroy"
   resources :users
+  resources :likes
   
   root :to => "routes#search"
   resources :routes

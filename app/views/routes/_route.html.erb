@@ -1,4 +1,5 @@
 <tr>
+	<% @route = route%>
 	<td><%= route.id %></td>
 	<td><%= route.src.name %></td>
 	<td><%= route.dest.name %></td>	
@@ -9,4 +10,5 @@
 	<td><%= link_to 'Edit', edit_route_path(route),:class =>'btn btn-mini btn-primary' %></td>
 	<td><%= link_to 'Destroy', route, :confirm => 'Are you sure?', :method => :delete ,:class =>'btn btn-mini btn-danger'%></td>
 	<td><%= link_to 'Show', route ,:class=>'btn btn-mini btn-success'%></td>
+	<td><%= render "likes/like_group", :id => route.id, :route => @route %></td>
 </tr>
