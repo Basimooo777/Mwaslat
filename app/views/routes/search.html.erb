@@ -23,10 +23,12 @@
 				<% end %>
 
 				<%= notice %>
-				<% if(@routes != nil) ;row = -1%>
 				<%
- flags = @routes.pop
-%>
+				 if(@routes != nil) 
+				 	row = -1
+ 					flags = @routes.pop
+ 					ids = 0
+				%>
 				<%= javascript_tag do %>
 				window.searchFlags = <%= flags %>
 				window.searchNodes = <%= raw @routes.to_json(
@@ -36,7 +38,7 @@
           },
           :only=>{} ) %>;
 				<% end %>
-				<% @routes.each do|route| %>
+				<% @routes.each do|sub_routes| %>
 				<table class="table table-striped" >
 					<thead>
 						<tr>
@@ -50,23 +52,24 @@
 					<tbody>
 						<%
 						i = 0
-						while i < route.length
-						cost = route[i].route.cost
-						trans = route[i].route.transportation.category
-						time = route[i].duration
-
-						if flags[row + 1][i][0]
-						src = route[i].src.name
-						else
-						src = route[i - 1].dest.name
-						end
-
-						while !flags[row + 1][i][1]
-						i += 1
-						time += route[i].duration
-						end
-						dest = route[i].dest.name
-						i += 1
+						while i < sub_routes.length
+							cost = sub_routes[i].route.cost
+							trans = sub_routes[i].route.transportation.category
+							time = sub_routes[i].duration
+	
+							if flags[row + 1][i][0]
+								src = sub_routes[i].src.name
+							else
+								src = sub_routes[i - 1].dest.name
+							end
+	
+							while !flags[row + 1][i][1]
+								i += 1
+								time += sub_routes[i].duration
+							end
+							dest = sub_routes[i].dest.name
+							@route = sub_routes[i].route
+							i += 1
 						%>
 						<tr>
 							<td><%= src %></td>
@@ -74,7 +77,9 @@
 							<td><%= cost %></td>
 							<td><%= time %></td>
 							<td><%= trans %></td>
-						</tr>
+							<td><%= @route.id %></td>
+							<td><%= render "likes/like_group", :id => @route.id , :route => @route %></td>
+						</tr >
 						<% end %>
 				</table>
 				<button type="button" style="margin-left: 90% ;" class="btn btn-big btn-success" onclick="map.showRoute(<%= row += 1%>)" >
@@ -92,6 +97,6 @@
 	</div>
 	<br />
 	<%= javascript_tag do %>
-	window.nodes = <%= raw Node.all.to_json(:only => [:name, :path, :id] ) %>;
+		window.nodes = <%= raw Node.all.to_json(:only => [:name, :path, :id] ) %>;
 	<% end %>
 </body>
