@@ -1,45 +1,53 @@
-<div class="container">
-	<div class="row">
-		<div class="span9">
-			<div id="sub_routes">
-				<% for i in 0..@route.sub_routes.length-1 %>
-				<div id = "<%= i%>" class="topbar" data-dropdown="dropdown">
-					<% if @route.sub_routes[i].duration %>
-					<p>
-						<b>Duration to next stop:</b>
-						<%= @route.sub_routes[i].duration %>
-					</p>
-					<%end%>
-					<p>
-						<b>Stop <%= i%>:</b>
-					</p>
-					<p>
-						<b>Name:</b>
-						<%= @route.sub_routes[i].dest.name %>
-					</p>
-					<p>
-						<b>Category:</b>
-						<%= @route.sub_routes[i].dest.category %>
-					</p>
+<body onload="showRoute();">
+	<div id="map_canvas" style="width:100%; height:100%"></div>
+	<div class="container">
+		<div class="row">
+			<div class="span9">
+				<div id="sub_routes">
+					<% for i in 0..@route.sub_routes.length-1 %>
+					<div id = "<%= i%>" class="topbar" data-dropdown="dropdown">
+						<% if @route.sub_routes[i].duration %>
+						<p>
+							<b>Duration to next stop:</b>
+							<%= @route.sub_routes[i].duration %>
+						</p>
+						<%end%>
+						<p>
+							<b>Stop <%= i%>:</b>
+						</p>
+						<p>
+							<b>Name:</b>
+							<%= @route.sub_routes[i].dest.name %>
+						</p>
+						<p>
+							<b>Category:</b>
+							<%= @route.sub_routes[i].dest.category %>
+						</p>
+					</div>
+					<% end %>
 				</div>
-				<% end %>
-			</div>
-			<p>
-				<b>Cost:</b>
-				<%= @route.cost %>
-			</p>
-			<p>
-				<b>Transportation Type:</b>
-				<%= @route.transportation.category %>
-			</p>
-			<p>
-				<b>Transportation Way:</b>
-				<%= @route.transportation.way %>
-			</p>
-			 <div class="form-actions">
-				 	
-				<%= link_to 'Edit', edit_route_path(@route) ,:class =>'btn btn-small btn-primary'  %>
+				<p>
+					<b>Cost:</b>
+					<%= @route.cost %>
+				</p>
+				<p>
+					<b>Transportation Type:</b>
+					<%= @route.transportation.category %>
+				</p>
+				<p>
+					<b>Transportation Way:</b>
+					<%= @route.transportation.way %>
+				</p>
+				 <div class="form-actions">
+					 	
+					<%= link_to 'Edit', edit_route_path(@route) ,:class =>'btn btn-small btn-primary'  %>
+				</div>
 			</div>
 		</div>
 	</div>
-</div>
+	<% javascript_tag do %>
+		window.routeStops = <%= raw @route.sub_routes.to_json(:include => {
+		  		:dest => {:only =>[:path, :name]}
+	  		}, :only => {}) %>
+	<% end %>
+</body>

@@ -42,10 +42,18 @@ function Map () {
 	 	google.maps.Polygon.prototype.tip = null;
 	 	google.maps.Polygon.prototype.title = null;
 	 	google.maps.Polygon.prototype.exist = null;
+	 	google.maps.Polygon.prototype.isSelected = false;
 	 	google.maps.Polygon.prototype.del = function()
 	 	{
-	 		if(!this.exist)
-	 			this.setMap(null);
+ 			if(this.exist)
+ 			{
+ 			    this.isSelected = false
+		        this.fillOpacity = 0;
+                this.strokeColor = "#000000";
+                this.fillColor = "#FFFF33";
+                this.strokeWeight = 1;
+ 			    this.setMap(map);   
+ 			}
      	    try{
     	 		this.tip.setMap(null);
      	    }
@@ -102,7 +110,7 @@ function Map () {
 	  		{
 	  			// strokeColor: "#FFFFFF",
 				// fillColor: "#FFFF00" ,
-				editable: true ,
+				editable: true
 	 		},
 	 		map: map
 	    });
@@ -423,7 +431,7 @@ function Map () {
 		// change icons and change lines
 		for(var i = 0; i < overlays.length; i ++)
 		{
-			overlays[i].del();
+			overlays[i].tip.setMap(null);
 			addTip(overlays[i], i + 1);
 			overlays[i].setMap(map);
 			if(i > 0)
@@ -557,6 +565,20 @@ function Map () {
 		    }
 			addTip(overlay, tip);
 			addMatchingEvent(overlay);
+			
+			// change the color of the selected node
+			// confirm("done1");
+			overlay.isSelected = true
+			overlay.setMap(null)
+            overlay.strokeColor = "#000000";
+            overlay.fillColor = "#000000";
+			overlay.fillOpacity = 0.2;
+            overlay.strokeWeight = 3;
+			overlay.setMap(map);
+			// confirm("done2")
+			map.rightClick.setMap(null);
+			map.rightClick = null;
+			map.highlight = null;
 		}
 	 	div.appendChild(button);
 		map.rightClick = new CustomeOverlay(pos, div, false);
@@ -661,16 +683,15 @@ function Map () {
 		this.div = null;
 	}
 
-	// ------------------------------------------- For editting Routes ---------------------
+	// ------------------------------------------- For showing and editting Routes ---------------------
 	/*
-	 * "updatable_stops" is an array of the sub routes of the route that wanted
-	 *     to be updated
+	 * "routeStops" is an array of the sub routes of the route that wanted to show or edit
 	 */
-	this.editRoutes = function()
+	this.showingRoute = function(isEdit)
 	{
-		for(var i = 0; i < updatable_stops.length; i ++)
+		for(var i = 0; i < routeStops.length; i ++)
 		{
-			var node = updatable_stops[i].sub_route.dest;
+			var node = routeStops[i].sub_route.dest;
 			var poly = new google.maps.Polygon({
 				path: google.maps.geometry.encoding.decodePath(node.path),
 				strokeColor: "#FF0000",
@@ -678,14 +699,19 @@ function Map () {
 				editable: false,
 				map: map		
 			});
-			poly.name = node.name;
-			poly.exist = true;
-			overlayComplete(poly);
+	        poly.name = node.name;
+			
 			addTip(poly, i+1);
 			overlays.push(poly);
-			addMatchingEvent(poly);
 			if(i > 0)
 				drawLine(i, false);
+		    addTitle(poly);
+			if(isEdit)
+			{
+                poly.exist = true;
+                overlayComplete(poly);    
+    			addMatchingEvent(poly);
+			}
 		}
 	}
 	/*
@@ -712,6 +738,7 @@ function Map () {
 			poly.id = node.id;
 			poly.exist = true;
 			poly.area = computeArea(poly.getPath());  // must be MVCArray
+		    
 		    addNodeEvents(poly);
 		    addTitle(poly);
 		    
@@ -741,7 +768,7 @@ function Map () {
 	        google.maps.event.addListener(poly, "rightclick", function(event){
                 if(map.rightClick != null)
                     map.rightClick.setMap(null);
-                if(overlays.indexOf(poly) < 0)  // not selected before
+                if(!poly.isSelected)  // not selected before
                 {
                     if (matchNode == null)
                         rightClickSelect(event.latLng, poly);
@@ -780,19 +807,22 @@ function Map () {
             }
         });
         google.maps.event.addListener(poly, "mouseout", function(){
-            if(map.highlight != null)
+            if(map.highlight != null && !poly.isSelected)
             {
                 refreshHighlight(2);
                 map.highlight = null;
             }
         });
         google.maps.event.addListener(poly, "mousemove", function(event){
-            if(map.highlight != null)
+            if(!poly.isSelected)
             {
-                refreshHighlight(2);
-                map.highlight = null;
+                if(map.highlight != null)
+                {
+                    refreshHighlight(2);
+                    map.highlight = null;
+                }
+                heighlight(poly, event.latLng);
             }
-            heighlight(poly, event.latLng);
         });
 	}
     /*

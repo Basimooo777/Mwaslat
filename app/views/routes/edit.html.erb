@@ -45,7 +45,7 @@
 	</div>
 </body>
 <%= javascript_tag do %>
-window.updatable_stops = <%= raw @route.sub_routes.to_json(
+window.routeStops = <%= raw @route.sub_routes.to_json(
   :include => {
   :dest => {:only =>[:path, :name]}
   },
