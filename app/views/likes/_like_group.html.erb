@@ -1,6 +1,11 @@
 <div class="<%=id%>" >
 <% like = current_user.likedRoute(@route)%>
-<% if (like == nil)%>
+<div class="btn-group" data-toggle="buttons-radio">
+ <button id="likebtn" class="btn btn-info">Like</button>
+ <button class="btn btn-danger">Dislike</button>
+ </div>
+ 
+ <% if (like == nil)%>
 	<%= form_for like = current_user.likes.build(:route => @route), :remote => true do |f| %>
 		<%= f.hidden_field :route_id%>
 		<%= f.hidden_field :user_id %>
