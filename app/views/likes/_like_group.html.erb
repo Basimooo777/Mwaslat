@@ -1,4 +1,4 @@
-<div id="<%=id%>" >
+<div class="<%=id%>" >
 <% like = current_user.likedRoute(@route)%>
 <% if (like == nil)%>
 	<%= form_for like = current_user.likes.build(:route => @route), :remote => true do |f| %>
@@ -38,4 +38,6 @@
 		<%= hidden_field_tag :div_id, id %>
 	<% end %>
 <% end %>
+<%=label :likes, "#{@route.numOfLikes} likes" %>
+<%=label :dislikes, "#{@route.numOfDislikes} dislikes" %>
 </div>

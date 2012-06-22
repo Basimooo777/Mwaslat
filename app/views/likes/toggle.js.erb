@@ -1,1 +1,1 @@
-$("#<%=@div_id%>").html("<%= escape_javascript(render('like_group', :id => @div_id, :route => @route)) %>");
+var matched_groups = $(".<%=@div_id%>").html("<%= escape_javascript(render('like_group', :id => @div_id, :route => @route)) %>");
