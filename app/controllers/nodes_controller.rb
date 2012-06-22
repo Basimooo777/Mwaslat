@@ -1,19 +1,20 @@
 class NodesController < ApplicationController
-  # before_filter :authenticate_user!, :except => [:districts]
+  before_filter :allow_guest!, :only => [:index, :new, :create, :edit, :update]
+  before_filter :prevent_guest!, :only => [:destroy]
+  before_filter :admin_only!, :only => [:confirm_deletion, :deletion_confirmed]
+  
   def index
-    @nodes = Node.page(params[:page]).per_page(10) #current_user.nodes
-    respond_to do |format|
-      format.html # show.html.erb
+    if(current_user.admin?)
+      @nodes = Node.page(params[:page]).per_page(10) #current_user.nodes
+    else
+      @nodes = current_user.nodes
     end
   end
 
-  def edit
-    @node = Node.find(params[:id])
-    if(!current_user.admin? && current_user != @node.user)
-      redirect_to "/404.html"
-    end
+  def new
+    @node = Node.new
   end
-
+  
   def create
     @node = Node.new(params[:node])
     @node.user = current_user
@@ -24,24 +25,26 @@ class NodesController < ApplicationController
         else
           @node.setParents()
         end
-        format.html { redirect_to(nodes_path, :notice => "Successfully Created") }
+        redirect_to(nodes_path, :notice => "Node Successfully Created")
       else
-        format.html { render :action => "new" }
+        render :action => "new"
       end
     end
   end
 
-  def new
-    @node = Node.new
+
+  def edit
+    @node = Node.find(params[:id])
+    authorize_node(@node)
   end
 
   def update
     @node = Node.find(params[:id])
-    new_node = Node.new(params[:node])
-    @node.path = new_node.path
-    @node.name = new_node.name
-    @node.category = new_node.category
-    @node.save
+    authorize_node(@node)
+    @node.update_attributes(params[:node])
+    if(current_user.admin?)
+      notify_node(@node, "updated")
+    end
     respond_to do |format|
       format.html { redirect_to(nodes_path, :notice => "Successfully updated") }
     end
@@ -67,7 +70,7 @@ class NodesController < ApplicationController
         node_src_routes = node.src_routes
         node_dest_routes = node.dest_routes
         if(node_src_routes.empty? && node_dest_routes.empty?)
-          notify_node_deletion(node)
+          notify_node(node, "deleted")
           node.destroy
           redirect_to (:back), :notice => "Node successfully deleted"
         else
@@ -83,12 +86,12 @@ class NodesController < ApplicationController
           redirect_to :action => "confirm_deletion", :node_id => node.id, :routes_ids => routes_ids, :escape => false
         end
       else
-        redirect_to "/404.html"
+        error_page
       end
     end
   end
   
-  def confirm_deletion    
+  def confirm_deletion
     @routes = []
     @routes_ids = params[:routes_ids]
     @node_id = params[:node_id]
@@ -102,11 +105,11 @@ class NodesController < ApplicationController
     node_id = params[:node_id]
     routes_ids.each do |id|
       route = Route.find(id)
-      notify_route_deletion(route)
+      notify_route(route, "deleted")
       route.destroy
     end
     node = Node.find(node_id)
-    notify_node_deletion(node)        # adds notification for deletion
+    notify_node(node, "deleted")        # adds notification for deletion
     Node.destroy(node_id)
     redirect_to :action => "index"
   end
@@ -117,6 +120,14 @@ class NodesController < ApplicationController
     @names = Node.where("name like ?", "%#{params[:term]}%").limit(5).map(&:name)
     respond_to do |format|
       format.json {render :json => @names}
+    end
+  end
+  
+protected
+
+  def authorize_node(node)
+   if(!current_user.admin? && current_user != @node.user)
+      error_page
     end
   end
 end

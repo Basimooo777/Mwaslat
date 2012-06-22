@@ -18,6 +18,28 @@ $(document).ready(function() {
 		"aoColumnDefs": [{ "bSortable": false, "aTargets": [5, 6] }, { "bSearchable": false, "aTargets": [5, 6] }],
 		"bPaginate": false
 	} );
+	
+	$("#admin_nodes_table").dataTable( {
+		"sDom": "<'row'<'span6'l><'span5'f>r>t<'row'<'span6'i><'span6'p>>",
+		"sPaginationType": "bootstrap",
+		"oLanguage": {
+			"sLengthMenu": "_MENU_ records per page"
+		},
+		"bSort": false,
+		 "aoColumnDefs": [{ "bSearchable": false, "aTargets": [ 3 ] }],
+		"bPaginate": false
+	} );
+	
+	$("#user_nodes_table").dataTable( {
+		"sDom": "<'row'<'span6'l><'span5'f>r>t<'row'<'span6'i><'span6'p>>",
+		"sPaginationType": "bootstrap",
+		"oLanguage": {
+			"sLengthMenu": "_MENU_ records per page"
+		},
+		 "aoColumnDefs":[{ "bSortable": false, "aTargets": [2] }, { "bSearchable": false, "aTargets": [2] }],
+		 "bPaginate": false
+	} );
+	
 } );
 
 function show_category_description(){
