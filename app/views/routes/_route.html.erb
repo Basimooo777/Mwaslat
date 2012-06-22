@@ -1,13 +1,15 @@
 <tr>
-	<% @route = route%>
-	<td><%= route.id %></td>
 	<td><%= route.src.name %></td>
 	<td><%= route.dest.name %></td>	
 	<td><%= route.cost %></td>
 	<td><%= route.transportation.category %></td>
 	<td><%= route.transportation.way %></td>
-	<td><%= route.try(:user).try(:email) %></td>
-	<td><%= link_to 'Edit', edit_route_path(route),:class =>'btn btn-mini btn-primary' %></td>
-	<td><%= link_to 'Destroy', route, :confirm => 'Are you sure?', :method => :delete ,:class =>'btn btn-mini btn-danger'%></td>
-	<td><%= link_to 'Show', route ,:class=>'btn btn-mini btn-success'%></td>
+	<% if(current_user.admin?) %>
+		<td><%=link_to route.user.email, route.user%></td>
+	<% end %>
+	<td>
+		<%= link_to 'Edit', edit_route_path(route),:class =>'btn btn-mini btn-primary' %>
+		<%= link_to 'Destroy', route, :confirm => 'Are you sure?', :method => :delete ,:class =>'btn btn-mini btn-danger'%>
+		<%= link_to 'Show', route ,:class=>'btn btn-mini btn-success'%>
+	</td>
 </tr>

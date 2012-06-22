@@ -126,7 +126,7 @@ class NodesController < ApplicationController
 protected
 
   def authorize_node(node)
-   if(!current_user.admin? && current_user != @node.user)
+   if(!current_user.admin? && current_user != node.user)
       error_page
     end
   end

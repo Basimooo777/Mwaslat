@@ -8,7 +8,6 @@ var template_2 = "route_sub_routes_attributes_index_dest_attributes_";
 var to_replace = new RegExp("index", "g");
 
 $(document).ready(function() {
-	$("#likebtn").button('toggle')
 	$('.dropdown-toggle').dropdown();
 	$("#routes_table").dataTable( {
 		"sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",

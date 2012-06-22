@@ -1,48 +1,25 @@
-<div class="<%=id%>" >
+<div class="<%=id%> btn-group" data-toggle="buttons-radio" >
 <% like = current_user.likedRoute(@route)%>
-<div class="btn-group" data-toggle="buttons-radio">
- <button id="likebtn" class="btn btn-info">Like</button>
- <button class="btn btn-danger">Dislike</button>
- </div>
- 
  <% if (like == nil)%>
 	<%= form_for like = current_user.likes.build(:route => @route), :remote => true do |f| %>
 		<%= f.hidden_field :route_id%>
 		<%= f.hidden_field :user_id %>
-		<%= hidden_field_tag :status, 1 %>
 	    <%= hidden_field_tag :div_id, id %>
-		<%= f.submit "Like"%>
-	<% end %>
-	<%= form_for like = current_user.likes.build(:route => @route), :remote => true do |f| %>
-		<%= f.hidden_field :route_id %>
-		<%= f.hidden_field :user_id %>
-		<%= hidden_field_tag :status, 0 %>
-		<%= hidden_field_tag :div_id, id %>
-		<%= f.submit "Dislike" %>
+		<button type="submit" name="commit" value="Like" class="<%=id%>_like_btn btn btn-info"><i class="icon-hand-left"></i> Like</button>
+		<button type="submit" name="commit" value="Dislike" class="<%=id%>_dislike_btn btn btn-danger"><i class="icon-hand-down"></i></button>
 	<% end %>
 <% elsif (like.status == true) %>
-	<%= form_for like, :html => { :method => :delete }, :remote => true do |f| %>
-		<%= f.submit "Unlike" %>
-		<%= hidden_field_tag :div_id, id %>
-	<% end %>
-	
 	<%= form_for like, :remote => true do |f| %>
-		<%= hidden_field_tag :status, 0 %>
 		<%= hidden_field_tag :div_id, id %>
-		<%= f.submit "Dislike" %>
+		<button type="submit" name="commit" value="Unlike" class="<%=id%>_like_btn btn btn-info active"><i class="icon-hand-left icon-white"></i> Like</button>
+		<button type="submit" name="commit" value="Dislike" class="<%=id%>_dislike_btn btn btn-danger"><i class="icon-hand-down"></i></button>
 	<% end %>
-	
 <% else %>
 	<%= form_for like, :remote => true do |f| %>
-		<%= hidden_field_tag :status, 1 %>
 		<%= hidden_field_tag :div_id, id %>
-		<%= f.submit "Like" %>
-	<% end %>
-	<%= form_for like, :html => { :method => :delete }, :remote => true do |f| %>
-		<%= f.submit "Undislike" %>
-		<%= hidden_field_tag :div_id, id %>
+		<button type="submit" name="commit" value="Like" class="<%=id%>_like_btn btn btn btn-info"><i class="icon-hand-left"></i>Like</button>
+		<button type="submit" name="commit" value="Undislike" class="<%=id%>_dislike_btn btn btn btn-danger active"><i class="icon-hand-down icon-white"></i></button>
 	<% end %>
 <% end %>
-<%=label :likes, "#{@route.numOfLikes} likes" %>
-<%=label :dislikes, "#{@route.numOfDislikes} dislikes" %>
+<%=label :likes, "#{@route.numOfLikes} likes, #{@route.numOfDislikes} dislikes", :class => "label" %>
 </div>

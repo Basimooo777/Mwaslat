@@ -110,15 +110,14 @@ class RoutesController < ApplicationController
   
   def destroy
     route = Route.find(params[:id])
-    if (route.user == current_user)
+    if(current_user.admin?)
+      notify_route(route, "deleted")
       route.destroy
-      redirect_to(:back)
-    elsif(current_user.admin?)
-      notify_route_deletion(route)
-      route.destroy           # sub routes are deleted subsequently
-      redirect_to(:back)
+    elsif(current_user == route.user)
+      route.destroy
+      redirect_to (:back)
     else
-      redirect_to "/404.html"
+      error_page
     end
   end
   
@@ -209,6 +208,4 @@ class RoutesController < ApplicationController
       @next = 10
     end
   end
-  
-  
 end
