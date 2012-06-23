@@ -33,7 +33,7 @@ if @routes != nil
 									end
 								end
 							end
-							xml.isStop flags[i][j][0]
+							xml.isStop flags[i][j][1]
 						end
 						xml.duration r.duration
 						xml.transportation r.route.transportation.category
