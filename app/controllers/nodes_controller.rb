@@ -5,7 +5,8 @@ class NodesController < ApplicationController
   
   def index
     if(current_user.admin?)
-      @nodes = Node.page(params[:page]).per_page(10) #current_user.nodes
+     @search = Node.search(params[:search])
+     @nodes = @search.group("id").page(params[:page]).per_page(15)
     else
       @nodes = current_user.nodes
     end

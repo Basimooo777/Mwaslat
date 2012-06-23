@@ -3,37 +3,37 @@
 		<p id="notice">
 			<%= notice %>
 		</p>
-		<h2>All Routes</h2>
 		<%if current_user.admin?%>
-		<% form_for @search do |f| %>
-		<p>
-			<%= f.label :srcs_name_or_dests_name_like, "Passing By: " %>
-			<%= f.text_field :srcs_name_like, :class => "auto" %>
-		</p>
-		<p>
-			<%= f.label :cost_gte, "Cost Range: " %>
-			<%= f.text_field :cost_gte %> - <%= f.text_field :cost_lte %>
-			<br />
-		</p>
-		<p>
-		<%= f.submit "Search" %>
-		<br />
-		<b> <u> Sort By: </u> </b>
-		<%= sort_link @search, :cost %>
-		<%= sort_link @search, :transportation_category %>
-		</p>
+			<% id = "admin_routes_table"%>
+		<%else%>
+			<% id = "user_routes_table"%>
+		<%end%>
+		<label class="label label-info"><h2>All Routes</h2></label>
+		<%if current_user.admin?%>
+			<div class="well form-vertical">
+				<label class="label"><h3>Advanced Search</h3></label>
+				<% form_for @search do |f| %>
+					<%= f.label :srcs_name_or_dests_name_like, "Passing By: " %>
+					<%= f.text_field :srcs_name_or_dests_name_like, :class => "auto" %>
+					<%= f.label :cost_gte, "Cost Range: " %>
+					<%= f.text_field :cost_gte%> - <%= f.text_field :cost_lte %><br/>
+					<%= f.submit "Search" %>   <br/>
+				<% end %>
+			</div>
 		<% end %>
-		<% end %>
-		<table id="routes_table" class="table table-striped table-bordered" >
+		<table id=<%= id%> class="table table-striped table-bordered" >
 			<thead>
 				<tr>
 					<th>Source</th>
 					<th>Destination</th>
 					<th>Cost</th>
-					<th>Transportation Type</th>
-					<th>Transportation description</th>
-					<th>User</th>
-					<th></th>
+					<th>Using</th>
+					<th>Description</th>
+					<th>Feedback</th>
+					<% if (current_user.admin?)%>
+						<th>User</th>
+					<%end%>
+					<th>Actions</th>
 				</tr>
 			</thead>
 			<tbody>

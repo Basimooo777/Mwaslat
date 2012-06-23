@@ -2,6 +2,15 @@ class RoutesController < ApplicationController
   #before_filter :authenticate_user!, :except => [:search]
   
   
+  def index
+   if current_user.admin?
+     @search = Route.search(params[:search])
+     @routes = @search.group("id").page(params[:page]).per_page(15)
+   else
+     @routes = current_user.routes
+   end
+  end
+  
   def show
     @route = Route.find(params[:id])
     if current_user.admin? || @route.user == current_user
@@ -10,15 +19,6 @@ class RoutesController < ApplicationController
     else
       error_page
     end
-  end
-  
-  def index
-   if current_user.admin?
-     @search = Route.search(params[:search])
-     @routes = @search.group("id").page(params[:page]).per_page(5)
-   else
-     @routes = current_user.routes
-   end
   end
   
   def new

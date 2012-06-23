@@ -9,35 +9,50 @@ var to_replace = new RegExp("index", "g");
 
 $(document).ready(function() {
 	$('.dropdown-toggle').dropdown();
-	$("#routes_table").dataTable( {
+	$("#admin_routes_table").dataTable( {
 		"sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
 		"sPaginationType": "bootstrap",
 		"oLanguage": {
 			"sLengthMenu": "_MENU_ records per page"
 		},
-		"aoColumnDefs": [{ "bSortable": false, "aTargets": [5, 6] }, { "bSearchable": false, "aTargets": [5, 6] }],
-		"bPaginate": false
+		"bSort" : false,
+		"aoColumnDefs": [{ "bSearchable": false, "aTargets": [5, 7] }],
+		"bPaginate": false,
+		"bInfo": false
+	} );
+	
+	$("#user_routes_table").dataTable( {
+		"sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+		"sPaginationType": "bootstrap",
+		"oLanguage": {
+			"sLengthMenu": "_MENU_ records per page"
+		},
+		"aoColumnDefs":[{ "bSortable": false, "aTargets": [5,6] }, { "bSearchable": false, "aTargets": [5,6] }],
+		"bPaginate": false,
+		"bInfo": false
 	} );
 	
 	$("#admin_nodes_table").dataTable( {
-		"sDom": "<'row'<'span6'l><'span5'f>r>t<'row'<'span6'i><'span6'p>>",
+		"sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
 		"sPaginationType": "bootstrap",
 		"oLanguage": {
 			"sLengthMenu": "_MENU_ records per page"
 		},
 		"bSort": false,
 		 "aoColumnDefs": [{ "bSearchable": false, "aTargets": [ 3 ] }],
-		"bPaginate": false
+		"bPaginate": false,
+		"bInfo": false
 	} );
 	
 	$("#user_nodes_table").dataTable( {
-		"sDom": "<'row'<'span6'l><'span5'f>r>t<'row'<'span6'i><'span6'p>>",
+		"sDom": "<'row'<'span6'l><'span2'f>r>t<'row'<'span6'i><'span6'p>>",
 		"sPaginationType": "bootstrap",
 		"oLanguage": {
 			"sLengthMenu": "_MENU_ records per page"
 		},
 		 "aoColumnDefs":[{ "bSortable": false, "aTargets": [2] }, { "bSearchable": false, "aTargets": [2] }],
-		 "bPaginate": false
+		 "bPaginate": false,
+     	 "bInfo": false
 	} );
 	
 } );

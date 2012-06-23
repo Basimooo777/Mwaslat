@@ -4,12 +4,19 @@
 	<td><%= route.cost %></td>
 	<td><%= route.transportation.category %></td>
 	<td><%= route.transportation.way %></td>
+	<td><%=label :likes, "#{route.numOfLikes} likes, #{route.numOfDislikes} dislikes", :class => "label" %></td>
 	<% if(current_user.admin?) %>
 		<td><%=link_to route.user.email, route.user%></td>
 	<% end %>
 	<td>
-		<%= link_to 'Edit', edit_route_path(route),:class =>'btn btn-mini btn-primary' %>
-		<%= link_to 'Destroy', route, :confirm => 'Are you sure?', :method => :delete ,:class =>'btn btn-mini btn-danger'%>
-		<%= link_to 'Show', route ,:class=>'btn btn-mini btn-success'%>
+		<%= link_to edit_route_path(route), :class =>'btn btn-small btn-primary' do %>
+		  <i class="icon-edit"></i>
+		<% end %>
+		<%= link_to route, :class =>'btn btn-small btn-danger' ,:confirm => 'Are you sure?', :method => :delete do %>
+		  <i class="icon-trash"></i>
+		<% end %>
+		<%= link_to route, :class =>'btn btn-small btn-success' do %>
+		  <i class="icon-eye-open"></i>
+		<% end %>
 	</td>
 </tr>
