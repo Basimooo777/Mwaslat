@@ -11,7 +11,19 @@
 				<p id="notice" >
 					<%= notice %>
 				</p>
-				<h1>My Nodes</h1>
+			<label class="label label-info"><h2>All Nodes</h2></label>
+			<%if current_user.admin?%>
+				<div class="well form-vertical">
+					<label class="label"><h4>Advanced Search</h4></label>
+					<% form_for @search do |f| %>
+						<%= f.label :name_like, "Name:" %>
+						<%= f.text_field :name_like, :class => "auto" %> <br/>
+						<%= f.label :category_like, "Category:" %>
+						<%= f.select :category_like, Node.all_categories %><br/>
+						<%= f.submit "Search" %>
+					<% end %>
+				</div>
+			<% end %>
 				<table id=<%= id%> class="table table-striped table-bordered" >
 					<thead>
 						<tr>

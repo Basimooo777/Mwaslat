@@ -2,6 +2,15 @@ class RoutesController < ApplicationController
   #before_filter :authenticate_user!, :except => [:search]
   
   
+  def index
+   if current_user.admin?
+     @search = Route.search(params[:search])
+     @routes = @search.group("id").page(params[:page]).per_page(15)
+   else
+     @routes = current_user.routes
+   end
+  end
+  
   def show
     @route = Route.find(params[:id])
     if current_user.admin? || @route.user == current_user
@@ -10,15 +19,6 @@ class RoutesController < ApplicationController
     else
       error_page
     end
-  end
-  
-  def index
-   if current_user.admin?
-     @search = Route.search(params[:search])
-     @routes = @search.group("id").page(params[:page]).per_page(5)
-   else
-     @routes = current_user.routes
-   end
   end
   
   def new
@@ -110,15 +110,14 @@ class RoutesController < ApplicationController
   
   def destroy
     route = Route.find(params[:id])
-    if (route.user == current_user)
+    if(current_user.admin?)
+      notify_route(route, "deleted")
       route.destroy
-      redirect_to(:back)
-    elsif(current_user.admin?)
-      notify_route_deletion(route)
-      route.destroy           # sub routes are deleted subsequently
-      redirect_to(:back)
+    elsif(current_user == route.user)
+      route.destroy
+      redirect_to (:back)
     else
-      redirect_to "/404.html"
+      error_page
     end
   end
   
@@ -209,6 +208,4 @@ class RoutesController < ApplicationController
       @next = 10
     end
   end
-  
-  
 end
