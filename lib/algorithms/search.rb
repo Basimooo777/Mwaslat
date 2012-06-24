@@ -2,10 +2,10 @@ class Search
   def searches(srcs, dests)    # src , dest are arrays of nodes
     puts "I am in search"
     
-    total_pathes=Array.new
-    visited=Hash.new
-    src=Array.new
-    dest=Array.new
+    total_pathes = Array.new
+    visited = Hash.new
+    src = Array.new
+    dest = Array.new
     srcs.each do |sr|
       puts sr.class
       if(sr.category != "District")

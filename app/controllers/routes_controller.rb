@@ -1,3 +1,5 @@
+require 'geo_ruby'
+
 class RoutesController < ApplicationController
   #before_filter :authenticate_user!, :except => [:search]
   
@@ -76,14 +78,44 @@ class RoutesController < ApplicationController
   # =================================================================
   
    def search
-    if(params[:src] != nil and params[:dest] != nil)
-        @src = Node.where(:name => params[:src])
+    if(params[:src] != nil or params[:dest] != nil)
+      n = Node.new
+      if(params[:p_src] != nil)
+        x = params[:p_src].split(',')[0]
+        y = params[:p_src].split(',')[1]
+        p = GeoRuby::SimpleFeatures::Point.new
+        p.x = x.to_f
+        p.y = y.to_f
+        @src = n.contained_districts p
         @dest = Node.where(:name => params[:dest])
+      elsif(params[:p_dest] != nil)
+        x = params[:p_dest].split(',')[0]
+        y = params[:p_dest].split(',')[1]
+        p = GeoRuby::SimpleFeatures::Point.new
+        p.x = x.to_f
+        p.y = y.to_f
+        @src = Node.where(:name => params[:src])
+        @dest = n.contained_districts p
+      elsif(params[:src] != nil and params[:dest] != nil)
+          @src = Node.where(:name => params[:src])
+          @dest = Node.where(:name => params[:dest])
+      end
+    @routes = search_helper @src, @dest
+    respond_to do |format|
+        format.html
+        if params[:key] == "1234"
+          format.xml       # search.xml
+        end
+      end
+    end
+  end
+  
+  def search_helper src, dest
         search = Search.new
-        @routes = search.searches(@src, @dest)
+        routes = search.searches(src, dest)
         
         array = []        
-        @routes.each do |r|
+        routes.each do |r|
           arr = []
           arr[0] = [true, true]
           for j in 1..(r.length-1)
@@ -94,18 +126,10 @@ class RoutesController < ApplicationController
           end
           array.push arr
         end
-        @routes.push array
-        puts ">>>>>>>>>>>>>>>>>>>>> #{array}"
-        
-        respond_to do |format|
-          format.html
-          if params[:key] == "1234"
-            format.xml       # search.xml
-          end
-        end
-        
-    end
-  end 
+        routes.push array
+        return routes
+  end
+   
   # =====================================================================    
   
   def destroy
@@ -209,3 +233,4 @@ class RoutesController < ApplicationController
     end
   end
 end
+  
