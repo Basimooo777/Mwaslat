@@ -80,7 +80,10 @@ class RoutesController < ApplicationController
    def search
     if(params[:src] != nil or params[:dest] != nil)
       n = Node.new
-      if(params[:p_src] != nil)
+      if(params[:src] != "" and params[:dest] != "")
+          @src = Node.where(:name => params[:src])
+          @dest = Node.where(:name => params[:dest])
+      elsif(params[:p_src] != "")
         x = params[:p_src].split(',')[0]
         y = params[:p_src].split(',')[1]
         p = GeoRuby::SimpleFeatures::Point.new
@@ -88,7 +91,7 @@ class RoutesController < ApplicationController
         p.y = y.to_f
         @src = n.contained_districts p
         @dest = Node.where(:name => params[:dest])
-      elsif(params[:p_dest] != nil)
+      elsif(params[:p_dest] != "")
         x = params[:p_dest].split(',')[0]
         y = params[:p_dest].split(',')[1]
         p = GeoRuby::SimpleFeatures::Point.new
@@ -96,9 +99,6 @@ class RoutesController < ApplicationController
         p.y = y.to_f
         @src = Node.where(:name => params[:src])
         @dest = n.contained_districts p
-      elsif(params[:src] != nil and params[:dest] != nil)
-          @src = Node.where(:name => params[:src])
-          @dest = Node.where(:name => params[:dest])
       end
     @routes = search_helper @src, @dest
     respond_to do |format|

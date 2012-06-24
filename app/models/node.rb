@@ -84,12 +84,10 @@ class Node < ActiveRecord::Base
 
   def contained_districts point
     districts = []
-    Node.all.each do |node|
+    Node.getAllDistricts.each do |node|
       node.decode_path
       if node.include_point? point
-        if node.category == "District"
-          districts.push node
-        end
+        districts.push node
       end
     end
     return districts
