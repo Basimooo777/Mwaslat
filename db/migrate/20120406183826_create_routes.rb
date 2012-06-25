@@ -1,7 +1,7 @@
 class CreateRoutes < ActiveRecord::Migration
   def self.up
     create_table :routes do |t|
-      t.decimal :cost
+      t.float :cost
       t.references :transportation
       t.references :user
 

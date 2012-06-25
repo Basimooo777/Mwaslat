@@ -198,16 +198,14 @@ function prepare_form(){
 
 // shows the time fields of the div of specified id
 function show_time_fields(id){
-	var element_key = template_1.replace(to_replace, id).replace(".", "\\.")+"duration";
-	$("#" + element_key).show();
-	$("label[for=" + element_key + "]").show();
+	var minutes_key = template_1.replace(to_replace, id).replace(".", "\\.")+"duration_minutes";
+	$("#" + minutes_key).parent().parent().show();
 }
 
 // hides the time fields of the div of specified id
 function hide_time_fields(id){
-	var element_key = template_1.replace(to_replace, id).replace(".", "\\.")+"duration";
-	$("#" + element_key).hide();
-	$("label[for=" + element_key + "]").hide();
+	var minutes_key = template_1.replace(to_replace, id).replace(".", "\\.")+"duration_minutes";
+	$("#" + minutes_key).parent().parent().hide();
 }
 /* 
  * "isFirst" is set to true when the added node is the first or second node
@@ -221,7 +219,8 @@ function add_selected_node(name, path, id, sub_route_index, isFirst){
 	var node_id_template = "#" + template_2.replace(to_replace, sub_routes_ids[sub_route_index]).replace(".", "\\.");
 	$(node_id_template + "name").val(name);
 	$(node_id_template + "path").val(path);
-	$(node_id_template + "id").val(id);
+	$(node_id_template + "id").val(id);	
+	$(node_id_template + "name").attr("disabled", "disabled");
 }
 
 function fillPaths() {

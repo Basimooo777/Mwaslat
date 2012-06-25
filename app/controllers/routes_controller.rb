@@ -1,8 +1,8 @@
 require 'geo_ruby'
 
 class RoutesController < ApplicationController
-  #before_filter :authenticate_user!, :except => [:search]
-  
+  before_filter :allow_guest!, :only => [:index, :new, :create, :edit, :update]
+  before_filter :prevent_guest!, :only => [:destroy]
   
   def index
    if current_user.admin?
@@ -15,12 +15,9 @@ class RoutesController < ApplicationController
   
   def show
     @route = Route.find(params[:id])
-    if current_user.admin? || @route.user == current_user
-      @route.order_sub_routes
-      @route.sub_routes = @route.sub_routes.unshift(SubRoute.new(:dest=> @route.sub_routes[0].src))
-    else
-      error_page
-    end
+    authorize_route(@route)
+    @route.order_sub_routes
+    @route.sub_routes = @route.sub_routes.unshift(SubRoute.new(:dest=> @route.sub_routes[0].src))
   end
   
   def new
@@ -44,7 +41,6 @@ class RoutesController < ApplicationController
          i.to_s 
        end
     end
-    puts keys.to_s
     for i in 0..keys.length-1
       child_params = children_params[keys[i]]
       dest_params = child_params["dest_attributes"]
@@ -53,7 +49,9 @@ class RoutesController < ApplicationController
         child = SubRoute.new
         dest = Node.find_or_initialize_by_id(dest_id, dest_params)
         child.dest = dest
-        child.duration = child_params["duration"].to_f
+        child.duration_hours = child_params["duration_hours"].split(" ")[0].to_i
+        child.duration_minutes = child_params["duration_minutes"].split(" ")[0].to_i
+        child.sum_duration
         children.push(child)
       end
     end
@@ -113,8 +111,7 @@ class RoutesController < ApplicationController
   def search_helper src, dest
         search = Search.new
         routes = search.searches(src, dest)
-        
-        array = []        
+        array = []
         routes.each do |r|
           arr = []
           arr[0] = [true, true]
@@ -181,8 +178,9 @@ class RoutesController < ApplicationController
         dest = Node.find_or_initialize_by_id(dest_id)
         dest.update_attributes(dest_params)
         child.dest = dest
-        child.duration = child_params["duration"].to_f
-        puts child_params["duration"]
+        child.duration_hours = child_params["duration_hours"].split(" ")[0].to_i
+        child.duration_minutes = child_params["duration_minutes"].split(" ")[0].to_i
+        child.sum_duration
         children.push(child)
       end
     end
@@ -230,6 +228,13 @@ class RoutesController < ApplicationController
     else
       @nodes = Node.first 10
       @next = 10
+    end
+  end
+  
+private
+  def authorize_route(route)
+    if(!current_user.admin? && current_user != route.user)
+      error_page
     end
   end
 end

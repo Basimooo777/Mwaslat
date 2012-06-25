@@ -3,7 +3,7 @@ class CreateSubRoutes < ActiveRecord::Migration
     create_table :sub_routes do |t|
       t.references :src
       t.references :dest
-      t.decimal :duration
+      t.integer :duration
       t.references :route
 
       t.timestamps
