@@ -88,4 +88,8 @@ class Route < ActiveRecord::Base
       super
     end
   end
+  
+  def nodes
+    self.srcs | self.dests
+  end
 end

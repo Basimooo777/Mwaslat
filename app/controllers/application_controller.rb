@@ -21,6 +21,20 @@ protected
     end
   end
   
+  def notify_node_usage(node, route)
+    if(current_user.admin?)
+      notification_msg = "Admin has used your node #{node.name} to build the route between #{route.src.name} and #{route.dest.name}"
+    else
+      notification_msg = "User #{current_user.email} has used your node #{node.name} to build the route between #{route.src.name} and #{route.dest.name}"
+    end
+    add_notification(notification_msg, node.user)
+  end
+  
+  def notify_route_enhancement(route)
+     notification_msg = "User #{current_user.email} has added information to your route between #{route.src.name} and #{route.dest.name}";
+     add_notification(notification_msg, route.user)
+  end
+  
   def add_notification(notification_msg, user)
     notification = Notification.new(:msg => notification_msg, :user => user)
     notification.save

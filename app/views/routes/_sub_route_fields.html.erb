@@ -8,7 +8,7 @@
 			</div>
 		</div>
 		<%= f.fields_for :dest , :html => { :class => 'form-horizontal' } do|f_dest|%>
-			<%= render "nodes/node_fields", :f => f_dest, :show_category => false%>
+			<%= render "nodes/node_fields", :f => f_dest, :show_category => false, :editable => f_dest.object.id.nil?%>
 		<% end %>
 		<%= f.hidden_field :_destroy %>
 		<%= f.hidden_field :id %>

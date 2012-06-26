@@ -3,6 +3,7 @@ Mwaslat1::Application.routes.draw do
   match "nodes/confirm_deletion" => "nodes#confirm_deletion"
   match "nodes/deletion_confirmed" => "nodes#deletion_confirmed"
   match "routes/data" => "routes#data"
+  match "routes/:id/enhance" => "routes#enhance_route"
   match "routes/search" => "routes#search"
   match "routes/search/:id/edit" => "routes#update"
   match "nodes/new" => "nodes#new"
