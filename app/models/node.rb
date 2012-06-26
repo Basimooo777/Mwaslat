@@ -11,6 +11,7 @@ class Node < ActiveRecord::Base
   validates :name, :presence => true
   validates :path, :presence => true
   validates :category, :presence => true
+  
   attr_accessor :node_points
   
   def out_bounds?(point)
@@ -40,7 +41,7 @@ class Node < ActiveRecord::Base
     point.x <= point_new_x
   end
 
-  def include_point? (point)
+  def include_point? point
     return false if out_bounds?point
     i = -1
     j = @node_points.length - 1
@@ -51,7 +52,7 @@ class Node < ActiveRecord::Base
       end_point = @node_points[j]
       if check_ys?(point, start_point, end_point)
         if check_ray?(point, start_point, end_point)
-          counter += 1
+        counter += 1
         end
       end
       j = i
@@ -61,14 +62,13 @@ class Node < ActiveRecord::Base
     return false
   end
 
-  
-  def include_node?(node)
+  def include_node? node
     arr = node.node_points
     c = true
     for i in 0..arr.length - 1
       if(!self.include_point?arr[i])
-        c = false
-        break
+      c = false
+      break
       end
     end
     return c
@@ -77,25 +77,36 @@ class Node < ActiveRecord::Base
   def decode_path
     node_array = Polylines::Decoder.decode_polyline(self.path)
     self.node_points = Array.new
-    for i in 0..node_array.length-1
+    for i in 0..(node_array.length - 1)
       @node_points[i] = GeoRuby::SimpleFeatures::Point.from_x_y(node_array[i][0], node_array[i][1])
     end
   end
-  
+
+  def contained_districts point
+    districts = []
+    Node.getAllDistricts.each do |node|
+      node.decode_path
+      if node.include_point? point
+        districts.push node
+      end
+    end
+    return districts
+  end
+
   def self.all_categories
     ["District", "Automotive", "Business", "Education", "Emergency", "Entertainment", "Food & Drink",
       "Government", "Lodging", "Public Services", "Shops", "Tourist Attraction",
       "Travel", "Recreation", "Other"]
   end
-  
+
   def self.getAllPois
     Node.search(:category_ne => "District").all
   end
-  
+
   def self.getAllDistricts
     Node.search(:category_eq => "District").all
   end
-  
+
   def setParents
     all_districts = Node.getAllDistricts()
     self.decode_path()
@@ -117,8 +128,9 @@ class Node < ActiveRecord::Base
       end
     end
   end
-  
+
   def name
     super().force_encoding('UTF-8')
   end
+
 end

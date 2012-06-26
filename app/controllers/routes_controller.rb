@@ -1,6 +1,8 @@
+require 'geo_ruby'
+
 class RoutesController < ApplicationController
-  #before_filter :authenticate_user!, :except => [:search]
-  
+  before_filter :allow_guest!, :only => [:index, :new, :create, :edit, :update]
+  before_filter :prevent_guest!, :only => [:destroy]
   
   def index
    if current_user.admin?
@@ -13,12 +15,9 @@ class RoutesController < ApplicationController
   
   def show
     @route = Route.find(params[:id])
-    if current_user.admin? || @route.user == current_user
-      @route.order_sub_routes
-      @route.sub_routes = @route.sub_routes.unshift(SubRoute.new(:dest=> @route.sub_routes[0].src))
-    else
-      error_page
-    end
+    authorize_route(@route)
+    @route.order_sub_routes
+    @route.sub_routes = @route.sub_routes.unshift(SubRoute.new(:dest=> @route.sub_routes[0].src))
   end
   
   def new
@@ -42,7 +41,6 @@ class RoutesController < ApplicationController
          i.to_s 
        end
     end
-    puts keys.to_s
     for i in 0..keys.length-1
       child_params = children_params[keys[i]]
       dest_params = child_params["dest_attributes"]
@@ -51,7 +49,9 @@ class RoutesController < ApplicationController
         child = SubRoute.new
         dest = Node.find_or_initialize_by_id(dest_id, dest_params)
         child.dest = dest
-        child.duration = child_params["duration"].to_f
+        child.duration_hours = child_params["duration_hours"].split(" ")[0].to_i
+        child.duration_minutes = child_params["duration_minutes"].split(" ")[0].to_i
+        child.sum_duration
         children.push(child)
       end
     end
@@ -76,14 +76,43 @@ class RoutesController < ApplicationController
   # =================================================================
   
    def search
-    if(params[:src] != nil and params[:dest] != nil)
-        @src = Node.where(:name => params[:src])
+    if(params[:src] != nil or params[:dest] != nil)
+      n = Node.new
+      if(params[:src] != "" and params[:dest] != "")
+          @src = Node.where(:name => params[:src])
+          @dest = Node.where(:name => params[:dest])
+      elsif(params[:p_src] != "")
+        x = params[:p_src].split(',')[0]
+        y = params[:p_src].split(',')[1]
+        p = GeoRuby::SimpleFeatures::Point.new
+        p.x = x.to_f
+        p.y = y.to_f
+        @src = n.contained_districts p
         @dest = Node.where(:name => params[:dest])
+      elsif(params[:p_dest] != "")
+        x = params[:p_dest].split(',')[0]
+        y = params[:p_dest].split(',')[1]
+        p = GeoRuby::SimpleFeatures::Point.new
+        p.x = x.to_f
+        p.y = y.to_f
+        @src = Node.where(:name => params[:src])
+        @dest = n.contained_districts p
+      end
+    @routes = search_helper @src, @dest
+    respond_to do |format|
+        format.html
+        if params[:key] == "1234"
+          format.xml       # search.xml
+        end
+      end
+    end
+  end
+  
+  def search_helper src, dest
         search = Search.new
-        @routes = search.searches(@src, @dest)
-        
-        array = []        
-        @routes.each do |r|
+        routes = search.searches(src, dest)
+        array = []
+        routes.each do |r|
           arr = []
           arr[0] = [true, true]
           for j in 1..(r.length-1)
@@ -94,18 +123,10 @@ class RoutesController < ApplicationController
           end
           array.push arr
         end
-        @routes.push array
-        puts ">>>>>>>>>>>>>>>>>>>>> #{array}"
-        
-        respond_to do |format|
-          format.html
-          if params[:key] == "1234"
-            format.xml       # search.xml
-          end
-        end
-        
-    end
-  end 
+        routes.push array
+        return routes
+  end
+   
   # =====================================================================    
   
   def destroy
@@ -157,8 +178,9 @@ class RoutesController < ApplicationController
         dest = Node.find_or_initialize_by_id(dest_id)
         dest.update_attributes(dest_params)
         child.dest = dest
-        child.duration = child_params["duration"].to_f
-        puts child_params["duration"]
+        child.duration_hours = child_params["duration_hours"].split(" ")[0].to_i
+        child.duration_minutes = child_params["duration_minutes"].split(" ")[0].to_i
+        child.sum_duration
         children.push(child)
       end
     end
@@ -208,4 +230,12 @@ class RoutesController < ApplicationController
       @next = 10
     end
   end
+  
+private
+  def authorize_route(route)
+    if(!current_user.admin? && current_user != route.user)
+      error_page
+    end
+  end
 end
+  

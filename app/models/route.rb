@@ -80,4 +80,12 @@ class Route < ActiveRecord::Base
     end
     counter
   end
+  
+  def cost=(cost)
+    if(cost.class == "String")
+      write_attribute(:cost, cost.split(" ")[0])
+    else
+      super
+    end
+  end
 end

@@ -6,15 +6,13 @@
 				<p>
 					<%= notice %>
 				</p>
-				<%= form_for @route , :html => { :class => 'form-horizontal' } do |f_route| %>
+				<%= form_for @route , :html => { :class => 'well form-horizontal' } do |f_route| %>
 				<div id="sub_routes">
 					<%= f_route.fields_for :sub_routes , :html => { :class => 'form-horizontal' } do |f_sub_routes|%>
 					<%= render "sub_route_fields", :f => f_sub_routes %>
 					<%end%>
 					<br/>
 				</div>
-				<hr width="50%" align="left"/>
-				
 				<div>
 					<fieldset>
 						<%= f_route.fields_for :transportation, Transportation.new , :html => { :class => 'form-horizontal' }  do |f_trans| %>
@@ -22,6 +20,7 @@
 	 						<%= f_trans.label :category, "Transportation" ,:class =>'control-label'%>
 	 						<div class="controls">
 							<%= f_trans.select :category, ["Autobus", "Microbus", "Tram", "Train"]  %>
+							<br/>
 							</div>
 						</div>
 						<div class="control-group">
@@ -34,7 +33,7 @@
 						<div class="control-group">
 							<%= f_route.label :cost, "Cost",:class =>'control-label' %>
 							<div class="controls">
-								 <%= f_route.text_field :cost ,:class =>'text_field' %>
+								 <%= f_route.select :cost , Array.new(8) {|i| "#{(i+1)*0.25} LE"} %>
 							</div>
 						</div>
 					</fieldset>
@@ -43,7 +42,7 @@
 			 <div class="form-actions">
 				 	
 				<%= f_route.submit(:onclick => "fillPaths();",:class =>'btn btn-small btn-primary')  %>
-				</div>
+			</div>
 				<br/>
 				<%javascript_tag do%>
 				window.sub_route_element = <%= get_stop(f_route)%>;

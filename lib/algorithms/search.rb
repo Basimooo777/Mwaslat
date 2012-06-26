@@ -1,11 +1,12 @@
 class Search
+
   def searches(srcs, dests)    # src , dest are arrays of nodes
-    puts "I am in search"
     
-    total_pathes=Array.new
-    visited=Hash.new
-    src=Array.new
-    dest=Array.new
+    total_pathes = Array.new
+    visited = Hash.new
+    src = Array.new
+    dest = Array.new
+
     srcs.each do |sr|
       puts sr.class
       if(sr.category != "District")
@@ -14,6 +15,7 @@ class Search
          src << sr
       end  
     end
+
     dests.each do |ds|
       puts ds.class
       if(ds.category != "District")
@@ -25,8 +27,8 @@ class Search
  
     src.each do |sr|
       dest.each do |ds|
-        pathes=Array.new
-        pathes[0]=Array.new
+        pathes = Array.new
+        pathes[0] = Array.new
         puts sr.class
         depth_ sr,ds,visited,pathes
         pathes.delete_at pathes.size - 1
@@ -35,19 +37,20 @@ class Search
         end
       end
     end
+
     return total_pathes
   end
 
-  def depth_ node,dst,visited,pathes
+  def depth_ node, dst, visited, pathes
     puts node.name
     puts dst.name
     pathes_size = pathes.size
     path = pathes[pathes_size - 1]
     path_size = path.size
-    if node!=dst
+    if node != dst
       routes = get_dests_(node)
       routes.each do |r|
-        if visited[node.id]!=true
+        if visited[node.id] != true
           pathes_size = pathes.size
           path = pathes[pathes_size - 1]
           path_size = path.size
@@ -65,11 +68,11 @@ class Search
         end
       end
     else
-      pathes[pathes_size]=Array.new path
+      pathes[pathes_size] = Array.new path
     end
   end
  
-  def get_dests_(node)
+  def get_dests_ node
     puts node.class
     return SubRoute.find_by_sql("select * from sub_routes where src_id = '#{node.id}'")
   end
@@ -77,4 +80,5 @@ class Search
   def get_route_dest(route)
     return Node.find_by_sql("select * from nodes where id in(select dest_id from sub_routes where id = '#{route.id}')")
   end
+
 end
