@@ -3,7 +3,7 @@
 		<div class="control-group">
 			<%= f.label :name ,:class =>'control-label' %>
 			<div class="controls">
-			<%= f.text_field :name,:class =>'text_field', :disabled => (!f.object.id.nil?) %>
+			<%= f.text_field :name,:class =>'text_field', :disabled => (!editable) %>
 			</div>
 		</div>
 		<% if (show_category) %>
