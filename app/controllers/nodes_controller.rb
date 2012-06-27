@@ -26,7 +26,7 @@ class NodesController < ApplicationController
         else
           @node.setParents()
         end
-        redirect_to(nodes_path, :notice => "Node Successfully Created")
+        format.html { redirect_to(nodes_path, :notice => "Node Successfully added") }
       else
         render :action => "new"
       end
