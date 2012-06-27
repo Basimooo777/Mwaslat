@@ -232,8 +232,8 @@ class RoutesController < ApplicationController
     if(params[:src] != nil or params[:dest] != nil)
       n = Node.new
       if(params[:src] != "" and params[:dest] != "")
-          @src = Node.where(:name => params[:src])
-          @dest = Node.where(:name => params[:dest])
+          @src = get_poi_destricts(Node.where(:name => params[:src]))
+          @dest = get_poi_destricts(Node.where(:name => params[:dest]))
       elsif(params[:p_src] != "")
         x = params[:p_src].split(',')[0]
         y = params[:p_src].split(',')[1]
@@ -241,22 +241,22 @@ class RoutesController < ApplicationController
         p.x = x.to_f
         p.y = y.to_f
         @src = n.contained_districts p
-        @dest = Node.where(:name => params[:dest])
+        @dest = get_poi_destricts(Node.where(:name => params[:dest]))
       elsif(params[:p_dest] != "")
         x = params[:p_dest].split(',')[0]
         y = params[:p_dest].split(',')[1]
         p = GeoRuby::SimpleFeatures::Point.new
         p.x = x.to_f
         p.y = y.to_f
-        @src = Node.where(:name => params[:src])
+        @src = get_poi_destricts(Node.where(:name => params[:src]))
         @dest = n.contained_districts p
       end
-    @routes = search_helper @src, @dest
-    respond_to do |format|
-        format.html
-        if params[:key] == "1234"
-          format.xml       # search.xml
-        end
+      @routes = search_helper @src, @dest
+      respond_to do |format|
+          format.html
+          if params[:key] == "1234"
+            format.xml       # search.xml
+          end
       end
     end
   end
@@ -278,6 +278,18 @@ class RoutesController < ApplicationController
         end
         routes.push array
         return routes
+  end
+  
+  def get_poi_destricts arr
+    districts = []
+    arr.each do |node|
+      if node.category == "District"
+        districts.push node
+      else
+        districts += node.districts
+      end
+    end
+    return districts
   end
   
   def data
