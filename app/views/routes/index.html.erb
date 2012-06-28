@@ -37,7 +37,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				<%= render @routes %>
+				<%= render @routes, :confirm => false %>
 			</tbody>
 		</table>
 		<% if current_user.admin?%>

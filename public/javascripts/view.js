@@ -27,6 +27,37 @@ function showRoute()
     map.initialize();
     map.showingRoute(false);
 }
+function confirmRouteDeletion()
+{
+    map = new Map();
+    map.initialize();
+}
+/*
+ * "routes" is a global variable with all routes to be confirmed to delete
+ * set a global variable "routeStops" with the wanted route to show 
+ */
+function showConfirmRouteDeletion(routeId)
+{
+    confirm(routeId);
+    // try
+    // {
+        // confirm(routeStops)
+    // }
+    // catch(err) 
+    // {
+        // confirm(err)
+    // }
+    for(var i = 0; i < routes.length; i ++)
+    {
+        if(routes[i].route.id == routeId)
+        {
+            routeStops = routes[i].route
+            break
+        }
+    }
+    // confirm(routeStops.sub_routes[0].dest.name + " <<<<<<<<<<<");
+    // map.showingRoute(false);
+}
 function showingNodes()
 {
 	map = new Map();

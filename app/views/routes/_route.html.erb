@@ -1,4 +1,7 @@
 <tr>
+	<% if confirm %>
+		<td><%= route.id %></td>
+	<% end %>
 	<td><%= route.src.name %></td>
 	<td><%= route.dest.name %></td>	
 	<td><%= route.cost %> LE</td>
@@ -9,14 +12,18 @@
 		<td><%=link_to route.user.email, route.user%></td>
 	<% end %>
 	<td>
-		<%= link_to edit_route_path(route), :class =>'btn btn-small btn-primary' do %>
-		  <i class="icon-edit"></i>
-		<% end %>
-		<%= link_to route, :class =>'btn btn-small btn-danger' ,:confirm => 'Are you sure?', :method => :delete do %>
-		  <i class="icon-trash"></i>
-		<% end %>
-		<%= link_to route, :class =>'btn btn-small btn-success' do %>
-		  <i class="icon-eye-open"></i>
+		<% if !confirm %>
+			<%= link_to edit_route_path(route), :class =>'btn btn-small btn-primary' do %>
+			  <i class="icon-edit"></i>
+			<% end %>
+			<%= link_to route, :class =>'btn btn-small btn-danger' ,:confirm => 'Are you sure?', :method => :delete do %>
+			  <i class="icon-trash"></i>
+			<% end %>
+			<%= link_to route, :class =>'btn btn-small btn-success' do %>
+			  <i class="icon-eye-open"></i>
+			<% end %>
+		<% else %>
+			<button class="btn btn-small btn-success" name="showOnMap" onclick="showConfirmRouteDeletion('<%= route.id %>')" ><i class="icon-eye-open"></i></button>
 		<% end %>
 	</td>
 </tr>

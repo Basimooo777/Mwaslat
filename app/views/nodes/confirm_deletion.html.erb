@@ -1,29 +1,38 @@
-<div class="container-fluid" style="height: 100%;">
-	<div class="row-fluid" id="hasmap" style="height: 100%; " >
-		<p id="notice">
-			<%= notice %>
-		</p>
-		<h2>Route to be deleted</h2>
-		<table class="table table-striped table-bordered" >
-			<thead>
-				<tr>
-					<th>Id</th>
-					<th>Source</th>
-					<th>Destination</th>
-					<th>Cost</th>
-					<th>Transportation Type</th>
-					<th>Transportation Way</th>
-					<th>User</th>
-					<th></th>
-					<th></th>
-					<th></th>
-				</tr>
-			</thead>
-			<tbody>
-				<%= render @routes %>
-			</tbody>
-		</table>
-		<%= link_to "Confirm", :action => "deletion_confirmed", :routes_ids => @routes_ids, :node_id => @node_id%>
-		<%= link_to "Back", :back %>
+<body onload="confirmRouteDeletion();">
+	<div id="map_canvas" class="well" style="width:100%; height:100%"></div>
+	<div class="container-fluid" style="height: 100%;">
+		<div class="row-fluid" id="hasmap" style="height: 100%; " >
+			<p id="notice">
+				<%= notice %>
+			</p>
+			<h2>Route to be deleted</h2>
+			<table class="table table-striped table-bordered" >
+				<thead>
+					<tr>
+						<th>Id</th>
+						<th>Source</th>
+						<th>Destination</th>
+						<th>Cost</th>
+						<th>Transportation Type</th>
+						<th>Transportation Way</th>
+						<th>Feedback</th>
+						<th>User</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<%= render @routes, :confirm => true %>
+				</tbody>
+			</table>
+			<%= link_to "Confirm", :action => "deletion_confirmed", :routes_ids => @routes_ids, :node_id => @node_id%>
+			<%= link_to "Back", :back %>
+		</div>
 	</div>
-</div>
+	<% javascript_tag do %>
+			window.routes = <%= raw @routes.to_json(:include => {:sub_routes => {
+				:include => {:dest => {:only => [:name, :path]}},
+				:only => {}, :methods => [:no_name]}
+				} , 
+			:only => [:id]) %>
+	<% end %>
+</body>
