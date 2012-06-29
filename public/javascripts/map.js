@@ -775,6 +775,8 @@ function Map () {
 	        google.maps.event.addListener(poly, "rightclick", function(event){
                 if(map.rightClick != null)
                     map.rightClick.setMap(null);
+                if(map.highlight != null)
+                    poly = map.highlight
                 if(!poly.isSelected)  // not selected before
                 {
                     if (matchNode == null)
