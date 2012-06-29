@@ -15,14 +15,18 @@
 				</div>
 				<div>
 					<fieldset>
-						<%= f_route.fields_for :transportation, Transportation.new , :html => { :class => 'form-horizontal' }  do |f_trans| %>
 						<div class="control-group">
-							<%= f_trans.label :category, "Transportation" ,:class =>'control-label'%>
+							<%= f_route.label :trans_category, "Transportation" ,:class =>'control-label'%>
 							<div class="controls">
-								<%= f_trans.select :category, ["Autobus", "Microbus", "Tram", "Train"]  %>
+								<%= f_route.select :trans_category, ["Autobus", "Microbus", "Tram", "Train"]  %>
 							</div>
 						</div>
-						<%end%>
+						<div class="control-group">
+							<%= f_route.label :trans_description ,:class =>'control-label'%>
+							<div class="controls">
+								 <%= f_route.text_field :trans_description ,:class =>'text_field' %>
+							</div>
+						</div>
 						<div class="control-group">
 							<%= f_route.label :cost, "Cost",:class =>'control-label' %>
 							<div class="controls">

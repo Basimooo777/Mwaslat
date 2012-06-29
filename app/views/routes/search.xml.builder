@@ -36,7 +36,7 @@ if @routes != nil
 							xml.isStop flags[i][j][1]
 						end
 						xml.duration r.duration
-						xml.transportation r.route.transportation.category
+						xml.transportation r.route.trans_category
 						xml.cost r.route.cost
 					end
 					j += 1

@@ -1,11 +1,9 @@
 class Route < ActiveRecord::Base
   belongs_to :user
-  belongs_to :transportation, :dependent => :destroy
   has_many :sub_routes, :dependent => :destroy
   has_many :likes, :dependent => :destroy
   has_many :srcs, :through => :sub_routes, :class_name => "Node", :foreign_key => "src_id"
   has_many :dests, :through => :sub_routes, :class_name => "Node", :foreign_key => "dest_id"
-  accepts_nested_attributes_for :transportation
   accepts_nested_attributes_for :sub_routes, :allow_destroy => true
   
   def order_sub_routes
