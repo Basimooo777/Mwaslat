@@ -697,11 +697,13 @@ function Map () {
 	 */
 	this.showingRoute = function(isEdit)
 	{
+	    var bounds = new google.maps.LatLngBounds();
 		for(var i = 0; i < routeStops.length; i ++)
 		{
 			var node = routeStops[i].sub_route.dest;
+			var path = google.maps.geometry.encoding.decodePath(node.path);
 			var poly = new google.maps.Polygon({
-				path: google.maps.geometry.encoding.decodePath(node.path),
+				path: path,
 				strokeColor: "#FF0000",
 				fillColor: "#FF0000",
 				editable: false,
@@ -720,7 +722,9 @@ function Map () {
                 overlayComplete(poly);    
     			addMatchingEvent(poly);
 			}
+			fitBounds(bounds, path)
 		}
+		map.fitBounds(bounds);
 	}
 	/*
 	 * For Showing nodes 
