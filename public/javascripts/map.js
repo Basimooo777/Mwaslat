@@ -45,6 +45,7 @@ function Map () {
 	 	google.maps.Polygon.prototype.isSelected = false;
 	 	google.maps.Polygon.prototype.del = function()
 	 	{
+    	    this.setMap(null);
  			if(this.exist)
  			{
  			    this.isSelected = false
@@ -52,7 +53,7 @@ function Map () {
                 this.strokeColor = "#000000";
                 this.fillColor = "#FFFF33";
                 this.strokeWeight = 1;
- 			    this.setMap(map);   
+ 			    this.setMap(map);
  			}
      	    try{
     	 		this.tip.setMap(null);
