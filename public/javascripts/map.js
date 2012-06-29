@@ -460,13 +460,19 @@ function Map () {
 	    google.maps.event.addListener(overlay, "mousemove", function(event){
 	        if(map.rightClick == null)
 	        {
+	            if (map.highlight != null && map.highlight != overlay)
+	            {
+	               if(overlay.title)
+	               {
+                       overlay.title.setMap(null)
+                       overlay.title = null
+	               }
+	               overlay = map.highlight;
+	            }
     	        if(overlay.title)
     	        {
-    	            if (map.highlight == overlay)
-    	            {
-                        overlay.title.pos = event.latLng;
-                        overlay.title.redraw();    	            
-    	            }
+                    overlay.title.pos = event.latLng;
+                    overlay.title.redraw();    	            
     	        }
     	        else
     	        {
@@ -791,6 +797,8 @@ function Map () {
             google.maps.event.addListener(poly, "rightclick", function(event){
                 if(map.rightClick != null)
                     map.rightClick.setMap(null);
+                if(map.highlight != null)
+                    poly = map.highlight;
                 rightClickSearch(event.latLng, poly);
             });
         }
