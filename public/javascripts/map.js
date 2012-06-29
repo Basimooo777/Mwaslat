@@ -460,12 +460,13 @@ function Map () {
 	    google.maps.event.addListener(overlay, "mousemove", function(event){
 	        if(map.rightClick == null)
 	        {
-	            if(map.highlight != null)
-	               overlay = map.highlight;
     	        if(overlay.title)
     	        {
-                    overlay.title.pos = event.latLng;
-                    overlay.title.redraw();    	            
+    	            if (map.highlight == overlay)
+    	            {
+                        overlay.title.pos = event.latLng;
+                        overlay.title.redraw();    	            
+    	            }
     	        }
     	        else
     	        {
@@ -834,11 +835,11 @@ function Map () {
     {
         var index = poly.index
         var flag = false;
-        for(var i =  overlays.length - 1; i > index; i --)
+        for(var i =  oldOverlays.length - 1; i > index; i --)
         {
-            if(google.maps.geometry.poly.containsLocation(point, overlays[i]))
+            if(google.maps.geometry.poly.containsLocation(point, oldOverlays[i]))
             {
-                map.highlight = overlays[i]
+                map.highlight = oldOverlays[i]
                 flag = true
                 refreshHighlight(1);
                 break
@@ -864,7 +865,7 @@ function Map () {
             map.highlight.fillOpacity = 0;
             map.highlight.strokeColor = "#000000";
             map.highlight.strokeWeight = 1;
-        }     
+        }
         map.highlight.setMap(map);            
     }
 	/*
