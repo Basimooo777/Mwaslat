@@ -5,8 +5,8 @@
 	<td><%= route.src.name %></td>
 	<td><%= route.dest.name %></td>	
 	<td><%= route.cost %> LE</td>
-	<td><%= route.transportation.category %></td>
-	<td><%= route.transportation.way %></td>
+	<td><%= route.trans_category %></td>
+	<td><%= route.trans_description %></td>
 	<td><%=label :likes, "#{route.numOfLikes} likes, #{route.numOfDislikes} dislikes", :class => "label" %></td>
 	<% if(current_user.admin?) %>
 		<td><%=link_to route.user.email, route.user%></td>
