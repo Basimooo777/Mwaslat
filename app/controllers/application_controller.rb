@@ -37,6 +37,7 @@ protected
   
   def add_notification(notification_msg, user)
     notification = Notification.new(:msg => notification_msg, :user => user)
+    notification.read = false
     notification.save
   end
 

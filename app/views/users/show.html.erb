@@ -1,45 +1,39 @@
-<h2>Nodes</h2>
-<table id="users_nodes" class="table table-striped table-bordered" >
-	<thead>
-		<tr>
-			<th>Name</th>
-			<th>Category</th>
-			<th>Actions</th>
-		</tr>
-	</thead>
-	<tbody>
-		<% @nodes.each do |node| %>
-		<tr id="row<%= node.id %>">
-			<td><%= node.name %></td>
-			<td><%= node.category %></td>
-			<td><%= link_to 'Edit', edit_node_path(node), :class =>'btn btn-small btn-primary' %></td>
-		</tr>
-		<% end %>
-	</tbody>
-</table>
-<h2>Routes</h2>
-<table id="users_routes" class="table table-striped table-bordered" >
-	<thead>
-		<tr>
-			<th>Id</th>
-			<th>Cost</th>
-			<th>Transportation Type</th>
-			<th>Transportation Way</th>
-			<th></th>
-			<th></th>
-		</tr>
-	</thead>
-	<tbody>
-		<% @routes.each do |route| %>
-		<tr>
-			<td><%= route.id %></td>
-			<td><%= route.cost %></td>
-			<td><%= route.transportation.category %></td>
-			<td><%= route.transportation.way %></td>
-			<td><%= link_to 'Edit', edit_route_path(route) %></td>
-			<td><%= link_to 'Destroy', route, :confirm => 'Are you sure?', :method => :delete %></td>
-			<td><%= link_to 'Show', route %></td>
-		</tr>
-		<% end %>
-	</tbody>
-</table>
+<div class="container-fluid" style="height: 100%;">
+<div class="row-fluid" id="hasmap" style="height: 100%; " >
+	<label class="label"><h2>User's Routes</h2></label>
+	<table id="admin_routes_table" class="table table-striped table-bordered" >
+		<thead>
+			<tr>
+				<th>Source</th>
+				<th>Destination</th>
+				<th>Cost</th>
+				<th>Using</th>
+				<th>Description</th>
+				<th>Feedback</th>
+				<% if (current_user.admin?)%> <th>User</th>
+				<%end%> <th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			<%= render @routes, :confirm => false %>
+		</tbody>
+	</table>
+	<hr/>
+	<label class="label"><h2>User's Routes</h2></label>
+	<table id="admin_nodes_table" class="table table-striped table-bordered" >
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Category</th>
+				<% if (current_user.admin?)%>
+					<th>User</th>
+				<%end%>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			<%= render @nodes %>
+		</tbody>
+	</table>
+</div>
+</div>

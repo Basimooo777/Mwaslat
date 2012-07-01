@@ -132,5 +132,8 @@ class Node < ActiveRecord::Base
   def name
     super().force_encoding('UTF-8')
   end
-
+  
+  def sub_routes
+    self.src_routes | self.dest_routes
+  end
 end

@@ -1,0 +1,19 @@
+<table class="table table-striped table-bordered" >
+	<thead>
+		<tr>
+			<th>Source</th>
+			<th>Destination</th>
+			<th>Cost</th>
+			<th>Using</th>
+			<th>Description</th>
+			<th>Feedback</th>
+			<% if (current_user.admin?)%> 
+				<th>User</th>
+			<%end%>
+			<th>Actions</th>
+		</tr>
+	</thead>
+	<tbody>
+		<%= render @routes, :confirm => false %>
+	</tbody>
+</table>

@@ -21,5 +21,7 @@ class User < ActiveRecord::Base
       result[0]
     end
   end
-  
+  def numOfUnread
+    self.notifications.search(:read_eq => false).all.length
+  end
 end

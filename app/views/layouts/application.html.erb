@@ -34,27 +34,56 @@
 		<div class="navbar navbar-fixed-top">
 			<div class="navbar-inner">
 				<div class="container-fluid">
-					<a class="brand" href="/routes/search">Home</a>
+					<a class="brand" href="/routes/search">Wadeeeeeny</a>
 					<ul class="nav nav-pills">
-						 <li class="dropdown" id="menu1">
-						 <a class="dropdown-toggle" data-toggle="dropdown" href="#menu1">
-						 Go To
-						 <b class="caret"></b>
-						 </a>
-						 <ul class="dropdown-menu">
-						 <li><a href="/nodes">My Nodes</a></li>
-						 <li class="divider"></li>
-						 <li><a href="/routes">My Routes</a></li>
-						 </ul>
+						 <%if(!current_user.nil?)%>
+	 						 <li class="divider-vertical"></li>
+							 <li class="dropdown" id="menu1">
+								 <a class="dropdown-toggle" data-toggle="dropdown" href="#menu1">
+									 Go To <b class="caret"></b>
+								 </a>
+								 <ul class="dropdown-menu">
+									 <%if(current_user.admin?)%>
+										 <li><a href="/nodes">All Places</a></li>
+										 <li class="divider"></li>
+										 <li><a href="/routes">All Routes</a></li>
+	 									 <li class="divider"></li>
+										 <li><a href="/users">All Users</a></li>
+									 <%else%>
+										 <li><a href="/nodes">My Places</a></li>
+										 <li class="divider"></li>
+										 <li><a href="/routes">My Routes</a></li>
+									 <%end%>
+								 </ul>
+							 </li>
+						 <%end%>
+						 <li class="divider-vertical"></li>
+						 <li>
+						 	<a href="/routes/new">Add Your Route !</a>
+						 </li>
+						 <li class="divider-vertical"></li>
+						 <li>
+						 	<a href="/nodes/new">Describe Your City !</a>
+						 </li>
+						 <li class="dropdown" id="menu2">
+							 <a class="dropdown-toggle" data-toggle="dropdown" href="#menu2">
+								 Others' Routes <b class="caret"></b>
+							 </a>
+							<div class="dropdown-menu" style="padding: 15px; padding-bottom: 0px;">
+								<%= render "routes/passing_by"%>
+				            </div>
 						 </li>
 					</ul>
 					<ul class="nav pull-right">
-							<% if current_user != nil %>
+							<li class="divider-vertical"></li>
+							<% if (!current_user.nil?) %>
 							<li >
-								<a href="/notifications" id="example">Notifications</a>
+								<a href="/notifications">Notifications (<%=current_user.numOfUnread%> unread)</a>
 							</li>
+							<li class="divider-vertical"></li>
 							<%end%>
 							<%= render 'devise/menu/registration_items' %>						
+							<li class="divider-vertical"></li>
 							<%= render 'devise/menu/login_items' %>
 					</ul>
 				</div>

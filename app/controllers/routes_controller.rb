@@ -7,6 +7,7 @@ class RoutesController < ApplicationController
   def show
     @route = Route.find(params[:id])
     authorize_route(@route)
+    @route.set_sub_routes_durations
     @route.order_sub_routes
     @route.sub_routes = @route.sub_routes.unshift(SubRoute.new(:dest=> @route.sub_routes[0].src))
   end
@@ -31,6 +32,7 @@ class RoutesController < ApplicationController
   def create
     children = []
     notified_nodes = []
+    created_districts = []
     children_params = params[:route]["sub_routes_attributes"]
     keys = children_params.keys
     keys.collect! {|i| i.to_f}
@@ -52,6 +54,7 @@ class RoutesController < ApplicationController
           dest = Node.new(dest_params)
           dest.category = "District"
           dest.user = current_user
+          created_districts.push (dest)
         else
           dest = Node.find(dest_id)
           notified_nodes.push(dest) if (dest.user != current_user)
@@ -65,12 +68,27 @@ class RoutesController < ApplicationController
     end
     params[:route].delete("sub_routes_attributes")
     @route = Route.new(params[:route])
+    mappings = []
     for i in 1..children.length-1
       children[i].src = children[i-1].dest
-      children[i].save
+      if(children[i].src.id.nil? || children[i].dest.id.nil?)
+        children[i].save
+        mappings.push(Mapping.new(:route => @route, :sub_route => children[i], :duration => children[i].duration))
+      else
+        s = SubRoute.search(:src_id_eq => children[i].src.id, :dest_id_eq => children[i].dest.id).all
+        if(s.empty?)
+          children[i].save
+          mappings.push(Mapping.new(:route => @route, :sub_route => children[i], :duration => children[i].duration))
+        else
+          mappings.push(Mapping.new(:route => @route, :sub_route => s[0], :duration => children[i].duration))
+        end
+      end
     end
     children = children.drop(1)    # removes first sub-route
-    @route.sub_routes = children
+    created_districts.each do |district|
+      district.setChildren()
+    end
+    @route.mappings = mappings
     @route.user = current_user
     respond_to do |format|
       if @route.save
@@ -85,6 +103,7 @@ class RoutesController < ApplicationController
   def edit
     @route = Route.find(params[:id])
     authorize_route(@route)
+    @route.set_sub_routes_durations
     @route.order_sub_routes
     @route.sub_routes = @route.sub_routes.unshift(SubRoute.new(:dest=> @route.sub_routes[0].src))
   end
@@ -111,9 +130,9 @@ class RoutesController < ApplicationController
       dest_params = child_params["dest_attributes"]
       dest_id = dest_params["id"]
       if child_params["_destroy"] == "1"
-        SubRoute.destroy(child_id.to_i) if child_id != ""
+        @route.getMapping(child_id.to_i).destroy() if child_id != ""
       else
-        child = SubRoute.find_or_initialize_by_id(child_id)
+        child = SubRoute.new
         if(dest_id == "")
           dest = Node.new(dest_params)
           dest.category = "District"
@@ -131,13 +150,31 @@ class RoutesController < ApplicationController
     end
     params[:route].delete("sub_routes_attributes")
     @route.update_attributes(params[:route])
+    mappings = []
     for i in 1..children.length-1
       children[i].src = children[i-1].dest
-      children[i].save
+      if(children[i].src.id.nil? || children[i].dest.id.nil?)
+        children[i].save
+        mappings.push(Mapping.new(:route => @route, :sub_route => children[i], :duration => children[i].duration))
+      else
+        s = SubRoute.search(:src_id_eq => children[i].src.id, :dest_id_eq => children[i].dest.id).all
+        if(s.empty?)
+          children[i].save
+          mappings.push(Mapping.new(:route => @route, :sub_route => children[i], :duration => children[i].duration))
+        else
+          found_mapping = @route.getMapping(s[0].id)
+          if(found_mapping.nil?)
+            mappings.push(Mapping.new(:route => @route, :sub_route => s[0], :duration => children[i].duration))
+          else
+            found_mapping.update_attributes(:duration => children[i].duration)
+            mappings.push(found_mapping)
+          end
+        end
+      end
     end
-    children[0].destroy
+    # children[0].destroy
     children = children.drop(1)    # removes first sub-route
-    @route.sub_routes = children
+    @route.mappings = mappings
     respond_to do |format|
       if @route.save
         if(current_user.admin?)
@@ -292,6 +329,11 @@ class RoutesController < ApplicationController
     return districts
   end
   
+  def enhance_results
+    name = params[:name]
+    @routes = Route.search(:sub_routes_src_name_or_sub_routes_dest_name_like => name).all
+  end
+  
   def data
     if params[:commit]
       if params[:commit] == ">"
@@ -330,4 +372,3 @@ private
     end
   end
 end
-  

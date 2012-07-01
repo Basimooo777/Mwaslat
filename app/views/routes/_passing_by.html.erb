@@ -1,0 +1,7 @@
+<% form_tag "/routes/enhance_results", :method=>'get' do %>
+	<%= label_tag :name, "Passing By: " %>
+	<%= text_field_tag (:name), nil, :class => "auto"%>
+	<br/>
+	<%= submit_tag "Search", :class => "btn btn-primary"%>
+	<br/>
+<% end %>

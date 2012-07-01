@@ -1,9 +1,8 @@
 class Route < ActiveRecord::Base
   belongs_to :user
-  has_many :sub_routes, :dependent => :destroy
+  has_many :mappings, :dependent => :destroy
+  has_many :sub_routes, :through => :mappings
   has_many :likes, :dependent => :destroy
-  has_many :srcs, :through => :sub_routes, :class_name => "Node", :foreign_key => "src_id"
-  has_many :dests, :through => :sub_routes, :class_name => "Node", :foreign_key => "dest_id"
   accepts_nested_attributes_for :sub_routes, :allow_destroy => true
   
   def order_sub_routes
@@ -29,10 +28,30 @@ class Route < ActiveRecord::Base
       end
       self.sub_routes.pop(self.sub_routes.length)
       ordered_routes.each do |r|
-        self.sub_routes.push(r)
+        self.sub_routes.insert(self.sub_routes.length, r)
       end
   end
   
+  def srcs
+    @srcs = []
+    self.sub_routes.each do |sub_route|
+      @srcs.push(sub_route.src)
+    end
+    @srcs
+  end
+  
+  def dests
+    @dests = []
+    self.sub_routes.each do |sub_route|
+      @dests.push(sub_route.dest)
+    end
+    @dests
+  end
+  
+  def nodes
+    @nodes = self.srcs | self.dests
+  end
+ 
   def src
     dests_ids = []
     self.dests.each do |dest|
@@ -89,5 +108,20 @@ class Route < ActiveRecord::Base
   
   def nodes
     self.srcs | self.dests
+  end
+  
+  def set_sub_routes_durations
+    self.sub_routes.each_with_index do |sub_route, index|
+      sub_route.duration = self.mappings[index].duration
+    end
+  end
+  
+  def getMapping(sub_route_id)
+    self.mappings.each do |mapping|
+      if(mapping.sub_route.id == sub_route_id)
+        return mapping
+      end
+    end
+    return nil
   end
 end

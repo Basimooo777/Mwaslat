@@ -1,5 +1,10 @@
-<table>
-	<th>Messsage</th>
-	<th>Created at</th>
-	<%= render @notifications %>
+<label class="span10 label"><h2>Notifications</h2></label>
+<table class="table table-bordered span10 well">
+	<th class="well">Messsage</th>
+	<th class="well">Sent at</th>
+	<th class="well"></th>
+	<th class="well"></th>
+	<div id="notifications">
+		<%= render @notifications %>
+	</div>
 </table>

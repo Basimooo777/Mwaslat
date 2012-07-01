@@ -37,18 +37,14 @@
 					</fieldset>
 				</div>
 				
-			 <div class="form-actions">
-				 	
+			 <div class="form-actions">				 	
 				<%= f_route.submit(:onclick => "fillPaths();",:class =>'btn btn-small btn-primary')  %>
 			</div>
 				<br/>
 				<%javascript_tag do%>
-				window.sub_route_element = <%= get_stop(f_route)%>;
+					window.sub_route_element = <%= get_stop(f_route)%>;
 				<%end%>
 				<% end %>
-				<!-- <div style="left: 50%; top: 15%; position: absolute">
-					<%= link_to "See Data", "routes/data"%>
-				</div> -->
 			</div>
 		</div>
 	</div>

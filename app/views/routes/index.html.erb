@@ -13,8 +13,8 @@
 			<div class="well form-vertical">
 				<label class="label"><h3>Advanced Search</h3></label>
 				<% form_for @search do |f| %>
-					<%= f.label :srcs_name_or_dests_name_like, "Passing By: " %>
-					<%= f.text_field :srcs_name_or_dests_name_like, :class => "auto" %>
+					<%= f.label :sub_routes_src_name_or_sub_routes_dest_name_like, "Passing By: " %>
+					<%= f.text_field :sub_routes_src_name_or_sub_routes_dest_name_like, :class => "auto" %>
 					<%= f.label :cost_gte, "Cost Range: " %>
 					<%= f.text_field :cost_gte%> - <%= f.text_field :cost_lte %><br/>
 					<%= f.submit "Search" %>   <br/>
@@ -43,6 +43,5 @@
 		<% if current_user.admin?%>
 			<%= will_paginate @routes%>
 		<%end%>
-		<h3 > <%= link_to 'New', :action => "new" %> </h3>
 	</div>
 </div>

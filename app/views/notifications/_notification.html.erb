@@ -1,4 +1,14 @@
-<tr>
+<tr id=<%=notification.id%> <%if(!notification.read)%> style="background-color:#999999;" <%end%> class= "well">
 	<td><%= notification.msg %></td>
 	<td><%= notification.created_at%></td>
+	<td>
+		<%= link_to notification, :class =>'btn btn-small btn-danger' ,:confirm => 'Are you sure?', :method => :delete, :remote => true do %>
+			  <i class="icon-trash"></i>
+		<% end %>
+	</td>
+	<td>
+	<%if (!notification.read)%>
+		<%=link_to "mark as read", "notifications/mark_as_read/#{notification.id}", :class =>"btn", :id=>"link_#{notification.id}",:remote => true%>
+	<%end%>
+	</td>
 </tr>

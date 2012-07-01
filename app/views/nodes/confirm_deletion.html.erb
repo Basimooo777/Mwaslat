@@ -5,7 +5,7 @@
 			<p id="notice">
 				<%= notice %>
 			</p>
-			<h2>Route to be deleted</h2>
+			<label class=" label"><h2>Routes Using This Node</h2></label>
 			<table class="table table-striped table-bordered" >
 				<thead>
 					<tr>
@@ -24,8 +24,8 @@
 					<%= render @routes, :confirm => true %>
 				</tbody>
 			</table>
-			<%= link_to "Confirm", :action => "deletion_confirmed", :routes_ids => @routes_ids, :node_id => @node_id%>
-			<%= link_to "Back", :back %>
+			<%= link_to "Confirm", {:action => "deletion_confirmed",:routes_ids => @routes_ids, :node_id => @node_id}, :class => "btn btn-primary"%>
+			<%= link_to "Cancel", :back, :class => "btn" %>
 		</div>
 	</div>
 	<% javascript_tag do %>

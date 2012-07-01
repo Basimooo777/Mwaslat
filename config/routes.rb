@@ -1,13 +1,16 @@
 Mwaslat1::Application.routes.draw do
   devise_for :users
+  match "notifications/mark_as_read/:id" => "notifications#mark_as_read"
   match "nodes/confirm_deletion" => "nodes#confirm_deletion"
   match "nodes/deletion_confirmed" => "nodes#deletion_confirmed"
   match "routes/data" => "routes#data"
   match "routes/:id/enhance" => "routes#enhance_route"
+  match "routes/enhance_results" => "routes#enhance_results"
   match "routes/search" => "routes#search"
   match "routes/search/:id/edit" => "routes#update"
   match "nodes/new" => "nodes#new"
   match "nodes/delete" => "nodes#destroy"
+  match "users/promote/:id" => "users#promote"
   resources :users
   resources :likes
   
