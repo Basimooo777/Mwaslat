@@ -11,19 +11,11 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120620194826) do
+ActiveRecord::Schema.define(:version => 20120406184217) do
 
   create_table "containings", :force => true do |t|
     t.integer  "district_id"
     t.integer  "poi_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "likes", :force => true do |t|
-    t.integer  "user_id"
-    t.integer  "route_id"
-    t.boolean  "status"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -47,7 +39,7 @@ ActiveRecord::Schema.define(:version => 20120620194826) do
   end
 
   create_table "routes", :force => true do |t|
-    t.float    "cost"
+    t.decimal  "cost",              :precision => 10, :scale => 0
     t.integer  "transportation_id"
     t.integer  "user_id"
     t.datetime "created_at"
@@ -57,7 +49,7 @@ ActiveRecord::Schema.define(:version => 20120620194826) do
   create_table "sub_routes", :force => true do |t|
     t.integer  "src_id"
     t.integer  "dest_id"
-    t.integer  "duration"
+    t.decimal  "duration",   :precision => 10, :scale => 0
     t.integer  "route_id"
     t.datetime "created_at"
     t.datetime "updated_at"
