@@ -8,6 +8,10 @@ var template_2 = "route_sub_routes_attributes_index_dest_attributes_";
 var to_replace = new RegExp("index", "g");
 
 $(document).ready(function() {
+	$("#registerGuideData").hide();
+	$("#addNodeGuideData").hide();
+	$("#addRouteGuideData").hide();
+	$("#searchGuideData").hide();
 	$('.dropdown-toggle').dropdown();
 	$("#admin_routes_table").dataTable( {
 		"sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
@@ -45,7 +49,7 @@ $(document).ready(function() {
 	} );
 	
 	$("#user_nodes_table").dataTable( {
-		"sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+		"sDom": "<'row'<'span6'l><'span2'f>r>t<'row'<'span6'i><'span6'p>>",
 		"sPaginationType": "bootstrap",
 		"oLanguage": {
 			"sLengthMenu": "_MENU_ records per page"
@@ -132,12 +136,6 @@ function remove_child(sub_route_index){
 	rename_stops(sub_route_index);
 	alert(sub_routes_ids.toString());
 	alert(used_ids.toString());
-}
-
-function clear_name_field(sub_route_index){
-	var node_name_id = "#" + template_2.replace(to_replace, sub_routes_ids[sub_route_index]).replace(".", "\\.") + "name";
-	$(node_name_id).val("");
-	$(node_name_id).removeAttr("disabled");
 }
 
 // 0. 1. 2. 3. .....
@@ -299,3 +297,37 @@ $(function() {
         }
     });
 });
+
+function activeLi(element){
+	liArray=document.getElementById("navlist").childNodes;
+	i=0;
+	while(liArray[i]){
+	liArray[i].id="";
+	i++;
+	}
+	element.id="active";
+}
+
+function openGuideData(index){
+	if(index == 1){
+		$("#registerGuideData").show();
+		$("#addNodeGuideData").hide();
+		$("#addRouteGuideData").hide();
+		$("#searchGuideData").hide();
+	}else if(index==2){
+		$("#registerGuideData").hide();
+		$("#addNodeGuideData").show();
+		$("#addRouteGuideData").hide();
+		$("#searchGuideData").hide();
+	}else if(index==3){
+		$("#registerGuideData").hide();
+		$("#addNodeGuideData").hide();
+		$("#addRouteGuideData").show();
+		$("#searchGuideData").hide();
+	}else{
+		$("#registerGuideData").hide();
+		$("#addNodeGuideData").hide();
+		$("#addRouteGuideData").hide();
+		$("#searchGuideData").show();
+	}
+}
