@@ -8,3 +8,57 @@ ul.hmenu li {
   display: inline;  
 }
 
+#navcontainer
+{
+background: #ffffff;
+width: 100%;
+margin: 0 auto;
+padding: 1em 0;
+font-family: georgia, serif;
+font-size: 13px;
+text-align: center;
+}
+
+ul#navlist
+{
+text-align: left;
+list-style: none;
+padding: 0;
+margin: 0 auto;
+width: 70%;
+}
+
+ul#navlist li
+{
+display: block;
+margin: 0;
+padding: 0;
+}
+
+ul#navlist li a
+{
+display: block;
+width: 100%;
+padding: 0.5em 0 0.5em 2em;
+border-width: 1px;
+border-color: #ffe #aaab9c #ccc #fff;
+border-style: solid;
+color: #777;
+text-decoration: none;
+background: #ffffff;
+}
+
+#navcontainer>ul#navlist li a { width: auto; }
+
+ul#navlist li#active a
+{
+background: #ffffff;
+color: #000030;
+}
+
+ul#navlist li a:hover, ul#navlist li#active a:hover
+{
+color: #000030;
+background: transparent;
+border-color: #aaab9c #fff #fff #ccc;
+}
