@@ -1,0 +1,298 @@
+<html>
+	<head>
+		<link href="/stylesheets/bootstrap.css" media="screen" rel="stylesheet" type="text/css" />
+		<link href="/stylesheets/bootstrap-responsive.css" media="screen" rel="stylesheet" type="text/css" />
+		<link href="/stylesheets/bootstrap-responsive.min.css" media="screen" rel="stylesheet" type="text/css" />
+		<link href="/stylesheets/bootstrap.min.css" media="screen" rel="stylesheet" type="text/css" />
+		<link href="/stylesheets/public.css" media="screen" rel="stylesheet" type="text/css" />
+		<script src="/javascripts/jquery.js" type="text/javascript"></script>
+		<script src="/javascripts/jquery_ujs.js" type="text/javascript"></script>
+		<script src="/javascripts/map.js?1340365929" type="text/javascript"></script>
+		<script src="/javascripts/view.js?1340365929" type="text/javascript"></script>
+		<script src="/javascripts/bootstrap.min.js?1340365929" type="text/javascript"></script>
+		<script src="/javascripts/jquery-1.7.1.min.js" type="text/javascript"></script>
+		<script src="/javascripts/jquery-ui-1.8.18.custom.min.js?1340365929" type="text/javascript"></script>
+		<script src="/javascripts/equalheight.js?1340365929" type="text/javascript"></script>
+		<script src="/javascripts/dropdown.js?1340365929" type="text/javascript"></script>
+		<script src="/javascripts/transition.js" type="text/javascript"></script>
+		<script src="/javascripts/carousel.js" type="text/javascript"></script>
+		<script src="/javascripts/jquery.dataTables.min.js?1340365929" type="text/javascript"></script>
+		<script src="/javascripts/twitter_extension.js?1340365929" type="text/javascript"></script>
+		<script src="/javascripts/bootstrap-button.js?1340366958" type="text/javascript"></script>
+		<script src="/javascripts/application.js?1340752291" type="text/javascript"></script>
+		<title>Wadeeny</title>
+	</head>
+	<body>
+		<div class="container-fluid">
+			<div class="row-fluid" >
+				<div class="span3" >
+					<br />
+					<label class="label label-info"><h2>User Guide</h2></label>
+					<br />
+					<br />
+					<div id="navcontainer">
+						<ul id="navlist">
+							<li id="active" onClick='activeLi(this);openGuideData(1);'>
+								<a href="#" >Registration and log in</a>
+							</li>
+							<li onClick='activeLi(this);openGuideData(2);'>
+								<a href="#">Adding new nodes</a>
+							</li>
+							<li onClick='activeLi(this);openGuideData(3);'>
+								<a href="#">Adding new routes</a>
+							</li>
+							<li onClick='activeLi(this);openGuideData(4);'>
+								<a href="#">Search</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div class="span9" id="guideData">
+					<br />
+					<br />
+					<br />
+					<br />
+					<div id="registerGuideData">
+						<div >
+							<img src="img/userguide/r1.png" alt="">
+							<div >
+								<h4>First Step</h4>
+								<p>
+									click on 'Register'
+								</p>
+							</div>
+						</div>
+						<div >
+							<img src="img/userguide/r2.png" alt="">
+							<div >
+								<h4>Second Step</h4>
+								<p>
+									-Enter email in specified field then
+									<br />
+									-Enter your password then
+									<br />
+									-Retype your password
+									<br />
+									-Then click on 'signup'
+									<br />
+									-Then you should activate your account through a message sent to your email
+								</p>
+							</div>
+						</div>
+						<div >
+							<img src="img/userguide/r3.png" alt="">
+							<div >
+								<h4>Third Step</h4>
+								<p>
+									Go to home page then click on 'login'
+								</p>
+							</div>
+						</div>
+						<div >
+							<img src="img/userguide/r4.png" alt="">
+							<div >
+								<h4>Fourth Step</h4>
+								<p>
+									-Once after your account is activated
+									<br />
+									-Enter your email and password
+									<br />
+									-You can check the 'Remember me' button to make your browser save your login data so you don't need to write it every time you open our system
+									<br />
+									-Then Click on 'Sign in' button
+								</p>
+							</div>
+						</div>
+						<div >
+							<img src="img/userguide/r5.png" alt="">
+							<div >
+								<h4>Fifth Step</h4>
+								<p>
+									-A Message would show that you are singed in
+									<br />
+									-And a 'logout' link so you can log out of our system
+									<br />
+								</p>
+							</div>
+						</div>
+					</div>
+					<div id="addNodeGuideData">
+						<div >
+							<img src="img/userguide/n1.png" alt="">
+							<div >
+								<h4>First Step</h4>
+								<p>
+									-Click on 'Go To' then
+									<br />
+									-Choose 'My Nodes' from the list and click it
+								</p>
+							</div>
+						</div>
+						<div >
+							<img src="img/userguide/n2.png" alt="">
+							<div >
+								<h4>Second Step</h4>
+								<p>
+									-It will show you table with all your added nodes and the table would be empty if you didnt add any node before
+									<br />
+									-Click on the 'New' button to add new node
+								</p>
+							</div>
+						</div>
+						<div >
+							<img src="img/userguide/n3.png" alt="">
+							<div >
+								<h4>Third Step</h4>
+								<p>
+									-Enter name of Node (District) to be added
+									<br />
+									-Click on 'Add Place' to locate its position on map
+								</p>
+							</div>
+						</div>
+						<div >
+							<img src="img/userguide/n4.png" alt="">
+							<div >
+								<h4>Fourth Step</h4>
+								<p>
+									-After adding Node name and position on map then
+									<br />
+									-Click on 'Save' button
+								</p>
+							</div>
+						</div>
+						<div >
+							<img src="img/userguide/n5.png" alt="">
+							<div >
+								<h4>Fifth Step</h4>
+								<p>
+									-Now you can see list of your nodes with our new added node
+									<br />
+									-Each node can have 3 actions :
+									<br />
+									1)green button to show node on map
+									<br />
+									2)blue button to edit node data
+									<br />
+									3)red button to delete node from system
+								</p>
+							</div>
+						</div>
+					</div>
+					<div id="addRouteGuideData">
+						<div >
+							<img src="img/userguide/a1.png" alt="">
+							<div >
+								<h4>First Step</h4>
+								<p>
+									-Click on 'Go To' then
+									<br />
+									-Choose 'My Routes' from the list and click it
+								</p>
+							</div>
+						</div>
+						<div >
+							<img src="img/userguide/a2.png" alt="">
+							<div >
+								<h4>Second Step</h4>
+								<p>
+									-It will show you table with all your added routes and the table would be empty if you didn't add any route before
+									<br />
+									-Click on the 'New' button to add new route
+								</p>
+							</div>
+						</div>
+						<div >
+							<img src="img/userguide/a3.png" alt="">
+							<div >
+								<h4>Third Step</h4>
+								<p>
+									-Zoom in the map to see the districts to be connected
+								</p>
+							</div>
+						</div>
+						<div >
+							<img src="img/userguide/a4.png" alt="">
+							<div >
+								<h4>Fourth Step</h4>
+								<p>
+									--right click on the specified district then choose 'select'
+								</p>
+							</div>
+						</div>
+						<div >
+							<img src="img/userguide/a5.png" alt="">
+							<div >
+								<h4>Fifth Step</h4>
+								<p>
+									-You will see name of the node added
+									<br />
+									-Then you can either add many other stop by the same way as before Or  by adding new node which didnt exist by clicking 'add place' on top right corner of map
+								</p>
+							</div>
+						</div>
+						<div >
+							<img src="img/userguide/a6.png" alt="">
+							<div >
+								<h4>Sixth Step</h4>
+								<p>
+									-Now specify the transportation type , Cost and Way description if it exist
+									<br />
+									-Then click on 'Create Route'
+								</p>
+							</div>
+						</div>
+						<div >
+							<img src="img/userguide/a7.png" alt="">
+							<div >
+								<h4>Seventh Step</h4>
+								<p>
+									-You will see your route been added to the table
+									<br />
+									-the 3 action buttons (blue button to edit it ,red button to delete it ,green button to show it)
+								</p>
+							</div>
+						</div>
+					</div>
+					<div id="searchGuideData">
+						<div >
+							<img src="img/userguide/s1.png" alt="">
+							<div >
+								<h4>First Step</h4>
+								<p>
+									-You can Enter name of district and there would be helping list while you entering the source or destination
+								</p>
+							</div>
+						</div>
+						<div >
+							<img src="img/userguide/s2.png" alt="">
+							<div >
+								<h4>Second Step</h4>
+								<p>
+									-You can also check on the map at the specified district and right click on it
+									<br />
+									-then choose it as a source or destination
+									<br />
+									-Then click on search button
+								</p>
+							</div>
+						</div>
+						<div >
+							<img src="img/userguide/s3.png" alt="">
+							<div >
+								<h4>Third Step</h4>
+								<p>
+									-The result table would show routes relative to the search data
+									<br />
+									-you can like or dislike the result route
+									<br />
+									-you can also click on 'View' button to see the route on map
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
